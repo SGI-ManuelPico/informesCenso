@@ -1,8 +1,8 @@
-from persistence.informePrimero import InformePrimero
+from persistence.informeSegundo import InformeTercero
 
 
 def main():
-    InformePrimero
+    InformeTercero
 
 if __name__== "__main__":
     main()
