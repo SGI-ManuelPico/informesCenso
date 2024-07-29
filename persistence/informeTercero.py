@@ -129,7 +129,7 @@ class InformeTercero:
         elif actividad3 == 'Venta ambulante':
             hoja['Q42'] = 'X'
 
-        actividad4 = fila["¿Cuál fue el valor promedio de ventas en el último mes? "]
+        actividad4 = fila["¿Cuál fue el valor promedio de ventas en el último mes?"]
         if actividad4 == 'Inferiores a $600.000':
             hoja['AN10'] = 'X'
         elif actividad4 == 'Entre $ 601.000 y $ 1.500.000':
@@ -139,7 +139,7 @@ class InformeTercero:
         elif actividad4 == 'Superior a $ 3.000.000':
             hoja['AN13'] = 'X'
 
-        actividad5 = fila["¿Cuál fue el valor promedio de ventas en el último mes? "]
+        actividad5 = fila["¿Cuál fue el valor promedio de ventas en el último mes?"]
         if actividad5 == 'Sitio':
             hoja['AH16'] = 'X'
         elif actividad5 == 'Vereda':
@@ -287,7 +287,7 @@ class InformeTercero:
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AT54'] = 'X'
             elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AU4'] = 'X'
+                hoja['AU54'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AV54'] = 'X'
             elif actividad10 == 'Superiores s a $2.701.000':
@@ -345,7 +345,7 @@ class InformeTercero:
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AT55'] = 'X'
             elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AU4'] = 'X'
+                hoja['AU55'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AV55'] = 'X'
             elif actividad10 == 'Superiores s a $2.701.000':
@@ -403,7 +403,7 @@ class InformeTercero:
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AT56'] = 'X'
             elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AU4'] = 'X'
+                hoja['AU56'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AV56'] = 'X'
             elif actividad10 == 'Superiores s a $2.701.000':
@@ -461,7 +461,7 @@ class InformeTercero:
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AT57'] = 'X'
             elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AU4'] = 'X'
+                hoja['AU57'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AV57'] = 'X'
             elif actividad10 == 'Superiores s a $2.701.000':
@@ -519,7 +519,7 @@ class InformeTercero:
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AT58'] = 'X'
             elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AU4'] = 'X'
+                hoja['AU58'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AV58'] = 'X'
             elif actividad10 == 'Superiores s a $2.701.000':
@@ -577,7 +577,7 @@ class InformeTercero:
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AT59'] = 'X'
             elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AU4'] = 'X'
+                hoja['AU59'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AV59'] = 'X'
             elif actividad10 == 'Superiores s a $2.701.000':
@@ -635,7 +635,7 @@ class InformeTercero:
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AT60'] = 'X'
             elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AU4'] = 'X'
+                hoja['AU60'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AV60'] = 'X'
             elif actividad10 == 'Superiores s a $2.701.000':
@@ -693,7 +693,7 @@ class InformeTercero:
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AT61'] = 'X'
             elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AU4'] = 'X'
+                hoja['AU61'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AV61'] = 'X'
             elif actividad10 == 'Superiores s a $2.701.000':
@@ -751,7 +751,7 @@ class InformeTercero:
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AT62'] = 'X'
             elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AU4'] = 'X'
+                hoja['AU62'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AV62'] = 'X'
             elif actividad10 == 'Superiores s a $2.701.000':
@@ -809,7 +809,7 @@ class InformeTercero:
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AT63'] = 'X'
             elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AU4'] = 'X'
+                hoja['AU63'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AV63'] = 'X'
             elif actividad10 == 'Superiores s a $2.701.000':
