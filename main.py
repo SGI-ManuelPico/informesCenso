@@ -1,11 +1,11 @@
-from persistence.informeTercero import InformeTercero
+from persistence.informeCuarto import InformeCuarto
 import os
 from openpyxl import load_workbook
 
 def main():
             
-    archivoInicial = InformeTercero().lecturaArchivoTercero()
-    rutaArchivoFormato = os.getcwd() + "\\censos\\FORMATO 3 COMERCIAL - Aprobado.xlsx"
+    archivoInicial = InformeCuarto().lecturaArchivoCuarto()
+    rutaArchivoFormato = os.getcwd() + "\\censos\\FORMATO 4 SERVICIOS - Aprobado.xlsx"
     direc_guardado = os.getcwd() + "\\output"
     if not os.path.exists(direc_guardado):
         os.makedirs(direc_guardado)
@@ -14,7 +14,7 @@ def main():
         wb = load_workbook(rutaArchivoFormato)
         ws = wb.active
     
-        InformeTercero().crearArchivoTercero(ws, row)
+        InformeCuarto().crearArchivoCuarto(ws, row)
     
 
         output_path = f"{direc_guardado}" + "\\" + f"form_lleno_{index + 1}.xlsx"

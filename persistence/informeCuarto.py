@@ -71,7 +71,7 @@ class InformeCuarto:
             hoja['P17'] = 'X'
         elif actividad == 'Servicio de giros y/o financieros':
             hoja['P19'] = 'X'
-        elif actividad == 'Hosepdaje Diligenciar título E':
+        elif actividad == 'Hospedaje (diligenciar título E)':
             hoja['P22'] = 'X'
 
             ################
@@ -86,7 +86,9 @@ class InformeCuarto:
                 hoja['F62'] = 'X'
             elif fila['¿Qué tipo de hospedaje oferta?'] == 'Pensión':
                 hoja['F63'] = 'X'
-            elif fila['¿Qué tipo de hospedaje oferta?'] == 'Finca ecotuística':
+            elif fila['¿Qué tipo de hospedaje oferta?'] == 'Cabaña':
+                hoja['M60'] = 'X'
+            elif fila['¿Qué tipo de hospedaje oferta?'] == 'Finca ecoturística':
                 hoja['M61'] = 'X'
             elif fila['¿Qué tipo de hospedaje oferta?'] == 'Otro':
                 hoja['M62'] = 'X'
@@ -97,14 +99,16 @@ class InformeCuarto:
             hoja['AO60'] = fila["¿Cuáles son los principales sitios de procedencia de los huéspedes?"]
 
 
-        elif actividad == 'Otros ':
+        elif actividad == 'Educacion':
+            hoja['P22'] = 'X'
+        elif actividad == 'Otros':
             hoja['P23'] = 'X'
             hoja['J24'] = fila['Otro, ¿Cuáles?']
 
         if fila["Vende principalmente en:"] =='Sitio':
             hoja['I28'] = 'X'
         if fila["Vende principalmente en:"] =='Vereda':
-            hoja['I20'] = 'X'
+            hoja['I29'] = 'X'
         if fila["Vende principalmente en:"] =='Casco Urbano':
             hoja['I30'] = 'X'
         if fila["Vende principalmente en:"] =='Otros Municipios y/o Veredas':
@@ -136,23 +140,14 @@ class InformeCuarto:
         elif actividad2 == 'Mensual':
             hoja['AR24'] = 'X'
 
-        hoja['I31'] = fila["Cantidad.3"]
-        hoja['M31'] = fila["Unidad de medida.3"]
-        hoja['S31'] = fila["Valor.3"]
-        hoja['D34'] = fila["Producto.4"]
-        hoja['R34'] = fila["Precio"]
-        hoja['D35'] = fila["Producto.5"]
-        hoja['R35'] = fila["Precio.1"]
-        hoja['D36'] = fila["Producto.6"]
-        hoja['R36'] = fila["Precio.2"]
 
-        if fila['Hidrocarburos'] != "":
+        if str(fila['Hidrocarburos']) != "nan":
             hoja['AI28'] = 'X'
             hoja['AO28'] = fila['Hidrocarburos']
-        elif fila['Vereda'] != "":
+        elif str(fila['Vereda']) != "nan":
             hoja['AI29'] = 'X'
             hoja['AO29'] = fila['Vereda']
-        elif fila['Finca/Propiet.'] != "":
+        elif str(fila['Finca/Propiet.']) != "nan":
             hoja['AI30'] = 'X'
             hoja['AO30'] = fila['Finca/Propiet.']
 
@@ -179,10 +174,8 @@ class InformeCuarto:
             hoja['AQ36'] = fila['Otro, ¿Cuál?.1']
     
         hoja['W37'] = fila["Forma de extracción"]
-        hoja['AQ37'] = fila["Cantidad estimada (m3)"]
+        hoja['AQ37'] = fila["Cantidad estimada (agregar m3)"]
 
-
-        hoja['AF45'] = fila["¿Cuál?"]
 
         actividad7 = fila['¿Qué tipo de energía utiliza?']
         if actividad7 == 'Energía Eléctrica':
@@ -244,7 +237,7 @@ class InformeCuarto:
         hoja['AQ47'] = fila["Procedencia.3"]
 
         ## SERVICIO 5
-        hoja['B48'] = fila["Servicio 5.1"]
+        hoja['B48'] = fila["Servicio 5"]
         hoja['J48'] = fila["Insumo/Materia prima.4"]
         hoja['S48'] = fila["Precio compra.4"]
         hoja['AB48'] = fila["Cantidad.4"]
@@ -258,28 +251,28 @@ class InformeCuarto:
         ## EQUIPO 1
         hoja['B53'] = fila["Equipo/maquinaria"]
         hoja['N53'] = fila["Precio compra"]
-        hoja['XB53'] = fila["Cantidade que posee la unidad económica"]
+        hoja['X53'] = fila["Cantidad que posee la unidad económica"]
         hoja['AF53'] = fila["Vida útil"]
         hoja['AO53'] = fila["Procedencia.5"]
 
         ## EQUIPO 2
         hoja['B54'] = fila["Equipo/maquinaria.1"]
         hoja['N54'] = fila["Precio compra.1"]
-        hoja['XB54'] = fila["Cantidade que posee la unidad económica.1"]
+        hoja['X54'] = fila["Cantidad que posee la unidad económica.1"]
         hoja['AF54'] = fila["Vida útil.1"]
         hoja['AO54'] = fila["Procedencia.6"]
 
         ## EQUIPO 3
         hoja['B55'] = fila["Equipo/maquinaria.2"]
         hoja['N55'] = fila["Precio compra.2"]
-        hoja['XB55'] = fila["Cantidade que posee la unidad económica.2"]
+        hoja['X55'] = fila["Cantidad que posee la unidad económica.2"]
         hoja['AF55'] = fila["Vida útil.2"]
         hoja['AO55'] = fila["Procedencia.7"]
 
         ## EQUIPO 4
         hoja['B56'] = fila["Equipo/maquinaria.3"]
         hoja['N56'] = fila["Precio compra.3"]
-        hoja['XB56'] = fila["Cantidade que posee la unidad económica.3"]
+        hoja['X56'] = fila["Cantidad que posee la unidad económica.3"]
         hoja['AF56'] = fila["Vida útil.3"]
         hoja['AO56'] = fila["Procedencia.8"]
 
@@ -325,7 +318,7 @@ class InformeCuarto:
             elif fila['Pago de seguridad'] == 'No':
                 hoja['AG69'] = 'X'
 
-            hoja['AH69'] = fila["Procedencia"]
+            hoja['AH69'] = fila["Procedencia.9"]
             hoja['AI69'] = fila["Residencia"]
             hoja['AL69'] = fila["Tiempo trabajado"]
             hoja['AM69'] = fila["# Personas núcleo familiar"]
@@ -381,7 +374,7 @@ class InformeCuarto:
             elif fila['Pago de seguridad.1'] == 'No':
                 hoja['Ag70'] = 'X'
 
-            hoja['AH70'] = fila["Procedencia.1"]
+            hoja['AH70'] = fila["Procedencia.10"]
             hoja['AI70'] = fila["Residencia.1"]
             hoja['AL70'] = fila["Tiempo trabajado.1"]
             hoja['AM70'] = fila["# Personas núcleo familiar.1"]
@@ -437,7 +430,7 @@ class InformeCuarto:
             elif fila['Pago de seguridad.2'] == 'No':
                 hoja['AG71'] = 'X'
 
-            hoja['AH71'] = fila["Procedencia.2"]
+            hoja['AH71'] = fila["Procedencia.11"]
             hoja['AI71'] = fila["Residencia.2"]
             hoja['AL71'] = fila["Tiempo trabajado.2"]
             hoja['AM71'] = fila["# Personas núcleo familiar.2"]
@@ -493,7 +486,7 @@ class InformeCuarto:
             elif fila['Pago de seguridad.3'] == 'No':
                 hoja['AG72'] = 'X'
 
-            hoja['AH72'] = fila["Procedencia.3"]
+            hoja['AH72'] = fila["Procedencia.12"]
             hoja['AI72'] = fila["Residencia.3"]
             hoja['AL72'] = fila["Tiempo trabajado.3"]
             hoja['AM72'] = fila["# Personas núcleo familiar.3"]
@@ -549,7 +542,7 @@ class InformeCuarto:
             elif fila['Pago de seguridad.4'] == 'No':
                 hoja['AG73'] = 'X'
 
-            hoja['AH73'] = fila["Procedencia.4"]
+            hoja['AH73'] = fila["Procedencia.13"]
             hoja['AI73'] = fila["Residencia.4"]
             hoja['AL73'] = fila["Tiempo trabajado.4"]
             hoja['AM73'] = fila["# Personas núcleo familiar.4"]
@@ -605,7 +598,7 @@ class InformeCuarto:
             elif fila['Pago de seguridad.5'] == 'No':
                 hoja['AG74'] = 'X'
 
-            hoja['AH74'] = fila["Procedencia.5"]
+            hoja['AH74'] = fila["Procedencia.14"]
             hoja['AI74'] = fila["Residencia.5"]
             hoja['AL74'] = fila["Tiempo trabajado.5"]
             hoja['AM74'] = fila["# Personas núcleo familiar.5"]
@@ -661,7 +654,7 @@ class InformeCuarto:
             elif fila['Pago de seguridad.6'] == 'No':
                 hoja['AG75'] = 'X'
 
-            hoja['AH75'] = fila["Procedencia.6"]
+            hoja['AH75'] = fila["Procedencia.15"]
             hoja['AI75'] = fila["Residencia.6"]
             hoja['AL75'] = fila["Tiempo trabajado.6"]
             hoja['AM75'] = fila["# Personas núcleo familiar.6"]
@@ -717,7 +710,7 @@ class InformeCuarto:
             elif fila['Pago de seguridad.7'] == 'No':
                 hoja['AG76'] = 'X'
 
-            hoja['AH76'] = fila["Procedencia.7"]
+            hoja['AH76'] = fila["Procedencia.16"]
             hoja['AI76'] = fila["Residencia.7"]
             hoja['AL76'] = fila["Tiempo trabajado.7"]
             hoja['AM76'] = fila["# Personas núcleo familiar.7"]
@@ -773,7 +766,7 @@ class InformeCuarto:
             elif fila['Pago de seguridad.8'] == 'No':
                 hoja['AG77'] = 'X'
 
-            hoja['AH77'] = fila["Procedencia.8"]
+            hoja['AH77'] = fila["Procedencia.17"]
             hoja['AI77'] = fila["Residencia.8"]
             hoja['AL77'] = fila["Tiempo trabajado.8"]
             hoja['AM77'] = fila["# Personas núcleo familiar.8"]
@@ -797,7 +790,7 @@ class InformeCuarto:
             elif fila["Tipo de mano de obra.9"] == "Contratado":
                 hoja['D78'] = 'X'
 
-            hoja['E78'] = fila["Cargo.90"]
+            hoja['E78'] = fila["Cargo.9"]
 
             if fila["Género.9"] == "Masculino":
                 hoja['J78'] = 'X'
@@ -829,7 +822,7 @@ class InformeCuarto:
             elif fila['Pago de seguridad.9'] == 'No':
                 hoja['AG78'] = 'X'
 
-            hoja['AH78'] = fila["Procedencia.9"]
+            hoja['AH78'] = fila["Procedencia.18"]
             hoja['AI78'] = fila["Residencia.9"]
             hoja['AL78'] = fila["Tiempo trabajado.9"]
             hoja['AM78'] = fila["# Personas núcleo familiar.9"]
