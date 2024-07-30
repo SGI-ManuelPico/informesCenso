@@ -18,7 +18,6 @@ class InformeTercero:
         # Ajustes preliminares al archivo inicial.
         archivoInicial = archivoInicial.drop(columns=[0,1,2,3]).transpose()
         archivoInicial.columns = archivoInicial.iloc[0].str.lstrip()
-        archivoInicial.columns = archivoInicial.iloc[0].str.rstrip()
         archivoInicial = archivoInicial.drop(archivoInicial.index[0])
         archivoInicial.columns = pd.io.common.dedup_names(archivoInicial.columns, is_potential_multiindex=False)
 
@@ -139,7 +138,7 @@ class InformeTercero:
         elif actividad4 == 'Superior a $ 3.000.000':
             hoja['AN13'] = 'X'
 
-        actividad5 = fila["¿Cuál fue el valor promedio de ventas en el último mes?"]
+        actividad5 = fila["Vende principalmente en:"]
         if actividad5 == 'Sitio':
             hoja['AH16'] = 'X'
         elif actividad5 == 'Vereda':

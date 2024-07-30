@@ -18,7 +18,6 @@ class InformeCuarto:
         # Ajustes preliminares al archivo inicial.
         archivoInicial = archivoInicial.drop(columns=[0,1,2,3]).transpose()
         archivoInicial.columns = archivoInicial.iloc[0].str.lstrip()
-        archivoInicial.columns = archivoInicial.iloc[0].str.rstrip()
         archivoInicial = archivoInicial.drop(archivoInicial.index[0])
         archivoInicial.columns = pd.io.common.dedup_names(archivoInicial.columns, is_potential_multiindex=False)
 
@@ -373,16 +372,14 @@ class InformeCuarto:
                 hoja['W70'] = 'X'
 
             if fila['Contrato.1'] == 'Tem.':
-                hoja['AE70'] = 'X'
+                hoja['Y70'] = 'X'
             elif fila['Contrato.1'] == 'Fij':
-                hoja['AG70'] = 'X'
+                hoja['AC70'] = 'X'
             
             if fila['Pago de seguridad.1'] == 'Si':
-                hoja['AH70'] = 'X'
-                hoja['AJ70'] = ''
+                hoja['AE70'] = 'X'
             elif fila['Pago de seguridad.1'] == 'No':
-                hoja['AH70'] = ''
-                hoja['AJ70'] = 'X'
+                hoja['Ag70'] = 'X'
 
             hoja['AH70'] = fila["Procedencia.1"]
             hoja['AI70'] = fila["Residencia.1"]

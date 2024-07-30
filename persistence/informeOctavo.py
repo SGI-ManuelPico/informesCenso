@@ -18,7 +18,6 @@ class InformeOctavo:
         # Ajustes preliminares al archivo inicial.
         archivoInicial = archivoInicial.drop(columns=[0,1,2,3]).transpose()
         archivoInicial.columns = archivoInicial.iloc[0].str.lstrip()
-        archivoInicial.columns = archivoInicial.iloc[0].str.rstrip()
         archivoInicial = archivoInicial.drop(archivoInicial.index[0])
         archivoInicial.columns = pd.io.common.dedup_names(archivoInicial.columns, is_potential_multiindex=False)
 
@@ -555,5 +554,5 @@ class InformeOctavo:
         hoja['Z87'] = fila['Salarios pagados a la mano de obra calificada']
         hoja['Z88'] = fila['Salarios pagados a la mano de obra no calificada']
         hoja['Z89'] = fila['Salarios pagados a empleados y administrativos']
-        hoja['Z90'] = fila[' Salarios pagados a gerentes y directivos']
-        hoja['Z91'] = fila[' Total remuneraciones']
+        hoja['Z90'] = fila['Salarios pagados a gerentes y directivos']
+        hoja['Z91'] = fila['Total remuneraciones']
