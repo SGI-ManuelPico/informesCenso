@@ -17,7 +17,7 @@ class InformeTercero:
 
         # Ajustes preliminares al archivo inicial.
         archivoInicial = archivoInicial.drop(columns=[0,1,2,3]).transpose()
-        archivoInicial.columns = archivoInicial.iloc[0].str.lstrip()
+        archivoInicial.columns = archivoInicial.iloc[0].str.strip()
         archivoInicial = archivoInicial.drop(archivoInicial.index[0])
         archivoInicial.columns = pd.io.common.dedup_names(archivoInicial.columns, is_potential_multiindex=False)
 

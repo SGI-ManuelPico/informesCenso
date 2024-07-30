@@ -17,7 +17,7 @@ class InformeSeptimo:
 
         # Ajustes preliminares al archivo inicial.
         archivoInicial = archivoInicial.drop(columns=[0,1,2,3]).transpose()
-        archivoInicial.columns = archivoInicial.iloc[0].str.lstrip()
+        archivoInicial.columns = archivoInicial.iloc[0].str.strip()
         archivoInicial = archivoInicial.drop(archivoInicial.index[0])
         archivoInicial.columns = pd.io.common.dedup_names(archivoInicial.columns, is_potential_multiindex=False)
         archivoInicial = archivoInicial.reset_index(drop = True)
@@ -745,39 +745,39 @@ class InformeSeptimo:
         ##### INFORMACIÓN TRANSPORTE DE PASAJEROS 2 #####
 
         hoja['A56'] = fila['Elemento transportado']
-        hoja['I56'] = fila['Cantidad mensual ']
-        hoja['M56'] = fila['Procedencia ']
-        hoja['T56'] = fila['Destino ']
-        hoja['AA56'] = fila['Frecuencia de movilización ']
-        hoja['AG56'] = fila['Costo promedio del flete o tarifa ']
-        hoja['AM56'] = fila['Promedio mensual e ingreso ']
+        hoja['I56'] = fila['Cantidad mensual']
+        hoja['M56'] = fila['Procedencia']
+        hoja['T56'] = fila['Destino']
+        hoja['AA56'] = fila['Frecuencia de movilización']
+        hoja['AG56'] = fila['Costo promedio del flete o tarifa']
+        hoja['AM56'] = fila['Promedio mensual e ingreso']
         hoja['AT56'] = fila['Medio de transporte']
 
         hoja['A57'] = fila['Elemento transportado.1']
-        hoja['I57'] = fila['Cantidad mensual .1']
-        hoja['M57'] = fila['Procedencia .1']
-        hoja['T57'] = fila['Destino .1']
-        hoja['AA57'] = fila['Frecuencia de movilización .1']
-        hoja['AG57'] = fila['Costo promedio del flete o tarifa .1']
-        hoja['AM57'] = fila['Promedio mensual e ingreso .1']
+        hoja['I57'] = fila['Cantidad mensual.1']
+        hoja['M57'] = fila['Procedencia.1']
+        hoja['T57'] = fila['Destino.1']
+        hoja['AA57'] = fila['Frecuencia de movilización.1']
+        hoja['AG57'] = fila['Costo promedio del flete o tarifa.1']
+        hoja['AM57'] = fila['Promedio mensual e ingreso.1']
         hoja['AT57'] = fila['Medio de transporte.1']
 
         hoja['A58'] = fila['Elemento transportado.2']
         hoja['I58'] = fila['Cantidad mensual .2']
-        hoja['M58'] = fila['Procedencia .2']
-        hoja['T58'] = fila['Destino .2']
-        hoja['AA58'] = fila['Frecuencia de movilización .2']
-        hoja['AG58'] = fila['Costo promedio del flete o tarifa .2']
-        hoja['AM58'] = fila['Promedio mensual e ingreso .2']
+        hoja['M58'] = fila['Procedencia.2']
+        hoja['T58'] = fila['Destino.2']
+        hoja['AA58'] = fila['Frecuencia de movilización.2']
+        hoja['AG58'] = fila['Costo promedio del flete o tarifa.2']
+        hoja['AM58'] = fila['Promedio mensual e ingreso.2']
         hoja['AT58'] = fila['Medio de transporte.2']
     
         hoja['A59'] = fila['Elemento transportado.3']
-        hoja['I59'] = fila['Cantidad mensual .3']
-        hoja['M59'] = fila['Procedencia .3']
-        hoja['T59'] = fila['Destino .3']
-        hoja['AA59'] = fila['Frecuencia de movilización .3']
-        hoja['AG59'] = fila['Costo promedio del flete o tarifa .3']
-        hoja['AM59'] = fila['Promedio mensual e ingreso .3']
+        hoja['I59'] = fila['Cantidad mensual.3']
+        hoja['M59'] = fila['Procedencia.3']
+        hoja['T59'] = fila['Destino.3']
+        hoja['AA59'] = fila['Frecuencia de movilización.3']
+        hoja['AG59'] = fila['Costo promedio del flete o tarifa.3']
+        hoja['AM59'] = fila['Promedio mensual e ingreso.3']
         hoja['AT59'] = fila['Medio de transporte.3']
 
 
