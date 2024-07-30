@@ -233,663 +233,327 @@ class InformeOctavo:
         elif actividad7 == 'Otro':
             hoja['AP50'] = fila['¿Cuál?.3']
 
-        actividad8 = fila['¿De dónde proviene la energía que utiliza para la cocción de alimentos?']
-        if actividad8 == 'Energía elétrica':
-            hoja['AA39'] = 'X'
-        elif actividad8 == 'Leña':
-            hoja['AF39'] = 'X'
-        elif actividad8 == 'Gas':
-            hoja['AL39'] = 'X'
-        elif actividad8 == 'Otro':
-            hoja['AQ39'] = fila['Otro, ¿Cuál?.3']
-
         if fila["¿Cuenta con servicio de alcantarillado?"] == "Si":
             hoja['AB40'] = 'X'
         elif fila["¿Cuenta con servicio de alcantarillado?"] == "No":
             hoja['AD40'] = 'X'
         hoja['AO40'] = fila['¿Cuál?']
 
+        if fila['¿Cuenta con servicio de alcantarillado?'] == "Si":
+            hoja['AB51'] = 'X'
+        elif fila['¿Cuenta con servicio de alcantarillado?'] == "No":
+            hoja['AD51'] = 'X'
 
-        ##### ABASTECIMIENTO DE INSUMOS #####
+        hoja['AO51'] = fila['¿Cuál?.5']
+        hoja['Y52'] = fila["¿Cuál es el manejo de aguas residuales y solidos?"]
+        hoja['Y53'] = fila["¿Cuál es el gasto aproximado de suministros en el proceso durante un mes?"]
 
-        ## SERVICIO 1
-        hoja['B44'] = fila["Servicio 1.2"]
-        hoja['J44'] = fila["Insumo/Materia prima"]
-        hoja['S44'] = fila["Precio compra"]
-        hoja['AB44'] = fila["Cantidad"]
-        hoja['AI44'] = fila["Frecuencia de compra"]
-        hoja['AQ44'] = fila["Procedencia"]
+        ##### ¿Qué tipo de equipos o maquinaría utiliza? #####
 
-        ## SERVICIO 2
-        hoja['B45'] = fila["Servicio 2.2"]
-        hoja['J45'] = fila["Insumo/Materia prima.1"]
-        hoja['S45'] = fila["Precio compra.1"]
-        hoja['AB45'] = fila["Cantidad.1"]
-        hoja['AI45'] = fila["Frecuencia de compra.1"]
-        hoja['AQ45'] = fila["Procedencia.1"]
+        ## EQUIPO 1
+        hoja['B56'] = fila["Equipo/maquinaria 1"]
+        hoja['N56'] = fila["Precio al que lo compró"]
+        hoja['X56'] = fila["Cantidad que posee la unidad económica"]
+        hoja['AF56'] = fila["Vida útil"]
+        hoja['AO56'] = fila["Procedencia"]
 
-        ## SERVICIO 3
-        hoja['B46'] = fila["Servicio 3.1"]
-        hoja['J46'] = fila["Insumo/Materia prima.2"]
-        hoja['S46'] = fila["Precio compra.2"]
-        hoja['AB46'] = fila["Cantidad.2"]
-        hoja['AI46'] = fila["Frecuencia de compra.2"]
-        hoja['AQ46'] = fila["Procedencia.2"]
+        ## EQUIPO 2
+        hoja['B57'] = fila["Equipo/maquinaria 2"]
+        hoja['N57'] = fila["Precio al que lo compró.1"]
+        hoja['X57'] = fila["Cantidad que posee la unidad económica.1"]
+        hoja['AF57'] = fila["Vida útil.1"]
+        hoja['AO57'] = fila["Procedencia.1"]
 
-        ## SERVICIO 4
-        hoja['B47'] = fila["Servicio 4.1"]
-        hoja['J47'] = fila["Insumo/Materia prima.3"]
-        hoja['S47'] = fila["Precio compra.3"]
-        hoja['AB47'] = fila["Cantidad.3"]
-        hoja['AI47'] = fila["Frecuencia de compra.3"]
-        hoja['AQ47'] = fila["Procedencia.3"]
+        ## EQUIPO 3
+        hoja['B58'] = fila["Equipo/maquinaria 3"]
+        hoja['N58'] = fila["Precio al que lo compró.1"]
+        hoja['X58'] = fila["Cantidad que posee la unidad económica.1"]
+        hoja['AF58'] = fila["Vida útil.1"]
+        hoja['AO58'] = fila["Procedencia.1"]
 
-        ## SERVICIO 5
-        hoja['B48'] = fila["Servicio 5.1"]
-        hoja['J48'] = fila["Insumo/Materia prima.4"]
-        hoja['S48'] = fila["Precio compra.4"]
-        hoja['AB48'] = fila["Cantidad.4"]
-        hoja['AI48'] = fila["Frecuencia de compra.4"]
-        hoja['AQ48'] = fila["Procedencia.4"]
+        ## EQUIPO 4
+        hoja['B59'] = fila["Equipo/maquinaria 4"]
+        hoja['N59'] = fila["Precio al que lo compró.1"]
+        hoja['X59'] = fila["Cantidad que posee la unidad económica.1"]
+        hoja['AF59'] = fila["Vida útil.1"]
+        hoja['AO59'] = fila["Procedencia.1"]
+
+        ## EQUIPO 5
+        hoja['B60'] = fila["Equipo/maquinaria 5"]
+        hoja['N60'] = fila["Precio al que lo compró.1"]
+        hoja['X60'] = fila["Cantidad que posee la unidad económica.1"]
+        hoja['AF60'] = fila["Vida útil.1"]
+        hoja['AO60'] = fila["Procedencia.1"]
 
         hoja['W49'] = fila["¿Cuál fue el monto total gastado en insumos del último mes?"]
 
-        ##### EQUIPOS Y MAQUINARIA #####
+        ##### INFORMACIÓN LABORAL #####
 
-        ## EQUIPO 1
-        hoja['B53'] = fila["Equipo/maquinaria"]
-        hoja['N53'] = fila["Precio compra"]
-        hoja['XB53'] = fila["Cantidade que posee la unidad económica"]
-        hoja['AF53'] = fila["Vida útil"]
-        hoja['AO53'] = fila["Procedencia.5"]
+        #### MANO DE OBRA CALIFICADA ####
+        hoja['I67'] = fila["#"]
 
-        ## EQUIPO 2
-        hoja['B54'] = fila["Equipo/maquinaria.1"]
-        hoja['N54'] = fila["Precio compra.1"]
-        hoja['XB54'] = fila["Cantidade que posee la unidad económica.1"]
-        hoja['AF54'] = fila["Vida útil.1"]
-        hoja['AO54'] = fila["Procedencia.6"]
+        if fila["Género"] == "Femenino":
+            hoja['K66'] = 'X'
+        elif fila["Género"] == "Masculino":
+            hoja['M66'] = 'X'
 
-        ## EQUIPO 3
-        hoja['B55'] = fila["Equipo/maquinaria.2"]
-        hoja['N55'] = fila["Precio compra.2"]
-        hoja['XB55'] = fila["Cantidade que posee la unidad económica.2"]
-        hoja['AF55'] = fila["Vida útil.2"]
-        hoja['AO55'] = fila["Procedencia.7"]
+        if fila["Contrato"] == "Termino Fijo":
+            hoja['O66'] = 'X'
+        elif fila["Contrato"] == "Indefinido":
+            hoja['S66'] = 'X'
 
-        ## EQUIPO 4
-        hoja['B56'] = fila["Equipo/maquinaria.3"]
-        hoja['N56'] = fila["Precio compra.3"]
-        hoja['XB56'] = fila["Cantidade que posee la unidad económica.3"]
-        hoja['AF56'] = fila["Vida útil.3"]
-        hoja['AO56'] = fila["Procedencia.8"]
+        #hoja['XB53'] = fila["¿Cuánto?"]
+        hoja['W66'] = fila["Jornal y turno laboral"]
 
-        if fila["Contrata algún tipo de mano de obra"] == "Si":
-            hoja['AC64'] = 'X'
-
-            #### Persona 1 ####
-
-            if fila["Tipo de mano de obra"] == "Familiar":
-                hoja['B69'] = 'X'
-            elif fila["Tipo de mano de obra"] == "Contratado":
-                hoja['D69'] = 'X'
-
-            hoja['E69'] = fila["Cargo.1"]
-
-            if fila["Género"] == "Masculino":
-                hoja['J69'] = 'X'
-            elif fila["Género"] == "Femenino":
-                hoja['H69'] = 'X'
-
-            hoja['K69'] = fila["Edad (años)"]
-            hoja['L69'] = fila["Duración jornada (horas)"]
-
-            actividad9 = fila['Escolaridad']
-            if actividad9 == 'Primaria':
-                hoja['N69'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                hoja['Q69'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                hoja['S69'] = 'X'
-            elif actividad9 == 'Profesional':
-                hoja['U69'] = 'X'
-            elif actividad9 == 'Posgrado':
-                hoja['W69'] = 'X'
-
-            if fila['Contrato'] == 'Tem.':
-                hoja['Y69'] = 'X'
-            elif fila['Contrato'] == 'Fij':
-                hoja['AC69'] = 'X'
-            
-            if fila['Pago de seguridad'] == 'Si':
-                hoja['AE69'] = 'X'
-            elif fila['Pago de seguridad'] == 'No':
-                hoja['AG69'] = 'X'
-
-            hoja['AH69'] = fila["Procedencia"]
-            hoja['AI69'] = fila["Residencia"]
-            hoja['AL69'] = fila["Tiempo trabajado"]
-            hoja['AM69'] = fila["# Personas núcleo familiar"]
-            hoja['AO69'] = fila["Personas a cargo"]
-            hoja['AP69'] = fila["Lugar de residencia familiar"]
+        if fila["Escolaridad"] == "Primaria":
+            hoja['AB66'] = 'X'
+        elif fila["Escolaridad"] == "Bachillerato":
+            hoja['AC66'] = 'X'
+        elif fila["Escolaridad"] == "Técnico o tecnológico":
+            hoja['AD66'] = 'X'
+        elif fila["Escolaridad"] == "Profesional":
+            hoja['AE66'] = 'X'
+        elif fila["Escolaridad"] == "Posgrado":
+            hoja['AG66'] = 'X'
         
-            actividad10 = fila['Remuneración']
-            if actividad10 == 'Inferiores a $900.000':
-                hoja['AR69'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AS69'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                hoja['AT69'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
-                hoja['AU69'] = 'X'
-
-            ##### Persona 2 #####
-
-            if fila["Tipo de mano de obra.1"] == "Familiar":
-                hoja['B70'] = 'X'
-            elif fila["Tipo de mano de obra.1"] == "Contratado":
-                hoja['D70'] = 'X'
-
-            hoja['E70'] = fila["Cargo.2"]
-
-            if fila["Género.1"] == "Masculino":
-                hoja['J70'] = 'X'
-            elif fila["Género.1"] == "Femenino":
-                hoja['H70'] = 'X'
-
-            hoja['K70'] = fila["Edad (años).1"]
-            hoja['L70'] = fila["Duración jornada (horas).1"]
-
-            actividad9 = fila['Escolaridad.1']
-            if actividad9 == 'Primaria':
-                hoja['N70'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                hoja['Q70'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                hoja['S70'] = 'X'
-            elif actividad9 == 'Profesional':
-                hoja['U70'] = 'X'
-            elif actividad9 == 'Posgrado':
-                hoja['W70'] = 'X'
-
-            if fila['Contrato.1'] == 'Tem.':
-                hoja['AE70'] = 'X'
-            elif fila['Contrato.1'] == 'Fij':
-                hoja['AG70'] = 'X'
-            
-            if fila['Pago de seguridad.1'] == 'Si':
-                hoja['AH70'] = 'X'
-                hoja['AJ70'] = ''
-            elif fila['Pago de seguridad.1'] == 'No':
-                hoja['AH70'] = ''
-                hoja['AJ70'] = 'X'
-
-            hoja['AH70'] = fila["Procedencia.1"]
-            hoja['AI70'] = fila["Residencia.1"]
-            hoja['AL70'] = fila["Tiempo trabajado.1"]
-            hoja['AM70'] = fila["# Personas núcleo familiar.1"]
-            hoja['AO70'] = fila["Personas a cargo.1"]
-            hoja['AP70'] = fila["Lugar de residencia familiar.1"]
+        if fila["Procedencia.3"] == "Vereda":
+            hoja['AJ66'] = 'X'
+        elif fila["Procedencia.3"] == "Municipio":
+            hoja['AM66'] = 'X'
+        elif fila["Procedencia.3"] == "Otro":
+            hoja['AO66'] = 'X'
         
-            actividad10 = fila['Remuneración.1']
-            if actividad10 == 'Inferiores a $900.000':
-                hoja['AR70'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AS70'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                hoja['AT70'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
-                hoja['AU70'] = 'X'
-
-            ##### Persona 3 #####
-
-            if fila["Tipo de mano de obra.2"] == "Familiar":
-                hoja['B71'] = 'X'
-            elif fila["Tipo de mano de obra.2"] == "Contratado":
-                hoja['D71'] = 'X'
-
-            hoja['E71'] = fila["Cargo.3"]
-
-            if fila["Género.2"] == "Masculino":
-                hoja['J71'] = 'X'
-            elif fila["Género.2"] == "Femenino":
-                hoja['H71'] = 'X'
-
-            hoja['K71'] = fila["Edad (años).2"]
-            hoja['L71'] = fila["Duración jornada (horas).2"]
-
-            actividad9 = fila['Escolaridad.2']
-            if actividad9 == 'Primaria':
-                hoja['N71'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                hoja['Q71'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                hoja['S71'] = 'X'
-            elif actividad9 == 'Profesional':
-                hoja['U71'] = 'X'
-            elif actividad9 == 'Posgrado':
-                hoja['W71'] = 'X'
-
-            if fila['Contrato.2'] == 'Tem.':
-                hoja['Y71'] = 'X'
-            elif fila['Contrato.2'] == 'Fij':
-                hoja['AC71'] = 'X'
-            
-            if fila['Pago de seguridad.2'] == 'Si':
-                hoja['AE71'] = 'X'
-            elif fila['Pago de seguridad.2'] == 'No':
-                hoja['AG71'] = 'X'
-
-            hoja['AH71'] = fila["Procedencia.2"]
-            hoja['AI71'] = fila["Residencia.2"]
-            hoja['AL71'] = fila["Tiempo trabajado.2"]
-            hoja['AM71'] = fila["# Personas núcleo familiar.2"]
-            hoja['AO71'] = fila["Personas a cargo.2"]
-            hoja['AP71'] = fila["Lugar de residencia familiar.2"]
+        if fila["Residencia"] == "Vereda":
+            hoja['AQ66'] = 'X'
+        elif fila["Residencia"] == "Municipio":
+            hoja['AS66'] = 'X'
+        elif fila["Residencia"] == "Otro":
+            hoja['AU66'] = 'X'
         
-            actividad10 = fila['Remuneración.2']
-            if actividad10 == 'Inferiores a $900.000':
-                hoja['AR71'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AS71'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                hoja['AT71'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
-                hoja['AU71'] = 'X'
 
-            ##### Persona 4 #####
+        #### MANO DE OBRA NO CALIFICADA ####
+        hoja['I67'] = fila["#.1"]
 
-            if fila["Tipo de mano de obra.3"] == "Familiar":
-                hoja['B72'] = 'X'
-            elif fila["Tipo de mano de obra.3"] == "Contratado":
-                hoja['D72'] = 'X'
+        if fila["Género.1"] == "Femenino":
+            hoja['K67'] = 'X'
+        elif fila["Género.1"] == "Masculino":
+            hoja['M67'] = 'X'
 
-            hoja['E72'] = fila["Cargo.4"]
+        if fila["Contrato.1"] == "Termino Fijo":
+            hoja['O67'] = 'X'
+        elif fila["Contrato.1"] == "Indefinido":
+            hoja['S67'] = 'X'
 
-            if fila["Género.3"] == "Masculino":
-                hoja['J72'] = 'X'
-            elif fila["Género.3"] == "Femenino":
-                hoja['H72'] = 'X'
+        #hoja['XB53'] = fila["¿Cuánto?.1"]
+        hoja['W67'] = fila["Jornal y turno laboral.1"]
 
-            hoja['K72'] = fila["Edad (años).3"]
-            hoja['L72'] = fila["Duración jornada (horas).3"]
-
-            actividad9 = fila['Escolaridad.3']
-            if actividad9 == 'Primaria':
-                hoja['N72'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                hoja['Q72'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                hoja['S72'] = 'X'
-            elif actividad9 == 'Profesional':
-                hoja['U72'] = 'X'
-            elif actividad9 == 'Posgrado':
-                hoja['W72'] = 'X'
-
-            if fila['Contrato.3'] == 'Tem.':
-                hoja['Y72'] = 'X'
-            elif fila['Contrato.3'] == 'Fij':
-                hoja['AC72'] = 'X'
-            
-            if fila['Pago de seguridad.3'] == 'Si':
-                hoja['AE72'] = 'X'
-            elif fila['Pago de seguridad.3'] == 'No':
-                hoja['AG72'] = 'X'
-
-            hoja['AH72'] = fila["Procedencia.3"]
-            hoja['AI72'] = fila["Residencia.3"]
-            hoja['AL72'] = fila["Tiempo trabajado.3"]
-            hoja['AM72'] = fila["# Personas núcleo familiar.3"]
-            hoja['AO72'] = fila["Personas a cargo.3"]
-            hoja['AP72'] = fila["Lugar de residencia familiar.3"]
+        if fila["Escolaridad.1"] == "Primaria":
+            hoja['AB67'] = 'X'
+        elif fila["Escolaridad.1"] == "Bachillerato":
+            hoja['AC67'] = 'X'
+        elif fila["Escolaridad.1"] == "Técnico o tecnológico":
+            hoja['AD67'] = 'X'
+        elif fila["Escolaridad.1"] == "Profesional":
+            hoja['AE67'] = 'X'
+        elif fila["Escolaridad.1"] == "Posgrado":
+            hoja['AG67'] = 'X'
         
-            actividad10 = fila['Remuneración.3']
-            if actividad10 == 'Inferiores a $900.000':
-                hoja['AR72'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AS72'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                hoja['AT72'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
-                hoja['AU72'] = 'X'
-
-            ##### Persona 5 #####
-
-            if fila["Tipo de mano de obra.4"] == "Familiar":
-                hoja['B73'] = 'X'
-            elif fila["Tipo de mano de obra.4"] == "Contratado":
-                hoja['D73'] = 'X'
-
-            hoja['E73'] = fila["Cargo.5"]
-
-            if fila["Género.4"] == "Masculino":
-                hoja['J73'] = 'X'
-            elif fila["Género.4"] == "Femenino":
-                hoja['H73'] = 'X'
-
-            hoja['K73'] = fila["Edad (años).4"]
-            hoja['L73'] = fila["Duración jornada (horas).4"]
-
-            actividad9 = fila['Escolaridad.4']
-            if actividad9 == 'Primaria':
-                hoja['N73'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                hoja['Q73'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                hoja['S73'] = 'X'
-            elif actividad9 == 'Profesional':
-                hoja['U73'] = 'X'
-            elif actividad9 == 'Posgrado':
-                hoja['W73'] = 'X'
-
-            if fila['Contrato.4'] == 'Tem.':
-                hoja['Y73'] = 'X'
-            elif fila['Contrato.4'] == 'Fij':
-                hoja['AC73'] = 'X'
-            
-            if fila['Pago de seguridad.4'] == 'Si':
-                hoja['AE73'] = 'X'
-            elif fila['Pago de seguridad.4'] == 'No':
-                hoja['AG73'] = 'X'
-
-            hoja['AH73'] = fila["Procedencia.4"]
-            hoja['AI73'] = fila["Residencia.4"]
-            hoja['AL73'] = fila["Tiempo trabajado.4"]
-            hoja['AM73'] = fila["# Personas núcleo familiar.4"]
-            hoja['AO73'] = fila["Personas a cargo.4"]
-            hoja['AP73'] = fila["Lugar de residencia familiar.4"]
+        if fila["Procedencia.4"] == "Vereda":
+            hoja['AJ67'] = 'X'
+        elif fila["Procedencia.4"] == "Municipio":
+            hoja['AM67'] = 'X'
+        elif fila["Procedencia.4"] == "Otro":
+            hoja['AO67'] = 'X'
         
-            actividad10 = fila['Remuneración.4']
-            if actividad10 == 'Inferiores a $900.000':
-                hoja['AR73'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AS73'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                hoja['AT73'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
-                hoja['AU73'] = 'X'
-
-            ##### Persona 6 #####
-
-            if fila["Tipo de mano de obra.5"] == "Familiar":
-                hoja['B74'] = 'X'
-            elif fila["Tipo de mano de obra.5"] == "Contratado":
-                hoja['D74'] = 'X'
-
-            hoja['E74'] = fila["Cargo.6"]
-
-            if fila["Género.5"] == "Masculino":
-                hoja['j74'] = 'X'
-            elif fila["Género.5"] == "Femenino":
-                hoja['H74'] = 'X'
-
-            hoja['K74'] = fila["Edad (años).5"]
-            hoja['L74'] = fila["Duración jornada (horas).5"]
-
-            actividad9 = fila['Escolaridad.5']
-            if actividad9 == 'Primaria':
-                hoja['N74'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                hoja['Q74'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                hoja['S74'] = 'X'
-            elif actividad9 == 'Profesional':
-                hoja['U74'] = 'X'
-            elif actividad9 == 'Posgrado':
-                hoja['W74'] = 'X'
-
-            if fila['Contrato.5'] == 'Tem.':
-                hoja['Y74'] = 'X'
-            elif fila['Contrato.5'] == 'Fij':
-                hoja['AC74'] = 'X'
-            
-            if fila['Pago de seguridad.5'] == 'Si':
-                hoja['AE74'] = 'X'
-            elif fila['Pago de seguridad.5'] == 'No':
-                hoja['AG74'] = 'X'
-
-            hoja['AH74'] = fila["Procedencia.5"]
-            hoja['AI74'] = fila["Residencia.5"]
-            hoja['AL74'] = fila["Tiempo trabajado.5"]
-            hoja['AM74'] = fila["# Personas núcleo familiar.5"]
-            hoja['AO74'] = fila["Personas a cargo.5"]
-            hoja['AP74'] = fila["Lugar de residencia familiar.5"]
+        if fila["Residencia.1"] == "Vereda":
+            hoja['AQ67'] = 'X'
+        elif fila["Residencia.1"] == "Municipio":
+            hoja['AS67'] = 'X'
+        elif fila["Residencia.1"] == "Otro":
+            hoja['AU67'] = 'X'
         
-            actividad10 = fila['Remuneración.5']
-            if actividad10 == 'Inferiores a $900.000':
-                hoja['AR74'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AS74'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                hoja['AT74'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
-                hoja['AU74'] = 'X'
 
-            ##### Persona 7 #####
+        #### EMPLEADOS ADMINISTRATIVOS Y CONTABLES ####
+        hoja['I68'] = fila["#.2"]
 
-            if fila["Tipo de mano de obra.6"] == "Familiar":
-                hoja['B75'] = 'X'
-            elif fila["Tipo de mano de obra.6"] == "Contratado":
-                hoja['D75'] = 'X'
+        if fila["Género.2"] == "Femenino":
+            hoja['K68'] = 'X'
+        elif fila["Género.2"] == "Masculino":
+            hoja['M68'] = 'X'
 
-            hoja['E75'] = fila["Cargo.7"]
+        if fila["Contrato.2"] == "Termino Fijo":
+            hoja['O68'] = 'X'
+        elif fila["Contrato.2"] == "Indefinido":
+            hoja['S68'] = 'X'
 
-            if fila["Género.6"] == "Masculino":
-                hoja['J75'] = 'X'
-            elif fila["Género.6"] == "Femenino":
-                hoja['H75'] = 'X'
+        #hoja['XB53'] = fila["¿Cuánto?.2"]
+        hoja['W68'] = fila["Jornal y turno laboral.2"]
 
-            hoja['K75'] = fila["Edad (años).6"]
-            hoja['L75'] = fila["Duración jornada (horas).6"]
-
-            actividad9 = fila['Escolaridad.6']
-            if actividad9 == 'Primaria':
-                hoja['N75'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                hoja['Q75'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                hoja['S75'] = 'X'
-            elif actividad9 == 'Profesional':
-                hoja['U75'] = 'X'
-            elif actividad9 == 'Posgrado':
-                hoja['W75'] = 'X'
-
-            if fila['Contrato.6'] == 'Tem.':
-                hoja['Y75'] = 'X'
-            elif fila['Contrato.6'] == 'Fij':
-                hoja['AC75'] = 'X'
-            
-            if fila['Pago de seguridad.6'] == 'Si':
-                hoja['AE75'] = 'X'
-            elif fila['Pago de seguridad.6'] == 'No':
-                hoja['AG75'] = 'X'
-
-            hoja['AH75'] = fila["Procedencia.6"]
-            hoja['AI75'] = fila["Residencia.6"]
-            hoja['AL75'] = fila["Tiempo trabajado.6"]
-            hoja['AM75'] = fila["# Personas núcleo familiar.6"]
-            hoja['AO75'] = fila["Personas a cargo.6"]
-            hoja['AP75'] = fila["Lugar de residencia familiar.6"]
+        if fila["Escolaridad.2"] == "Primaria":
+            hoja['AB68'] = 'X'
+        elif fila["Escolaridad.2"] == "Bachillerato":
+            hoja['AC68'] = 'X'
+        elif fila["Escolaridad.2"] == "Técnico o tecnológico":
+            hoja['AD68'] = 'X'
+        elif fila["Escolaridad.2"] == "Profesional":
+            hoja['AE68'] = 'X'
+        elif fila["Escolaridad.2"] == "Posgrado":
+            hoja['AG68'] = 'X'
         
-            actividad10 = fila['Remuneración.6']
-            if actividad10 == 'Inferiores a $900.000':
-                hoja['AR75'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AS75'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                hoja['AT75'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
-                hoja['AU75'] = 'X'
-
-            ##### Persona 8 #####
-
-            if fila["Tipo de mano de obra.7"] == "Familiar":
-                hoja['B76'] = 'X'
-            elif fila["Tipo de mano de obra.7"] == "Contratado":
-                hoja['D76'] = 'X'
-
-            hoja['E76'] = fila["Cargo.8"]
-
-            if fila["Género.7"] == "Masculino":
-                hoja['J76'] = 'X'
-            elif fila["Género.7"] == "Femenino":
-                hoja['H76'] = 'X'
-
-            hoja['K76'] = fila["Edad (años).7"]
-            hoja['L76'] = fila["Duración jornada (horas).7"]
-
-            actividad9 = fila['Escolaridad.7']
-            if actividad9 == 'Primaria':
-                hoja['N76'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                hoja['Q76'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                hoja['S76'] = 'X'
-            elif actividad9 == 'Profesional':
-                hoja['U76'] = 'X'
-            elif actividad9 == 'Posgrado':
-                hoja['W76'] = 'X'
-
-            if fila['Contrato.7'] == 'Tem.':
-                hoja['Y76'] = 'X'
-            elif fila['Contrato.7'] == 'Fij':
-                hoja['AC76'] = 'X'
-            
-            if fila['Pago de seguridad.7'] == 'Si':
-                hoja['AE76'] = 'X'
-            elif fila['Pago de seguridad.7'] == 'No':
-                hoja['AG76'] = 'X'
-
-            hoja['AH76'] = fila["Procedencia.7"]
-            hoja['AI76'] = fila["Residencia.7"]
-            hoja['AL76'] = fila["Tiempo trabajado.7"]
-            hoja['AM76'] = fila["# Personas núcleo familiar.7"]
-            hoja['AO76'] = fila["Personas a cargo.7"]
-            hoja['AP76'] = fila["Lugar de residencia familiar.7"]
+        if fila["Procedencia.5"] == "Vereda":
+            hoja['AJ68'] = 'X'
+        elif fila["Procedencia.5"] == "Municipio":
+            hoja['AM68'] = 'X'
+        elif fila["Procedencia.5"] == "Otro":
+            hoja['AO68'] = 'X'
         
-            actividad10 = fila['Remuneración.7']
-            if actividad10 == 'Inferiores a $900.000':
-                hoja['AR76'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AS76'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                hoja['AT76'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
-                hoja['AU76'] = 'X'
-
-            ##### Persona 9 #####
-
-            if fila["Tipo de mano de obra.8"] == "Familiar":
-                hoja['B77'] = 'X'
-            elif fila["Tipo de mano de obra.8"] == "Contratado":
-                hoja['D77'] = 'X'
-
-            hoja['E77'] = fila["Cargo.9"]
-
-            if fila["Género.8"] == "Masculino":
-                hoja['J77'] = 'X'
-            elif fila["Género.8"] == "Femenino":
-                hoja['H77'] = 'X'
-
-            hoja['K77'] = fila["Edad (años).8"]
-            hoja['L77'] = fila["Duración jornada (horas).8"]
-
-            actividad9 = fila['Escolaridad.8']
-            if actividad9 == 'Primaria':
-                hoja['N77'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                hoja['Q77'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                hoja['S77'] = 'X'
-            elif actividad9 == 'Profesional':
-                hoja['U77'] = 'X'
-            elif actividad9 == 'Posgrado':
-                hoja['W77'] = 'X'
-
-            if fila['Contrato.8'] == 'Tem.':
-                hoja['Y77'] = 'X'
-            elif fila['Contrato.8'] == 'Fij':
-                hoja['AC77'] = 'X'
-            
-            if fila['Pago de seguridad.8'] == 'Si':
-                hoja['AE77'] = 'X'
-            elif fila['Pago de seguridad.8'] == 'No':
-                hoja['AG77'] = 'X'
-
-            hoja['AH77'] = fila["Procedencia.8"]
-            hoja['AI77'] = fila["Residencia.8"]
-            hoja['AL77'] = fila["Tiempo trabajado.8"]
-            hoja['AM77'] = fila["# Personas núcleo familiar.8"]
-            hoja['AO77'] = fila["Personas a cargo.8"]
-            hoja['AP77'] = fila["Lugar de residencia familiar.8"]
+        if fila["Residencia.2"] == "Vereda":
+            hoja['AQ68'] = 'X'
+        elif fila["Residencia.2"] == "Municipio":
+            hoja['AS68'] = 'X'
+        elif fila["Residencia.2"] == "Otro":
+            hoja['AU68'] = 'X'
         
-            actividad10 = fila['Remuneración.8']
-            if actividad10 == 'Inferiores a $900.000':
-                hoja['AR77'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AS77'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                hoja['AT77'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
-                hoja['AU77'] = 'X'
+        #### GERENTES Y DIRECTIVOS ####
+        hoja['I69'] = fila["#.3"]
 
-            ##### Persona 10 #####
-
-            if fila["Tipo de mano de obra.9"] == "Familiar":
-                hoja['B78'] = 'X'
-            elif fila["Tipo de mano de obra.9"] == "Contratado":
-                hoja['D78'] = 'X'
-
-            hoja['E78'] = fila["Cargo.90"]
-
-            if fila["Género.9"] == "Masculino":
-                hoja['J78'] = 'X'
-            elif fila["Género.9"] == "Femenino":
-                hoja['H78'] = 'X'
-
-            hoja['K78'] = fila["Edad (años).9"]
-            hoja['L78'] = fila["Duración jornada (horas).9"]
-
-            actividad9 = fila['Escolaridad.9']
-            if actividad9 == 'Primaria':
-                hoja['N78'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                hoja['Q78'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                hoja['S78'] = 'X'
-            elif actividad9 == 'Profesional':
-                hoja['U78'] = 'X'
-            elif actividad9 == 'Posgrado':
-                hoja['W78'] = 'X'
-
-            if fila['Contrato.9'] == 'Tem.':
-                hoja['Y78'] = 'X'
-            elif fila['Contrato.9'] == 'Fij':
-                hoja['AC78'] = 'X'
-            
-            if fila['Pago de seguridad.9'] == 'Si':
-                hoja['AE78'] = 'X'
-            elif fila['Pago de seguridad.9'] == 'No':
-                hoja['AG78'] = 'X'
-
-            hoja['AH78'] = fila["Procedencia.9"]
-            hoja['AI78'] = fila["Residencia.9"]
-            hoja['AL78'] = fila["Tiempo trabajado.9"]
-            hoja['AM78'] = fila["# Personas núcleo familiar.9"]
-            hoja['AO78'] = fila["Personas a cargo.9"]
-            hoja['AP78'] = fila["Lugar de residencia familiar.9"]
+        if fila["Género.3"] == "Femenino":
+            hoja['K69'] = 'X'
+        elif fila["Género.3"] == "Masculino":
+            hoja['M69'] = 'X'
         
-            actividad10 = fila['Remuneración.9']
-            if actividad10 == 'Inferiores a $900.000':
-                hoja['AR78'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
-                hoja['AS78'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                hoja['AT78'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
-                hoja['AU78'] = 'X'
+        if fila["Contrato.3"] == "Termino Fijo":
+            hoja['O69'] = 'X'
+        elif fila["Contrato.3"] == "Indefinido":
+            hoja['S69'] = 'X'
+        
+        # hoja['XB53'] = fila["¿Cuánto?.3"]
+        hoja['W69'] = fila["Jornal y turno laboral.3"]
+
+        if fila["Escolaridad.3"] == "Primaria":
+            hoja['AB69'] = 'X'
+        elif fila["Escolaridad.3"] == "Bachillerato":
+            hoja['AC69'] = 'X'
+        elif fila["Escolaridad.3"] == "Técnico o tecnológico":
+            hoja['AD69'] = 'X'
+        elif fila["Escolaridad.3"] == "Profesional":
+            hoja['AE69'] = 'X'
+        elif fila["Escolaridad.3"] == "Posgrado":
+            hoja['AG69'] = 'X'
+        
+        if fila["Procedencia.6"] == "Vereda":
+            hoja['AJ69'] = 'X'
+        elif fila["Procedencia.6"] == "Municipio":
+            hoja['AM69'] = 'X'
+        elif fila["Procedencia.6"] == "Otro":
+            hoja['AO69'] = 'X'
+        
+        if fila["Residencia.4"] == "Vereda":
+            hoja['AQ69'] = 'X'
+        elif fila["Residencia.4"] == "Municipio":
+            hoja['AS69'] = 'X'
+        elif fila["Residencia.4"] == "Otro":
+            hoja['AU69'] = 'X'
+        
+        ##### OBRA O LABOR #####
+        ## Obra o labor 1
+        hoja['A74'] = fila['Tipo de obra o labor 1']
+        hoja['K74'] = fila['Frecuencia de contratación/año']
+        hoja['R74'] = fila['Duración en Jornales del contrato']
+        hoja['AA74'] = fila['Valor del jornal']
+        hoja['AG74'] = fila['Cantidad de jornaleros empleados por contrato']
+        hoja['AO74'] = fila['Residencia de los jornaleros']
+
+        ## Obra o labor 2
+        hoja['A75'] = fila['Tipo de obra o labor 2']
+        hoja['K75'] = fila['Frecuencia de contratación/año.1']
+        hoja['R75'] = fila['Duración en Jornales del contrato.1']
+        hoja['AA75'] = fila['Valor del jornal.1']
+        hoja['AG75'] = fila['Cantidad de jornaleros empleados por contrato.1']
+        hoja['AO75'] = fila['Residencia de los jornaleros.1']
+
+        ## Obra o labor 3
+        hoja['A76'] = fila['Tipo de obra o labor 3']
+        hoja['K76'] = fila['Frecuencia de contratación/año.2']
+        hoja['R76'] = fila['Duración en Jornales del contrato.2']
+        hoja['AA76'] = fila['Valor del jornal.2']
+        hoja['AG76'] = fila['Cantidad de jornaleros empleados por contrato.2']
+        hoja['AO76'] = fila['Residencia de los jornaleros.2']
 
 
-        elif fila["Contrata algún tipo de mano de obra"] == "No":
-            hoja['AE64'] = 'X'
+        if fila['Contrata servicios profesionales * Sí (Responder 30 y 31)'] == "Si":
+            hoja['L78'] = 'X'
+        elif fila['Contrata servicios profesionales * Sí (Responder 30 y 31)'] == "No":
+            hoja['N78'] = 'X'
 
+        if fila['¿Qué tipo de servicios?'] == "Contaduría":
+            hoja['AK78'] = 'X'
+        elif fila['¿Qué tipo de servicios?'] == "Consultoría":
+            hoja['AT78'] = 'X'
+        elif fila['¿Qué tipo de servicios?'] == "Asesoría legal":
+            hoja['AK79'] = 'X'
+        elif fila['¿Qué tipo de servicios?'] == "Otros":
+            hoja['AT79'] = 'X'
+            hoja['AE80'] = fila['Otros, ¿Cuáles?.1']
+        
+
+        ##### SERVICIOS #####
+        hoja['A81'] = fila['Servicio 1']
+        if fila['Frecuencia'] == "Mensual":
+            hoja['F81'] = 'X'
+        elif fila['Frecuencia'] == "Semestral":
+            hoja['J81'] = 'X'
+        elif fila['Frecuencia'] == "Trimestral":
+            hoja['P81'] = 'X'
+        elif fila['Frecuencia'] == "Anual":
+            hoja['U81'] = 'X'
+
+        hoja['A82'] = fila['Servicio 2']
+        if fila['Frecuencia.1'] == "Mensual":
+            hoja['F82'] = 'X'
+        elif fila['Frecuencia.1'] == "Semestral":
+            hoja['J82'] = 'X'
+        elif fila['Frecuencia.1'] == "Trimestral":
+            hoja['P82'] = 'X'
+        elif fila['Frecuencia.1'] == "Anual":
+            hoja['U82'] = 'X'
+        
+        hoja['A83'] = fila['Servicio 3']
+        if fila['Frecuencia.2'] == "Mensual":
+            hoja['F83'] = 'X'
+        elif fila['Frecuencia.2'] == "Semestral":
+            hoja['J83'] = 'X'
+        elif fila['Frecuencia.2'] == "Trimestral":
+            hoja['P83'] = 'X'
+        elif fila['Frecuencia.2'] == "Anual":
+            hoja['U83'] = 'X'
+
+        
+        hoja['A84'] = fila['Servicio 4']
+        if fila['Frecuencia.3'] == "Mensual":
+            hoja['F84'] = 'X'
+        elif fila['Frecuencia.3'] == "Semestral":
+            hoja['J84'] = 'X'
+        elif fila['Frecuencia.3'] == "Trimestral":
+            hoja['P84'] = 'X'
+        elif fila['Frecuencia.3'] == "Anual":
+            hoja['U84'] = 'X'
+
+        
+        hoja['A85'] = fila['Servicio 5']
+        if fila['Frecuencia.4'] == "Mensual":
+            hoja['F85'] = 'X'
+        elif fila['Frecuencia.4'] == "Semestral":
+            hoja['J85'] = 'X'
+        elif fila['Frecuencia.4'] == "Trimestral":
+            hoja['P85'] = 'X'
+        elif fila['Frecuencia.4'] == "Anual":
+            hoja['U85'] = 'X'
+
+
+        hoja['AE84'] = fila['¿Cuál es el monto pagado por estos servicios durante el último semestre?']
+        hoja['Z87'] = fila['Salarios pagados a la mano de obra calificada']
+        hoja['Z88'] = fila['Salarios pagados a la mano de obra no calificada']
+        hoja['Z89'] = fila['Salarios pagados a empleados y administrativos']
+        hoja['Z90'] = fila[' Salarios pagados a gerentes y directivos']
+        hoja['Z91'] = fila[' Total remuneraciones']
