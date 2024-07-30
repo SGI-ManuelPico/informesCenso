@@ -1,5 +1,6 @@
 import pandas as pd
-import os
+import numpy as np
+import os, re
 
 class InformeTercero:
     def __init__(self):
@@ -36,13 +37,13 @@ class InformeTercero:
         if pd.notna(fila['Fecha']):
             fecha_str = str(fila['Fecha'])
             if '/' in fecha_str:
-                hoja['AK2'] = fecha_str.split('/')[0]
+                hoja['AK2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
                 hoja['AN2'] = fecha_str.split('/')[1]
-                hoja['AS2'] = fecha_str.split('/')[2]
+                hoja['AS2'] = fecha_str.split('/')[0]
             elif '-' in fecha_str:
-                hoja['AK2'] = fecha_str.split('-')[0]
+                hoja['AK2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
                 hoja['AN2'] = fecha_str.split('-')[1]
-                hoja['AS2'] = fecha_str.split('-')[2] ####### LLENAR FECHA EN ESPACIOS VACÍOS Y NO SOBRE EL SÍMBOLO.
+                hoja['AS2'] = fecha_str.split('-')[0] ####### LLENAR FECHA EN ESPACIOS VACÍOS Y NO SOBRE EL SÍMBOLO.
             else:
                 print(f'Formato de fecha inesperado: {fecha_str}')
         else:
@@ -155,18 +156,23 @@ class InformeTercero:
         elif fila["¿Lleva libros contables del establecimiento?"] == 'No':
             hoja['AQ22'] = 'X'
 
-        p1 = fila["Producto 1"]
-        p2 = fila["Prodcuto 2"]
-        p3 = fila["Producto 3"]
-        p4 = fila["Prodcuto 4"]
-        p5 = fila["Producto 5"]
+        if str(fila["Producto 1"]) != "nan":
+            p1 = fila["Producto 1"]
+        if str(fila["Producto 2"]) != "nan":
+            p2 = fila["Prodcuto 2"]
+        if str(fila["Producto 3"]) != "nan":
+            p3 = fila["Producto 3"]
+        if str(fila["Producto 4"]) != "nan":
+            p4 = fila["Prodcuto 4"]
+        if str(fila["Producto 5"]) != "nan":
+            p5 = fila["Producto 5"]
 
-        hoja['AE26'] = p1 + " " + p2 + " " + p3 + " " + p4 + " " + p5
+        hoja['AE26'] = str(p1) + " " + str(p2) + " " + str(p3) + " " + str(p4) + " " + str(p5)
 
-        if fila["Hidrocarburos"] != "":
+        if str(fila["Hidrocarburos"]) != "nan":
             hoja['AH29'] = 'X'
             hoja['AM29'] = fila['Hidrocarburos']
-        if fila["Otro.1"] != "":
+        if str(fila["Otro.1"]) != "nan":
             hoja['AH30'] = 'X'
             hoja['AM30'] = fila['Otro.1']
 
@@ -204,7 +210,7 @@ class InformeTercero:
             hoja['R47'] = fila['Otro, ¿Cuál?.2']
     
         hoja['U45'] = fila["Forma de extracción"]
-        hoja['P46'] = fila["Cantidad estimada (m3)"]
+        hoja['P46'] = fila["Cantidad estimada (escribir m3)"]
 
         if fila["¿Cuenta con servicio de alcantarillado?"] == "Si":
             hoja['AP44'] = 'X'
@@ -269,11 +275,11 @@ class InformeTercero:
                 hoja['AG54'] = 'X'
             
             if fila['Pago de seguridad'] == 'Si':
-                hoja['AH54'] = 'X'
+                hoja['AH54'] = 'Si'
                 hoja['AJ54'] = ''
             elif fila['Pago de seguridad'] == 'No':
                 hoja['AH54'] = ''
-                hoja['AJ54'] = 'X'
+                hoja['AJ54'] = 'No'
 
             hoja['AL54'] = fila["Procedencia"]
             hoja['AM54'] = fila["Residencia"]
@@ -327,11 +333,11 @@ class InformeTercero:
                 hoja['AG55'] = 'X'
             
             if fila['Pago de seguridad.1'] == 'Si':
-                hoja['AH55'] = 'X'
+                hoja['AH55'] = 'Si'
                 hoja['AJ55'] = ''
             elif fila['Pago de seguridad.1'] == 'No':
                 hoja['AH55'] = ''
-                hoja['AJ55'] = 'X'
+                hoja['AJ55'] = 'No'
 
             hoja['AL55'] = fila["Procedencia.1"]
             hoja['AM55'] = fila["Residencia.1"]
@@ -385,11 +391,11 @@ class InformeTercero:
                 hoja['AG56'] = 'X'
             
             if fila['Pago de seguridad.2'] == 'Si':
-                hoja['AH56'] = 'X'
+                hoja['AH56'] = 'Si'
                 hoja['AJ56'] = ''
             elif fila['Pago de seguridad.2'] == 'No':
                 hoja['AH56'] = ''
-                hoja['AJ56'] = 'X'
+                hoja['AJ56'] = 'No'
 
             hoja['AL56'] = fila["Procedencia.2"]
             hoja['AM56'] = fila["Residencia.2"]
@@ -443,11 +449,11 @@ class InformeTercero:
                 hoja['AG57'] = 'X'
             
             if fila['Pago de seguridad.3'] == 'Si':
-                hoja['AH57'] = 'X'
+                hoja['AH57'] = 'Si'
                 hoja['AJ57'] = ''
             elif fila['Pago de seguridad.3'] == 'No':
                 hoja['AH57'] = ''
-                hoja['AJ57'] = 'X'
+                hoja['AJ57'] = 'No'
 
             hoja['AL57'] = fila["Procedencia.3"]
             hoja['AM57'] = fila["Residencia.3"]
@@ -501,11 +507,11 @@ class InformeTercero:
                 hoja['AG58'] = 'X'
             
             if fila['Pago de seguridad.4'] == 'Si':
-                hoja['AH58'] = 'X'
+                hoja['AH58'] = 'Si'
                 hoja['AJ58'] = ''
             elif fila['Pago de seguridad.4'] == 'No':
                 hoja['AH58'] = ''
-                hoja['AJ58'] = 'X'
+                hoja['AJ58'] = 'No'
 
             hoja['AL58'] = fila["Procedencia.4"]
             hoja['AM58'] = fila["Residencia.4"]
@@ -559,11 +565,11 @@ class InformeTercero:
                 hoja['AG59'] = 'X'
             
             if fila['Pago de seguridad.5'] == 'Si':
-                hoja['AH59'] = 'X'
+                hoja['AH59'] = 'Si'
                 hoja['AJ59'] = ''
             elif fila['Pago de seguridad.5'] == 'No':
                 hoja['AH59'] = ''
-                hoja['AJ59'] = 'X'
+                hoja['AJ59'] = 'No'
 
             hoja['AL59'] = fila["Procedencia.5"]
             hoja['AM59'] = fila["Residencia.5"]
@@ -617,11 +623,11 @@ class InformeTercero:
                 hoja['AG60'] = 'X'
             
             if fila['Pago de seguridad.6'] == 'Si':
-                hoja['AH60'] = 'X'
+                hoja['AH60'] = 'Si'
                 hoja['AJ60'] = ''
             elif fila['Pago de seguridad.6'] == 'No':
                 hoja['AH60'] = ''
-                hoja['AJ60'] = 'X'
+                hoja['AJ60'] = 'No'
 
             hoja['AL60'] = fila["Procedencia.6"]
             hoja['AM60'] = fila["Residencia.6"]
@@ -675,11 +681,11 @@ class InformeTercero:
                 hoja['AG61'] = 'X'
             
             if fila['Pago de seguridad.7'] == 'Si':
-                hoja['AH61'] = 'X'
+                hoja['AH61'] = 'Si'
                 hoja['AJ61'] = ''
             elif fila['Pago de seguridad.7'] == 'No':
                 hoja['AH61'] = ''
-                hoja['AJ61'] = 'X'
+                hoja['AJ61'] = 'No'
 
             hoja['AL61'] = fila["Procedencia.7"]
             hoja['AM61'] = fila["Residencia.7"]
@@ -733,11 +739,11 @@ class InformeTercero:
                 hoja['AG62'] = 'X'
             
             if fila['Pago de seguridad.8'] == 'Si':
-                hoja['AH62'] = 'X'
+                hoja['AH62'] = 'Si'
                 hoja['AJ62'] = ''
             elif fila['Pago de seguridad.8'] == 'No':
                 hoja['AH62'] = ''
-                hoja['AJ62'] = 'X'
+                hoja['AJ62'] = 'No'
 
             hoja['AL62'] = fila["Procedencia.8"]
             hoja['AM62'] = fila["Residencia.8"]
@@ -763,7 +769,7 @@ class InformeTercero:
             elif fila["Tipo de mano de obra.9"] == "Contratado":
                 hoja['D63'] = 'X'
 
-            hoja['E63'] = fila["Cargo.90"]
+            hoja['E63'] = fila["Cargo.9"]
 
             if fila["Género.9"] == "Masculino":
                 hoja['M63'] = 'X'
@@ -791,11 +797,11 @@ class InformeTercero:
                 hoja['AG63'] = 'X'
             
             if fila['Pago de seguridad.9'] == 'Si':
-                hoja['AH63'] = 'X'
+                hoja['AH63'] = 'Si'
                 hoja['AJ63'] = ''
             elif fila['Pago de seguridad.9'] == 'No':
                 hoja['AH63'] = ''
-                hoja['AJ63'] = 'X'
+                hoja['AJ63'] = 'No'
 
             hoja['AL63'] = fila["Procedencia.9"]
             hoja['AM63'] = fila["Residencia.9"]
