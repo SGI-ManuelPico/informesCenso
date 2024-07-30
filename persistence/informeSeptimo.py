@@ -154,8 +154,7 @@ class InformeSeptimo:
         hoja['Q42'] = fila['Valor.2']
         hoja['AC37'] = fila['¿Cuál es el porcentaje cobrado a los afiliados por cada servicio prestado? (%)']
 
-        if fila["""Emplea directamente algún tipo de mano de obra
-0**Si la respuesta es SI, diligenciar el título G"""] == 'Si':
+        if fila["Emplea directamente algún tipo de mano de obra (si la respuesta es SI, diligenciar el título G)"] == 'Si':
             hoja['AN40'] = 'X'
             #### Persona 1 ####
             if fila["Tipo de mano de obra"] == "Familiar":
@@ -717,8 +716,7 @@ class InformeSeptimo:
                 hoja['AX73'] = 'X'
 
 
-        elif fila["""Emplea directamente algún tipo de mano de obra
-0**Si la respuesta es SI, diligenciar el título G"""] == 'No':
+        elif fila["Emplea directamente algún tipo de mano de obra (si la respuesta es SI, diligenciar el título G)"] == 'No':
             hoja['AP40'] = 'X'
 
         ##### INFORMACIÓN TRANSPORTE DE PASAJEROS #####

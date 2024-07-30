@@ -163,8 +163,7 @@ class InformeOctavo:
 
         hoja['AL36'] = fila['Costo aproximado de cosecha']
 
-        hoja['AK37'] = fila["""Duración de cada ciclo de producción
-(Indicar la unidad)"""]
+        hoja['AK37'] = fila["Duración de cada ciclo de producción (Indicar la unidad)"]
 
         if fila['Unidad.4'] == "Tn":
             hoja['V38'] = 'X'
