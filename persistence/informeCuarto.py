@@ -36,7 +36,7 @@ class InformeCuarto:
         if pd.notna(fila['Fecha']):
             fecha_str = str(fila['Fecha'])
             if '/' in fecha_str:
-                hoja['AN2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
+                hoja['AN2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
                 hoja['AQ2'] = fecha_str.split('/')[1]
                 hoja['AT2'] = fecha_str.split('/')[0]
             elif '-' in fecha_str:

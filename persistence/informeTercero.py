@@ -37,7 +37,7 @@ class InformeTercero:
         if pd.notna(fila['Fecha']):
             fecha_str = str(fila['Fecha'])
             if '/' in fecha_str:
-                hoja['AK2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
+                hoja['AK2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
                 hoja['AN2'] = fecha_str.split('/')[1]
                 hoja['AS2'] = fecha_str.split('/')[0]
             elif '-' in fecha_str:

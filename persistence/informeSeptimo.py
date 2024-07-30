@@ -35,7 +35,7 @@ class InformeSeptimo:
         if pd.notna(fila['Fecha']):
             fecha_str = str(fila['Fecha'])
             if '/' in fecha_str:
-                hoja['AO2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
+                hoja['AO2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
                 hoja['AR2'] = fecha_str.split('/')[1]
                 hoja['AU2'] = fecha_str.split('/')[0]
             elif '-' in fecha_str:
@@ -128,15 +128,15 @@ class InformeSeptimo:
         hoja['A31'] = fila['¿Cuál es el porcentaje pagado a la cooperativa por cada servicio? (%)']
         hoja['A33'] = fila['Durante la última semana cuántos Km recorrió']
         hoja['AP22'] = fila['Hace cuánto presta servicios de transporte']
-
+        
         if fila['¿Cuál es el costo aproximado de mantenimiento y gastos del vehículo en una semana?'] == "Entre $100.000 - $200.000":
-            hoja['A26'] = 'X'
+            hoja['AS26'] = 'X'
         elif fila['¿Cuál es el costo aproximado de mantenimiento y gastos del vehículo en una semana?'] == "Entre $201.000 - $400.000":
-            hoja['A27'] = 'X'
+            hoja['AS27'] = 'X'
         elif fila['¿Cuál es el costo aproximado de mantenimiento y gastos del vehículo en una semana?'] == "Entre $401.000 - $600.000":
-            hoja['A28'] = 'X'
+            hoja['AS28'] = 'X'
         elif fila['¿Cuál es el costo aproximado de mantenimiento y gastos del vehículo en una semana?'] == "Mayor a $600.000":
-            hoja['A29'] = 'X'
+            hoja['AS29'] = 'X'
 
         if fila["¿El estado de las vías le genera sobre costos?"] == 'Si':
             hoja['AN32'] = 'X'
@@ -194,7 +194,7 @@ class InformeSeptimo:
             elif fila['Pago de seguridad'] == 'No':
                 hoja['AI64'] = 'X'
 
-            hoja['AJ64'] = fila["Procedencia"]
+            hoja['AJ64'] = fila["Procedencia.4"]
             hoja['AK64'] = fila["Residencia"]
             hoja['AN64'] = fila["Tiempo trabajado"]
             hoja['AO64'] = fila["# Personas núcleo familiar"]
@@ -250,7 +250,7 @@ class InformeSeptimo:
             elif fila['Pago de seguridad.1'] == 'No':
                 hoja['AI65'] = 'X'
 
-            hoja['AJ65'] = fila["Procedencia.1"]
+            hoja['AJ65'] = fila["Procedencia.5"]
             hoja['AK65'] = fila["Residencia.1"]
             hoja['AN65'] = fila["Tiempo trabajado.1"]
             hoja['AO65'] = fila["# Personas núcleo familiar.1"]
@@ -306,7 +306,7 @@ class InformeSeptimo:
             elif fila['Pago de seguridad.2'] == 'No':
                 hoja['AI66'] = 'X'
 
-            hoja['AJ66'] = fila["Procedencia.2"]
+            hoja['AJ66'] = fila["Procedencia.6"]
             hoja['AK66'] = fila["Residencia.2"]
             hoja['AN66'] = fila["Tiempo trabajado.2"]
             hoja['AO66'] = fila["# Personas núcleo familiar.2"]
@@ -362,7 +362,7 @@ class InformeSeptimo:
             elif fila['Pago de seguridad.3'] == 'No':
                 hoja['AI67'] = 'X'
 
-            hoja['AJ67'] = fila["Procedencia.3"]
+            hoja['AJ67'] = fila["Procedencia.7"]
             hoja['AK67'] = fila["Residencia.3"]
             hoja['AN67'] = fila["Tiempo trabajado.3"]
             hoja['AO67'] = fila["# Personas núcleo familiar.3"]
@@ -418,7 +418,7 @@ class InformeSeptimo:
             elif fila['Pago de seguridad.4'] == 'No':
                 hoja['AI68'] = 'X'
 
-            hoja['AJ68'] = fila["Procedencia.4"]
+            hoja['AJ68'] = fila["Procedencia.8"]
             hoja['AK68'] = fila["Residencia.4"]
             hoja['AN68'] = fila["Tiempo trabajado.4"]
             hoja['AO68'] = fila["# Personas núcleo familiar.4"]
@@ -474,7 +474,7 @@ class InformeSeptimo:
             elif fila['Pago de seguridad.5'] == 'No':
                 hoja['AI69'] = 'X'
 
-            hoja['AJ69'] = fila["Procedencia.5"]
+            hoja['AJ69'] = fila["Procedencia.9"]
             hoja['AK69'] = fila["Residencia.5"]
             hoja['AN69'] = fila["Tiempo trabajado.5"]
             hoja['AO69'] = fila["# Personas núcleo familiar.5"]
@@ -530,7 +530,7 @@ class InformeSeptimo:
             elif fila['Pago de seguridad.6'] == 'No':
                 hoja['AI70'] = 'X'
 
-            hoja['AJ70'] = fila["Procedencia.6"]
+            hoja['AJ70'] = fila["Procedencia.10"]
             hoja['AK70'] = fila["Residencia.6"]
             hoja['AN70'] = fila["Tiempo trabajado.6"]
             hoja['AO70'] = fila["# Personas núcleo familiar.6"]
@@ -586,7 +586,7 @@ class InformeSeptimo:
             elif fila['Pago de seguridad.7'] == 'No':
                 hoja['AI71'] = 'X'
 
-            hoja['AJ71'] = fila["Procedencia.7"]
+            hoja['AJ71'] = fila["Procedencia.11"]
             hoja['AK71'] = fila["Residencia.7"]
             hoja['AN71'] = fila["Tiempo trabajado.7"]
             hoja['AO71'] = fila["# Personas núcleo familiar.7"]
@@ -642,7 +642,7 @@ class InformeSeptimo:
             elif fila['Pago de seguridad.8'] == 'No':
                 hoja['AI72'] = 'X'
 
-            hoja['AJ72'] = fila["Procedencia.8"]
+            hoja['AJ72'] = fila["Procedencia.12"]
             hoja['AK72'] = fila["Residencia.8"]
             hoja['AN72'] = fila["Tiempo trabajado.8"]
             hoja['AO72'] = fila["# Personas núcleo familiar.8"]
@@ -666,7 +666,7 @@ class InformeSeptimo:
             elif fila["Tipo de mano de obra.9"] == "Contratado":
                 hoja['D73'] = 'X'
 
-            hoja['E73'] = fila["Cargo.90"]
+            hoja['E73'] = fila["Cargo.9"]
 
             if fila["Género.9"] == "Masculino":
                 hoja['J73'] = 'X'
@@ -698,7 +698,7 @@ class InformeSeptimo:
             elif fila['Pago de seguridad.9'] == 'No':
                 hoja['AI73'] = 'X'
 
-            hoja['AJ73'] = fila["Procedencia.9"]
+            hoja['AJ73'] = fila["Procedencia.13"]
             hoja['AK73'] = fila["Residencia.9"]
             hoja['AN73'] = fila["Tiempo trabajado.9"]
             hoja['AO73'] = fila["# Personas núcleo familiar.9"]
@@ -733,11 +733,11 @@ class InformeSeptimo:
         hoja['AK48'] = fila['Servicio contratado por mes ($).1']
         hoja['AS48'] = fila['Servicio contratado por km recorrido ($).1']
 
-        hoja['M49'] = fila['Tarifa única ($).2']
-        hoja['U49'] = fila['Servicio contratado por día ($).2']
-        hoja['AD49'] = fila['Servicio contratado por semana ($).2']
-        hoja['AK49'] = fila['Servicio contratado por mes ($).2']
-        hoja['AS49'] = fila['Servicio contratado por km recorrido ($).2']
+        hoja['M50'] = fila['Tarifa única ($).2']
+        hoja['U50'] = fila['Servicio contratado por día ($).2']
+        hoja['AD50'] = fila['Servicio contratado por semana ($).2']
+        hoja['AK50'] = fila['Servicio contratado por mes ($).2']
+        hoja['AS50'] = fila['Servicio contratado por km recorrido ($).2']
 
         hoja['AC52'] = fila['¿Cuál es el destino más frecuente?']
 
@@ -763,7 +763,7 @@ class InformeSeptimo:
         hoja['AT57'] = fila['Medio de transporte.1']
 
         hoja['A58'] = fila['Elemento transportado.2']
-        hoja['I58'] = fila['Cantidad mensual .2']
+        hoja['I58'] = fila['Cantidad mensual.2']
         hoja['M58'] = fila['Procedencia.2']
         hoja['T58'] = fila['Destino.2']
         hoja['AA58'] = fila['Frecuencia de movilización.2']
