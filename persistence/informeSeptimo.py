@@ -11,7 +11,7 @@ class InformeSeptimo:
         """
 
         # Lectura de rutas
-        rutaArchivoInicial = os.getcwd() + "\\censos\\Censo Económico Maute.xlsm"
+        rutaArchivoInicial = os.getcwd() + "\\Censo Económico Maute.xlsm"
         archivoInicial = pd.ExcelFile(rutaArchivoInicial)
         archivoInicial = archivoInicial.parse(sheet_name="FORMATO 7. TRANSPORTE", header=None)
 

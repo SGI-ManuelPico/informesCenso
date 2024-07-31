@@ -6,7 +6,7 @@ def main():
             
     archivoInicial = InformeOctavo().lecturaArchivoOctavo()
     rutaArchivoFormato = os.getcwd() + "\\censos\\FORMATO 8 AGROINDUSTRIA - Aprobado.xlsx"
-    direc_guardado = os.getcwd() + "\\output"
+    direc_guardado = os.getcwd() + "\\Formatos Finales"
     if not os.path.exists(direc_guardado):
         os.makedirs(direc_guardado)
     archivoInicial.to_excel("hola.xlsx")
