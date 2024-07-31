@@ -2,8 +2,8 @@ from openpyxl import load_workbook
 import pandas as pd
 import os
 
-class informeQuinto:
-    def crearFormularioQuinto(self):
+class InformeQuinto:
+    def lecturaArchivoQuinto(self):
         rutaArchivoInicial = os.getcwd() + "\\Censo Económico Maute.xlsm"
         xl = pd.ExcelFile(rutaArchivoInicial)
         df5 = xl.parse(sheet_name='FORMATO 5. SERVICIOS PRESTADOS', header=None)
@@ -18,7 +18,7 @@ class informeQuinto:
         return df_enc5
 
 
-    def llenarFormularioQuinto(self, ws, df_fila):
+    def crearArchivoQuinto(self, ws, df_fila):
         # A. IDENTIFICACIÓN ENTREVISTADO
         ws['AO1'] = df_fila['Encuesta No.']
 

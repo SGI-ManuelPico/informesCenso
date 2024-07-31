@@ -6,7 +6,7 @@ class ArchivoSeptimo:
     def crearArchivoSeptimo(self):
                 
         archivoInicial = InformeSeptimo().lecturaArchivoSeptimo()
-        rutaArchivoFormato = os.getcwd() + "\\censos\\FORMATO 8 AGROINDUSTRIA - Aprobado.xlsx"
+        rutaArchivoFormato = os.getcwd() + "\\censos\\FORMATO 7 TRANSPORTE - Aprobado.xlsx"
         direc_guardado = os.getcwd() + "\\Formatos Finales"
         if not os.path.exists(direc_guardado):
             os.makedirs(direc_guardado)

@@ -7,7 +7,7 @@ class ArchivoCuarto:
     def crearArchivoCuarto(self):
                 
         archivoInicial = InformeCuarto().lecturaArchivoCuarto()
-        rutaArchivoFormato = os.getcwd() + "\\censos\\FORMATO 8 AGROINDUSTRIA - Aprobado.xlsx"
+        rutaArchivoFormato = os.getcwd() + "\\censos\\FORMATO 4 SERVICIOS - Aprobado.xlsx"
         direc_guardado = os.getcwd() + "\\Formatos Finales"
         if not os.path.exists(direc_guardado):
             os.makedirs(direc_guardado)

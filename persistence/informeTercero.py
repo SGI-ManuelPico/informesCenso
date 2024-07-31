@@ -33,20 +33,17 @@ class InformeTercero:
 
         hoja['AI1'] = fila["Encuesta No."]
 
-        if pd.notna(fila['Fecha']):
-            fecha_str = str(fila['Fecha'])
-            if '/' in fecha_str:
-                hoja['AK2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
-                hoja['AN2'] = fecha_str.split('/')[1]
-                hoja['AS2'] = fecha_str.split('/')[0]
-            elif '-' in fecha_str:
-                hoja['AK2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
-                hoja['AN2'] = fecha_str.split('-')[1]
-                hoja['AS2'] = fecha_str.split('-')[0] ####### LLENAR FECHA EN ESPACIOS VACÍOS Y NO SOBRE EL SÍMBOLO.
-            else:
-                print(f'Formato de fecha inesperado: {fecha_str}')
+        fecha_str = str(fila['Fecha'])
+        if '/' in fecha_str:
+            hoja['AK2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
+            hoja['AN2'] = fecha_str.split('/')[1]
+            hoja['AS2'] = fecha_str.split('/')[0]
+        elif '-' in fecha_str:
+            hoja['AK2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
+            hoja['AN2'] = fecha_str.split('-')[1]
+            hoja['AS2'] = fecha_str.split('-')[0] ####### LLENAR FECHA EN ESPACIOS VACÍOS Y NO SOBRE EL SÍMBOLO.
         else:
-            print('Campo de fecha vacío')
+            print(f'Formato de fecha inesperado: {fecha_str}')
 
         hoja['AK3'] = fila["Encuestador"]
         hoja['F6'] = fila["Nombre"]
@@ -158,15 +155,25 @@ class InformeTercero:
 
         if str(fila["Producto 1"]) != "nan":
             p1 = fila["Producto 1"]
+        else:
+            p1 = " "
         if str(fila["Producto 2"]) != "nan":
-            p2 = fila["Prodcuto 2"]
+            p2 = fila["Producto 2"]
+        else:
+            p2 = " "
         if str(fila["Producto 3"]) != "nan":
             p3 = fila["Producto 3"]
+        else:
+            p3 = " "
         if str(fila["Producto 4"]) != "nan":
-            p4 = fila["Prodcuto 4"]
+            p4 = fila["Producto 4"]
+        else:
+            p4 = " "
         if str(fila["Producto 5"]) != "nan":
             p5 = fila["Producto 5"]
-
+        else:
+            p5 = " "
+            3
         hoja['AE26'] = str(p1) + " " + str(p2) + " " + str(p3) + " " + str(p4) + " " + str(p5)
 
         if str(fila["Hidrocarburos"]) != "nan":
