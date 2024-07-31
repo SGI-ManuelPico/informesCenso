@@ -109,6 +109,9 @@ class InformeSeptimo:
         elif fila["Sobre la actividad, piensa: Producción"] == "Permanecer con la misma producción":
             hoja['AD19'] = 'X'
             hoja['AS19'] = 'X'
+        elif fila["Sobre la actividad, piensa: Producción"] == "Ninguna de las anteriores":
+            hoja['AD19'] = 'X'
+            hoja['AU19'] = 'X'
 
         if fila["Se encuentra afiliado a alguna empresa y/o cooperativa de transporte:"] == 'Si':
             hoja['H24'] = 'X'

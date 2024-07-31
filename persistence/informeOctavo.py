@@ -113,6 +113,9 @@ class InformeOctavo:
         elif fila["Sobre la actividad, piensa: Producción"] == "Permanecer con la misma producción":
             hoja['AQ25'] = 'X'
             hoja['AR24'] = 'X'
+        elif fila["Sobre la actividad, piensa: Producción"] == "Ninguna de las anteriores":
+            hoja['AR24'] = 'X'
+            hoja['AR25'] = 'X'
 
         if fila['Hidrocarburos'] != "":
             hoja['R28'] = 'X'

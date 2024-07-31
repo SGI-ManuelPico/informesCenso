@@ -76,7 +76,8 @@ class InformeTercero:
             hoja['U13'] = 'X'
         elif actividad == 'Productos Naturales: Vegetal':
             hoja['Y13'] = 'X'
-        hoja['T14'] = fila['Otro, ¿Cuáles?']
+        elif actividad == "Otros":
+            hoja['T14'] = fila['Otro, ¿Cuáles?']
 
         hoja['C16'] = fila["¿Cuál es el principal producto que comercializa?"]
 
@@ -198,6 +199,10 @@ class InformeTercero:
         elif fila["Sobre la actividad, piensa: Producción"] == "Permanecer con la misma producción":
             hoja['AN40'] = 'X'
             hoja['AP41'] = 'X'
+        elif fila["Sobre la actividad, piensa: Producción"] == "Ninguna de las anteriores":
+            hoja['AP40'] = 'X'
+            hoja['AP41'] = 'X'
+
 
         actividad6 = fila['¿De dónde se abastece del recurso hídrico?']
         if actividad6 == 'Aljibe':

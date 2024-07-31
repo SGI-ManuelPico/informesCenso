@@ -163,6 +163,9 @@ class InformeCuarto:
         elif fila["Sobre la actividad, piensa: Producción"] == "Permanecer con la misma producción":
             hoja['N34'] = 'X'
             hoja['AE33'] = 'X'
+        elif fila["Sobre la actividad, piensa: Producción"] == "Ninguna de las anteriores":
+            hoja['N34'] = 'X'
+            hoja['AG33'] = 'X'
 
         actividad6 = fila['¿De dónde se abastece del recurso hídrico?']
         if actividad6 == 'Aljibe':
