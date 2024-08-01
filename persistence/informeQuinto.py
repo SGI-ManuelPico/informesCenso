@@ -21,16 +21,16 @@ class InformeQuinto:
         # A. IDENTIFICACIÓN ENTREVISTADO
         ws['AO1'] = df_fila['Encuesta No.']
 
-        if pd.notna(df_fila['Fecha']):
-            fecha_str = str(df_fila['Fecha'])
+        if pd.notna(df_fila['Fecha(DD/MM/AAAA)']):
+            fecha_str = str(df_fila['Fecha(DD/MM/AAAA)'])
             if '/' in fecha_str:
-                ws['AM2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
-                ws['AO2'] = fecha_str.split('/')[1]
-                ws['AS2'] = fecha_str.split('/')[0]
+                ws['AN2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
+                ws['AQ2'] = fecha_str.split('/')[1]
+                ws['AU2'] = fecha_str.split('/')[0]
             elif '-' in fecha_str:
-                ws['AM2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
-                ws['AO2'] = fecha_str.split('-')[1]
-                ws['AS2'] = fecha_str.split('-')[0]
+                ws['AN2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
+                ws['AQ2'] = fecha_str.split('-')[1]
+                ws['AU2'] = fecha_str.split('-')[0]
             else:
                 print(f'Formato de fecha inesperado: {fecha_str}')
         else:
@@ -48,10 +48,10 @@ class InformeQuinto:
         asociacion = df_fila['¿Pertenece a alguna asociación?']
         if pd.notna(asociacion):
             if asociacion == 'Si':
-                ws['H7'] = 'X'
-            elif asociacion == 'No':
-                ws['I7'] = 'X'
+                ws['AB8'] = 'X'
                 ws['AO8'] = df_fila['Otro, ¿Cuál?']
+            elif asociacion == 'No':
+                ws['AD8'] = 'X'
         else:
             print(f'Campo vacío')
 
@@ -112,22 +112,22 @@ class InformeQuinto:
                 ws['V30'] = 'X'
             elif actividad_frecuencia == 'Otro':
                 ws['M31'] = 'X'
-                ws['P32'] = df_fila['¿Cuáles?']
+                ws['P32'] = df_fila['Otro, ¿Cuál?.1']
         else: 
             print('Campo vacío')
 
         # 7. En promedio cuántos servicios son contratados al mes por el sector de hidrocarburos
         ws['C36'] = df_fila['Servicio 1']
-        ws['N36'] = df_fila['Cantidad 1']
+        ws['N36'] = df_fila['Cantidad']
 
         ws['C37'] = df_fila['Servicio 2']
-        ws['N37'] = df_fila['Cantidad 2']
+        ws['N37'] = df_fila['Cantidad.1']
 
         ws['C38'] = df_fila['Servicio 3']
-        ws['N38'] = df_fila['Cantidad 3']
+        ws['N38'] = df_fila['Cantidad.2']
 
         ws['C39'] = df_fila['Servicio 4']
-        ws['N39'] = df_fila['Cantidad 4']
+        ws['N39'] = df_fila['Cantidad.3']
 
 
         # 8. Ingreso promedio mensual
@@ -138,7 +138,7 @@ class InformeQuinto:
         # 9. ¿El pago por sus servicios es oportuno?
         pago_oportuno = df_fila['¿El pago por sus servicios es oportuno?']
         if pd.notna(pago_oportuno):
-            if pago_oportuno == 'Sí':
+            if pago_oportuno == 'Si':
                 ws['P42'] = 'X'
             elif pago_oportuno == 'No':
                 ws['R42'] = 'X'
@@ -193,7 +193,7 @@ class InformeQuinto:
                 ws['AH32'] = 'X'
             elif lugar_venta == 'Vereda':
                 ws['AH33'] = 'X'
-            elif lugar_venta == 'Casco urbano':
+            elif lugar_venta == 'Casco Urbano':
                 ws['AH35'] = 'X'
             elif lugar_venta == 'Otros municipios y/o veredas':
                 ws['AS33'] = 'X'
@@ -269,7 +269,7 @@ class InformeQuinto:
         contrato = df_fila['Contrato']
         if pd.notna(genero):
             if contrato == 'Termino Fijo':
-                ws['O48'] = 'X'
+                ws['O48'] = df_fila['¿Cuánto?']
             elif contrato == 'Indefinido':
                 ws['S48'] = 'X'
         else:
@@ -278,22 +278,22 @@ class InformeQuinto:
         ws['W48'] = df_fila['Jornal y turno laboral']
 
         escolaridad = df_fila['Escolaridad']
-        if pd.notna(escolaridad):
-            if contrato == 'Primaria':
+        if pd.notna(df_fila['Escolaridad']):
+            if df_fila['Escolaridad'] == 'Primaria':
                 ws['AB48'] = 'X'
-            elif contrato == 'Bachillerato':
+            elif df_fila['Escolaridad'] == 'Bachillerato':
                 ws['AC48'] = 'X'
-            elif contrato == 'Técnico o tecnológico ':
+            elif df_fila['Escolaridad'] == 'Técnico o tecnológico ':
                 ws['AD48'] = 'X'
-            elif contrato == 'Profesional':
+            elif df_fila['Escolaridad'] == 'Profesional':
                 ws['AE48'] = 'X'
-            elif contrato == 'Posgrado':
+            elif df_fila['Escolaridad'] == 'Posgrado':
                 ws['AG48'] = 'X'
         else:
             print('Campo vacio')
 
         procedencia = df_fila['Procedencia']
-        if pd.notna(escolaridad):
+        if pd.notna(procedencia):
             if procedencia == 'Vereda':
                 ws['AJ48'] = 'X'
             elif procedencia == 'Municipio':
@@ -331,25 +331,25 @@ class InformeQuinto:
         contrato = df_fila['Contrato.1']
         if pd.notna(genero):
             if contrato == 'Termino Fijo':
-                ws['O49'] = 'X'
+                ws['O49'] = df_fila['¿Cuánto?.1']
             elif contrato == 'Indefinido':
                 ws['S49'] = 'X'
         else:
             print('Campo vacio')
 
-        ws['W48'] = df_fila['Jornal y turno laboral.1']
+        ws['W49'] = df_fila['Jornal y turno laboral.1']
 
         escolaridad = df_fila['Escolaridad.1']
         if pd.notna(escolaridad):
-            if contrato == 'Primaria':
+            if escolaridad == 'Primaria':
                 ws['AB49'] = 'X'
-            elif contrato == 'Bachillerato':
+            elif escolaridad == 'Bachillerato':
                 ws['AC49'] = 'X'
-            elif contrato == 'Técnico o tecnológico ':
+            elif escolaridad == 'Técnico o tecnológico ':
                 ws['AD49'] = 'X'
-            elif contrato == 'Profesional':
+            elif escolaridad == 'Profesional':
                 ws['AE49'] = 'X'
-            elif contrato == 'Posgrado':
+            elif escolaridad == 'Posgrado':
                 ws['AG49'] = 'X'
         else:
             print('Campo vacio')
@@ -383,7 +383,7 @@ class InformeQuinto:
 
         ws['I50'] = df_fila['#.2']
 
-        genero = df_fila['Género']
+        genero = df_fila['Género.2']
         if pd.notna(genero):
             if genero == 'Masculino':
                 ws['M50'] = 'X'
@@ -395,7 +395,7 @@ class InformeQuinto:
         contrato = df_fila['Contrato.2']
         if pd.notna(genero):
             if contrato == 'Termino Fijo':
-                ws['O50'] = 'X'
+                ws['O50'] = df_fila['¿Cuánto?.2']
             elif contrato == 'Indefinido':
                 ws['S50'] = 'X'
         else:
@@ -405,15 +405,15 @@ class InformeQuinto:
 
         escolaridad = df_fila['Escolaridad.2']
         if pd.notna(escolaridad):
-            if contrato == 'Primaria':
+            if escolaridad == 'Primaria':
                 ws['AB50'] = 'X'
-            elif contrato == 'Bachillerato':
+            elif escolaridad == 'Bachillerato':
                 ws['AC50'] = 'X'
-            elif contrato == 'Técnico o tecnológico ':
+            elif escolaridad == 'Técnico o tecnológico ':
                 ws['AD50'] = 'X'
-            elif contrato == 'Profesional':
+            elif escolaridad == 'Profesional':
                 ws['AE50'] = 'X'
-            elif contrato == 'Posgrado':
+            elif escolaridad == 'Posgrado':
                 ws['AG50'] = 'X'
         else:
             print('Campo vacio')
@@ -444,7 +444,7 @@ class InformeQuinto:
 
         ws['I52'] = df_fila['#.3']
 
-        genero = df_fila['Género']
+        genero = df_fila['Género.3']
         if pd.notna(genero):
             if genero == 'Masculino':
                 ws['M52'] = 'X'
@@ -456,7 +456,7 @@ class InformeQuinto:
         contrato = df_fila['Contrato.3']
         if pd.notna(genero):
             if contrato == 'Termino Fijo':
-                ws['O52'] = 'X'
+                ws['O52'] = df_fila['¿Cuánto?.3']
             elif contrato == 'Indefinido':
                 ws['S52'] = 'X'
         else:
@@ -466,15 +466,15 @@ class InformeQuinto:
 
         escolaridad = df_fila['Escolaridad.3']
         if pd.notna(escolaridad):
-            if contrato == 'Primaria':
+            if escolaridad == 'Primaria':
                 ws['AB52'] = 'X'
-            elif contrato == 'Bachillerato':
+            elif escolaridad == 'Bachillerato':
                 ws['AC52'] = 'X'
-            elif contrato == 'Técnico o tecnológico ':
+            elif escolaridad == 'Técnico o tecnológico ':
                 ws['AD52'] = 'X'
-            elif contrato == 'Profesional':
+            elif escolaridad == 'Profesional':
                 ws['AE52'] = 'X'
-            elif contrato == 'Posgrado':
+            elif escolaridad == 'Posgrado':
                 ws['AG52'] = 'X'
         else:
             print('Campo vacio')
@@ -502,108 +502,111 @@ class InformeQuinto:
             print('Campo vacio')
         
         # 28. ¿Contrata servicios profesionales?
-        if df_fila['Contrata servicios profesionales * Sí (Responder 30 y 31)'] == 'No':
-            ws['N56'] = 'X'
-        elif df_fila['Contrata servicios profesionales * Sí (Responder 30 y 31)'] == 'Sí':
+        if df_fila['Contrata servicios profesionales * Sí (Responder 30 y 31)'] == 'Si':
             ws['L56'] = 'X'
+
+            # ¿Qué tipo de servicios? 
+            servicios = df_fila['¿Qué tipo de servicios?']
+            if pd.notna(servicios):
+                if servicios == 'Contaduría':
+                    ws['AK56'] = 'X'
+                elif servicios == 'Consultoría':
+                    ws['AT56'] = 'X'
+                elif servicios == 'Asesoría legal':
+                    ws['AK57'] = 'X'
+                elif servicios == 'Otros':
+                    ws['AT57'] = 'X'
+                    ws['AE58'] = df_fila['¿Cuál?.1']
+            else:
+                print('Campo vacio')
+
+            # 30. Con qué frecuencia contrata servicios profesionales
+
+            ws['A59'] = df_fila['Servicio 1.3']
+
+            frecuencia_servicios1 = df_fila['Frecuencia']
+            if pd.notna(frecuencia_servicios1):
+                if frecuencia_servicios1 == 'Mensual':
+                    ws['F59'] = 'X'
+                elif frecuencia_servicios1 == 'Semestral':
+                    ws['J59'] = 'X'
+                elif frecuencia_servicios1 == 'Trimestral':
+                    ws['P59'] = 'X'
+                elif frecuencia_servicios1 == 'Anual':
+                    ws['U59'] = 'X'
+
+            ws['A60'] = df_fila['Servicio 2.3']
+
+            frecuencia_servicios2 = df_fila['Frecuencia.1']
+            if pd.notna(frecuencia_servicios2):
+                if frecuencia_servicios2 == 'Mensual':
+                    ws['F60'] = 'X'
+                elif frecuencia_servicios2 == 'Semestral':
+                    ws['J60'] = 'X'
+                elif frecuencia_servicios2 == 'Trimestral':
+                    ws['P60'] = 'X'
+                elif frecuencia_servicios2 == 'Anual':
+                    ws['U60'] = 'X'
+            else:
+                print('Campo vacio')
+
+            ws['A61'] = df_fila['Servicio 3.3']
+
+            frecuencia_servicios3 = df_fila['Frecuencia.2']
+            if pd.notna(frecuencia_servicios3):
+                if frecuencia_servicios3 == 'Mensual':
+                    ws['F61'] = 'X'
+                elif frecuencia_servicios3 == 'Semestral':
+                    ws['J61'] = 'X'
+                elif frecuencia_servicios3 == 'Trimestral':
+                    ws['P61'] = 'X'
+                elif frecuencia_servicios3 == 'Anual':
+                    ws['U61'] = 'X'
+            else:
+                print('Campo vacio')
+
+            ws['A62'] = df_fila['Servicio 4.3']
+
+            frecuencia_servicios4 = df_fila['Frecuencia.3']
+            if pd.notna(frecuencia_servicios4):
+                if frecuencia_servicios4 == 'Mensual':
+                    ws['F62'] = 'X'
+                elif frecuencia_servicios4 == 'Semestral':
+                    ws['J62'] = 'X'
+                elif frecuencia_servicios4 == 'Trimestral':
+                    ws['P62'] = 'X'
+                elif frecuencia_servicios4 == 'Anual':
+                    ws['U62'] = 'X'
+            else:
+                print('Campo vacio')
+
+            ws['A63'] = df_fila['Servicio 5.3']
+            frecuencia_servicios5 = df_fila['Frecuencia.4']
+            if pd.notna(frecuencia_servicios5):
+                if frecuencia_servicios5 == 'Mensual':
+                    ws['F63'] = 'X'
+                elif frecuencia_servicios5 == 'Semestral':
+                    ws['J63'] = 'X'
+                elif frecuencia_servicios5 == 'Trimestral':
+                    ws['P63'] = 'X'
+                elif frecuencia_servicios5 == 'Anual':
+                    ws['U63'] = 'X'       
+            else:
+                print('Campo vacio')
+
+            # 31. ¿Cuál es el monto pagado por estos servicios durante el último semestre?
+            ws['AE62'] = df_fila['¿Cuál es el monto pagado por estos servicios durante el último semestre?']
+
+
+        elif df_fila['Contrata servicios profesionales * Sí (Responder 30 y 31)'] == 'No':
+            ws['N56'] = 'X'
         
-        # ¿Qué tipo de servicios? 
 
-        servicios = df_fila['¿Qué tipo de servicios?']
-        if pd.notna(servicios):
-            if servicios == 'Contaduría':
-                ws['AK56'] = 'X'
-            elif servicios == 'Consultoría':
-                ws['AT56'] = 'X'
-            elif servicios == 'Asesoría legal':
-                ws['AK57'] = 'X'
-            elif servicios == 'Otros':
-                ws['AT57'] = 'X'
-                ws['AE58'] = df_fila['¿Cuál?.1']
-        else:
-            print('Campo vacio')
-
-        # 30. Con qué frecuencia contrata servicios profesionales
-
-        ws['A59'] = df_fila['Servicio 1.3']
-
-        frecuencia_servicios1 = df_fila['Frecuencia']
-        if pd.notna(frecuencia_servicios1):
-            if frecuencia_servicios1 == 'Mensual':
-                ws['F59'] = 'X'
-            elif frecuencia_servicios1 == 'Semestral':
-                ws['J59'] = 'X'
-            elif frecuencia_servicios1 == 'Trimestral':
-                ws['P59'] = 'X'
-            elif frecuencia_servicios1 == 'Anual':
-                ws['U59'] = 'X'
-
-        ws['A60'] = df_fila['Servicio 2.3']
-
-        frecuencia_servicios2 = df_fila['Frecuencia.1']
-        if pd.notna(frecuencia_servicios2):
-            if frecuencia_servicios2 == 'Mensual':
-                ws['F60'] = 'X'
-            elif frecuencia_servicios2 == 'Semestral':
-                ws['J60'] = 'X'
-            elif frecuencia_servicios2 == 'Trimestral':
-                ws['P60'] = 'X'
-            elif frecuencia_servicios2 == 'Anual':
-                ws['U60'] = 'X'
-        else:
-            print('Campo vacio')
-
-        ws['A61'] = df_fila['Servicio 3.3']
-
-        frecuencia_servicios3 = df_fila['Frecuencia.2']
-        if pd.notna(frecuencia_servicios3):
-            if frecuencia_servicios3 == 'Mensual':
-                ws['F61'] = 'X'
-            elif frecuencia_servicios3 == 'Semestral':
-                ws['J61'] = 'X'
-            elif frecuencia_servicios3 == 'Trimestral':
-                ws['P61'] = 'X'
-            elif frecuencia_servicios3 == 'Anual':
-                ws['U61'] = 'X'
-        else:
-            print('Campo vacio')
-
-        ws['A62'] = df_fila['Servicio 4.3']
-
-        frecuencia_servicios4 = df_fila['Frecuencia.3']
-        if pd.notna(frecuencia_servicios4):
-            if frecuencia_servicios4 == 'Mensual':
-                ws['F62'] = 'X'
-            elif frecuencia_servicios4 == 'Semestral':
-                ws['J62'] = 'X'
-            elif frecuencia_servicios4 == 'Trimestral':
-                ws['P62'] = 'X'
-            elif frecuencia_servicios4 == 'Anual':
-                ws['U62'] = 'X'
-        else:
-            print('Campo vacio')
-
-        ws['A63'] = df_fila['Servicio 5.3']
-        frecuencia_servicios5 = df_fila['Frecuencia.4']
-        if pd.notna(frecuencia_servicios5):
-            if frecuencia_servicios5 == 'Mensual':
-                ws['F63'] = 'X'
-            elif frecuencia_servicios5 == 'Semestral':
-                ws['J63'] = 'X'
-            elif frecuencia_servicios5 == 'Trimestral':
-                ws['P63'] = 'X'
-            elif frecuencia_servicios5 == 'Anual':
-                ws['U63'] = 'X'       
-        else:
-            print('Campo vacio')
-
-        # 31. ¿Cuál es el monto pagado por estos servicios durante el último semestre?
-        ws['AE62'] = df_fila['¿Cuál es el monto pagado por estos servicios durante el último semestre?']
 
         # D. REMUNERACIONES
         ws['Z65'] = df_fila['Salarios pagados a la mano de obra calificada']
         ws['Z66'] = df_fila['Salarios pagados a la mano de obra no calificada']
-        ws['Z67'] = df_fila['Salarios pagados a empleados administrativos']
+        ws['Z67'] = df_fila['Salarios pagados a empleados y administrativos']
         ws['Z68'] = df_fila['Salarios pagados a gerentes y directivos']
         ws['Z69'] = df_fila['Total remuneraciones']
 

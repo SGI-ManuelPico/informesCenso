@@ -1,4 +1,4 @@
-#from util.archivoPrimero import ArchivoPrimero
+from util.archivoPrimero import ArchivoPrimero
 #from util.archivoSegundo import ArchivoSegundo
 from util.archivoTercero import ArchivoTercero
 from util.archivoCuarto import ArchivoCuarto
@@ -10,7 +10,7 @@ from util.archivoNoveno import ArchivoNoveno
 
 def main():
 
-    #ArchivoPrimero().crearArchivoPrimero()
+    ArchivoPrimero().crearArchivoPrimero()
     #ArchivoSegundo().crearArchivoSegundo()
     ArchivoTercero().crearArchivoTercero()
     ArchivoCuarto().crearArchivoCuarto()
