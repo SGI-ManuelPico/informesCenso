@@ -55,10 +55,9 @@ class InformeOctavo:
 
         if fila["¿Pertenece a alguna asociación?"] == 'Si':
             hoja['AB8'] = 'X'
+            hoja['AO8'] = fila["Otro, ¿Cuál?"]
         elif fila["¿Pertenece a alguna asociación?"] == 'No':
             hoja['AD8'] = 'X'
-
-        hoja['AO8'] = fila["Otro, ¿Cuál?"]
 
         if fila["¿Tiene registro industrial y/o permiso ambiental?"] == 'Si':
             hoja['I12'] = 'X'
@@ -89,12 +88,12 @@ class InformeOctavo:
             hoja['R24'] = 'X'
         elif actividad2 == 'Otros Municipios y/o Veredas':
             hoja['R25'] = 'X'
-            hoja['G26'] = fila["¿Cuáles?"]
+            hoja['G26'] = fila["Otros, ¿Cuáles?"]
         
         actividad3 = fila["La planta obtiene el producto de:"]
         if actividad3 == 'Plantaciones propias':
             hoja['AQ12'] = 'X'
-        elif actividad2 == 'Venta del producto por parte de particulares':
+        elif actividad3 == 'Venta del producto por parte de particulares':
             hoja['AQ13'] = 'X'
         elif actividad3 == 'Otro':
             hoja['AQ14'] = 'X'
@@ -117,15 +116,15 @@ class InformeOctavo:
             hoja['AR24'] = 'X'
             hoja['AR25'] = 'X'
 
-        if fila['Hidrocarburos'] != "":
+        if str(fila['Hidrocarburos']) != "nan":
             hoja['R28'] = 'X'
             hoja['AD28'] = fila['Hidrocarburos']
-        elif fila['Plantas de procesamiento'] != "":
+        elif str(fila['Plantas de procesamiento']) != "nan":
             hoja['R29'] = 'X'
             hoja['AD29'] = fila['Plantas de procesamiento']
-        elif fila['Distribuidores regionales'] != "":
+        elif str(fila['Distribuidores regionales']) != "nan":
             hoja['R30'] = 'X'
-        elif fila['Otro, ¿Cuál?.2'] != "":
+        elif str(fila['Otro, ¿Cuál?.2']) != "nan":
             hoja['AD30'] = fila['Otro, ¿Cuál?.2']
 
         hoja['AK33'] = fila['¿Cuál es el área total cultivada? (Ha)']
@@ -182,16 +181,18 @@ class InformeOctavo:
         ##### ABASTECIMIENTO DE INSUMOS #####
 
         ## INSUMO 1 - AGUA
-        hoja['N44'] = fila["Precio compra"]
-        hoja['Y44'] = fila["Cantidad (m3)"]
-        hoja['AG44'] = fila["Frecuencia de abastecimiento"]
-        hoja['AO44'] = fila["Procedencia de los insumos"]
+        if fila['Agua'] == "Si":
+            hoja['N44'] = fila["Precio compra"]
+            hoja['Y44'] = fila["Cantidad (m3)"]
+            hoja['AG44'] = fila["Frecuencia de abastecimiento"]
+            hoja['AO44'] = fila["Procedencia de los insumos"]
 
         ## INSUMO 2 - COMBUSTIBLE
-        hoja['N45'] = fila["Precio compra.1"]
-        hoja['Y45'] = fila["Cantidad (Gn)"]
-        hoja['AG45'] = fila["Frecuencia de abastecimiento.1"]
-        hoja['AO45'] = fila["Procedencia de los insumos.1"]
+        if fila['Combustible'] == "Si":
+            hoja['N45'] = fila["Precio compra.1"]
+            hoja['Y45'] = fila["Cantidad (Gn)"]
+            hoja['AG45'] = fila["Frecuencia de abastecimiento.1"]
+            hoja['AO45'] = fila["Procedencia de los insumos.1"]
 
         ## INSUMO 3
         hoja['N46'] = fila["Precio compra.2"]
@@ -283,11 +284,10 @@ class InformeOctavo:
             hoja['M66'] = 'X'
 
         if fila["Contrato"] == "Termino Fijo":
-            hoja['O66'] = 'X'
+            hoja['O66'] = fila["¿Cuánto?"]
         elif fila["Contrato"] == "Indefinido":
             hoja['S66'] = 'X'
 
-        #hoja['XB53'] = fila["¿Cuánto?"]
         hoja['W66'] = fila["Jornal y turno laboral"]
 
         if fila["Escolaridad"] == "Primaria":
@@ -325,11 +325,10 @@ class InformeOctavo:
             hoja['M67'] = 'X'
 
         if fila["Contrato.1"] == "Termino Fijo":
-            hoja['O67'] = 'X'
+            hoja['O67'] = fila["¿Cuánto?.1"]
         elif fila["Contrato.1"] == "Indefinido":
             hoja['S67'] = 'X'
 
-        #hoja['XB53'] = fila["¿Cuánto?.1"]
         hoja['W67'] = fila["Jornal y turno laboral.1"]
 
         if fila["Escolaridad.1"] == "Primaria":
@@ -367,11 +366,10 @@ class InformeOctavo:
             hoja['M68'] = 'X'
 
         if fila["Contrato.2"] == "Termino Fijo":
-            hoja['O68'] = 'X'
+            hoja['O68'] = fila["¿Cuánto?.2"]
         elif fila["Contrato.2"] == "Indefinido":
             hoja['S68'] = 'X'
 
-        #hoja['XB53'] = fila["¿Cuánto?.2"]
         hoja['W68'] = fila["Jornal y turno laboral.2"]
 
         if fila["Escolaridad.2"] == "Primaria":
@@ -408,11 +406,10 @@ class InformeOctavo:
             hoja['M70'] = 'X'
         
         if fila["Contrato.3"] == "Termino Fijo":
-            hoja['O70'] = 'X'
+            hoja['O70'] = fila["¿Cuánto?.3"]
         elif fila["Contrato.3"] == "Indefinido":
             hoja['S70'] = 'X'
         
-        # hoja['XB53'] = fila["¿Cuánto?.3"]
         hoja['W70'] = fila["Jornal y turno laboral.3"]
 
         if fila["Escolaridad.3"] == "Primaria":
@@ -468,75 +465,78 @@ class InformeOctavo:
 
         if fila['Contrata servicios profesionales ("Sí" implica responder 70, 71, y 72)'] == "Si":
             hoja['L78'] = 'X'
+
+
+            if fila['¿Qué tipo de servicios?'] == "Contaduría":
+                hoja['AK78'] = 'X'
+            elif fila['¿Qué tipo de servicios?'] == "Consultoría":
+                hoja['AT78'] = 'X'
+            elif fila['¿Qué tipo de servicios?'] == "Asesoría legal":
+                hoja['AK79'] = 'X'
+            elif fila['¿Qué tipo de servicios?'] == "Otros":
+                hoja['AT79'] = 'X'
+                hoja['AE80'] = fila['Otros, ¿Cuáles?.1']
+            
+
+            ##### SERVICIOS #####
+            hoja['A81'] = fila['Servicio 1']
+            if fila['Frecuencia'] == "Mensual":
+                hoja['F81'] = 'X'
+            elif fila['Frecuencia'] == "Semestral":
+                hoja['J81'] = 'X'
+            elif fila['Frecuencia'] == "Trimestral":
+                hoja['P81'] = 'X'
+            elif fila['Frecuencia'] == "Anual":
+                hoja['U81'] = 'X'
+
+            hoja['A82'] = fila['Servicio 2']
+            if fila['Frecuencia.1'] == "Mensual":
+                hoja['F82'] = 'X'
+            elif fila['Frecuencia.1'] == "Semestral":
+                hoja['J82'] = 'X'
+            elif fila['Frecuencia.1'] == "Trimestral":
+                hoja['P82'] = 'X'
+            elif fila['Frecuencia.1'] == "Anual":
+                hoja['U82'] = 'X'
+            
+            hoja['A83'] = fila['Servicio 3']
+            if fila['Frecuencia.2'] == "Mensual":
+                hoja['F83'] = 'X'
+            elif fila['Frecuencia.2'] == "Semestral":
+                hoja['J83'] = 'X'
+            elif fila['Frecuencia.2'] == "Trimestral":
+                hoja['P83'] = 'X'
+            elif fila['Frecuencia.2'] == "Anual":
+                hoja['U83'] = 'X'
+
+            
+            hoja['A84'] = fila['Servicio 4']
+            if fila['Frecuencia.3'] == "Mensual":
+                hoja['F84'] = 'X'
+            elif fila['Frecuencia.3'] == "Semestral":
+                hoja['J84'] = 'X'
+            elif fila['Frecuencia.3'] == "Trimestral":
+                hoja['P84'] = 'X'
+            elif fila['Frecuencia.3'] == "Anual":
+                hoja['U84'] = 'X'
+
+            
+            hoja['A85'] = fila['Servicio 5']
+            if fila['Frecuencia.4'] == "Mensual":
+                hoja['F85'] = 'X'
+            elif fila['Frecuencia.4'] == "Semestral":
+                hoja['J85'] = 'X'
+            elif fila['Frecuencia.4'] == "Trimestral":
+                hoja['P85'] = 'X'
+            elif fila['Frecuencia.4'] == "Anual":
+                hoja['U85'] = 'X'
+
+
+            hoja['AE84'] = fila['¿Cuál es el monto pagado por estos servicios durante el último semestre?']
+
         elif fila['Contrata servicios profesionales ("Sí" implica responder 70, 71, y 72)'] == "No":
             hoja['N78'] = 'X'
 
-        if fila['¿Qué tipo de servicios?'] == "Contaduría":
-            hoja['AK78'] = 'X'
-        elif fila['¿Qué tipo de servicios?'] == "Consultoría":
-            hoja['AT78'] = 'X'
-        elif fila['¿Qué tipo de servicios?'] == "Asesoría legal":
-            hoja['AK79'] = 'X'
-        elif fila['¿Qué tipo de servicios?'] == "Otros":
-            hoja['AT79'] = 'X'
-            hoja['AE80'] = fila['Otros, ¿Cuáles?.1']
-        
-
-        ##### SERVICIOS #####
-        hoja['A81'] = fila['Servicio 1']
-        if fila['Frecuencia'] == "Mensual":
-            hoja['F81'] = 'X'
-        elif fila['Frecuencia'] == "Semestral":
-            hoja['J81'] = 'X'
-        elif fila['Frecuencia'] == "Trimestral":
-            hoja['P81'] = 'X'
-        elif fila['Frecuencia'] == "Anual":
-            hoja['U81'] = 'X'
-
-        hoja['A82'] = fila['Servicio 2']
-        if fila['Frecuencia.1'] == "Mensual":
-            hoja['F82'] = 'X'
-        elif fila['Frecuencia.1'] == "Semestral":
-            hoja['J82'] = 'X'
-        elif fila['Frecuencia.1'] == "Trimestral":
-            hoja['P82'] = 'X'
-        elif fila['Frecuencia.1'] == "Anual":
-            hoja['U82'] = 'X'
-        
-        hoja['A83'] = fila['Servicio 3']
-        if fila['Frecuencia.2'] == "Mensual":
-            hoja['F83'] = 'X'
-        elif fila['Frecuencia.2'] == "Semestral":
-            hoja['J83'] = 'X'
-        elif fila['Frecuencia.2'] == "Trimestral":
-            hoja['P83'] = 'X'
-        elif fila['Frecuencia.2'] == "Anual":
-            hoja['U83'] = 'X'
-
-        
-        hoja['A84'] = fila['Servicio 4']
-        if fila['Frecuencia.3'] == "Mensual":
-            hoja['F84'] = 'X'
-        elif fila['Frecuencia.3'] == "Semestral":
-            hoja['J84'] = 'X'
-        elif fila['Frecuencia.3'] == "Trimestral":
-            hoja['P84'] = 'X'
-        elif fila['Frecuencia.3'] == "Anual":
-            hoja['U84'] = 'X'
-
-        
-        hoja['A85'] = fila['Servicio 5']
-        if fila['Frecuencia.4'] == "Mensual":
-            hoja['F85'] = 'X'
-        elif fila['Frecuencia.4'] == "Semestral":
-            hoja['J85'] = 'X'
-        elif fila['Frecuencia.4'] == "Trimestral":
-            hoja['P85'] = 'X'
-        elif fila['Frecuencia.4'] == "Anual":
-            hoja['U85'] = 'X'
-
-
-        hoja['AE84'] = fila['¿Cuál es el monto pagado por estos servicios durante el último semestre?']
         hoja['Z87'] = fila['Salarios pagados a la mano de obra calificada']
         hoja['Z88'] = fila['Salarios pagados a la mano de obra no calificada']
         hoja['Z89'] = fila['Salarios pagados a empleados y administrativos']
