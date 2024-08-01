@@ -29,13 +29,13 @@ class InformeNoveno:
         if pd.notna(df_fila['Fecha(DD/MM/AAAA)']):
             fecha_str = str(df_fila['Fecha(DD/MM/AAAA)'])
             if '/' in fecha_str:
-                ws['AL2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
-                ws['AN2'] = fecha_str.split('/')[1]
-                ws['AS2'] = fecha_str.split('/')[0]
+                ws['AM2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
+                ws['AP2'] = fecha_str.split('/')[1]
+                ws['AU2'] = fecha_str.split('/')[0]
             elif '-' in fecha_str:
-                ws['AL2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
-                ws['AN2'] = fecha_str.split('-')[1]
-                ws['AS2'] = fecha_str.split('-')[0]
+                ws['AM2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
+                ws['AP2'] = fecha_str.split('-')[1]
+                ws['AU2'] = fecha_str.split('-')[0]
             else:
                 print(f'Formato de fecha inesperado: {fecha_str}')
         else:
@@ -51,7 +51,7 @@ class InformeNoveno:
         # ¿Pertenece a alguna asociación?
         asociacion = df_fila['¿Pertenece a alguna asociación?']
         if pd.notna(asociacion):
-            if asociacion == 'Sí':
+            if asociacion == 'Si':
                 ws['AA8'] = 'X'
                 ws['AN8'] = df_fila['¿Cuál?']
             elif asociacion == 'No':
@@ -76,9 +76,9 @@ class InformeNoveno:
 
         tiene_calculo = df_fila['¿Tiene un cálculo aproximado del tiempo que puede seguir explotando el mineral?']
         if pd.notna(tiene_calculo):
-            if tiene_calculo == 'Sí':
+            if tiene_calculo == 'Si':
                 ws['O22'] = 'X'
-                ws['AE22'] = df_fila['¿Cuánto']
+                ws['AE22'] = df_fila['¿Cuánto?']
             elif tiene_calculo == 'No':
                 ws['Q22'] = 'X'
         else:
@@ -140,13 +140,13 @@ class InformeNoveno:
 
         alcantarillado = df_fila['¿Cuenta con servicio de alcantarillado?']
         if pd.notna(alcantarillado):
-            if alcantarillado == 'Sí':
+            if alcantarillado == 'Si':
                 ws['AA28'] = 'X'
-                ws['AA28'] = df_fila['¿Cuál?.4']
+                ws['AN28'] = df_fila['¿Cuál?.4']
             elif alcantarillado == 'No':
                 ws['AC28'] = 'X'
 
-        ws['A30'] = df_fila['¿Cómo se maneja el agua residual y sólidos?']
+        ws['A30'] = df_fila['¿Cuál es el manejo de aguas residuales y solidos?']
 
         ws['Z31'] = df_fila['Sitio de venta']
         
@@ -163,7 +163,7 @@ class InformeNoveno:
         ws['O36'] = df_fila['Valor total de la maquinaria']
 
         if pd.notna(df_fila['¿Cuenta con permisos ambientales?']):
-            if df_fila['¿Cuenta con permisos ambientales?'] == 'Sí':
+            if df_fila['¿Cuenta con permisos ambientales?'] == 'Si':
                 ws['Y37'] = 'X'
             elif df_fila['¿Cuenta con permisos ambientales?'] == 'No':
                 ws['AA37'] = 'X'
@@ -221,16 +221,16 @@ class InformeNoveno:
 
         for i in range(10):
             prefijo_persona = 51 + i
-            ws[f'E{prefijo_persona}'] = InformeNoveno().valorCol('Cargo', i, df_fila)
+            ws[f'E{prefijo_persona}'] = InformeNoveno().valorCol('Cargo', i+1, df_fila)
             ws[f'K{prefijo_persona}'] = InformeNoveno().valorCol('Edad (años)', i, df_fila)
             ws[f'L{prefijo_persona}'] = InformeNoveno().valorCol('Duración jornada (horas)', i, df_fila)
 
             manoObra = InformeNoveno().valorCol('Tipo de mano de obra', i, df_fila)
             if pd.notna(manoObra):
                 if manoObra == 'Familiar':
-                    ws[f'B{prefijo_persona}'] == 'X'
+                    ws[f'B{prefijo_persona}'] = 'X'
                 elif manoObra == 'Contratado':
-                    ws[f'D{prefijo_persona}20'] == 'X'
+                    ws[f'D{prefijo_persona}'] = 'X'
 
             # Genero
             genero = InformeNoveno().valorCol('Género', i,df_fila)
@@ -282,9 +282,9 @@ class InformeNoveno:
             if remuneracion:
                 if remuneracion == 'Inferiores a $900.000':
                     ws[f'AS{prefijo_persona}'] = 'X'
-                elif remuneracion == '$900.000 a $1.800.000':
+                elif remuneracion == '$901.000 - $1.800.000':
                     ws[f'AT{prefijo_persona}'] = 'X'
-                elif remuneracion == '$1.801.000 a $2.700.000':
+                elif remuneracion == '$1.801.000 - $2.700.000':
                     ws[f'AU{prefijo_persona}'] = 'X'
                 elif remuneracion == 'Superiores a $2.701.000':
                     ws[f'AV{prefijo_persona}'] = 'X'
