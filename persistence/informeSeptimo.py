@@ -54,11 +54,12 @@ class InformeSeptimo:
 
         if fila["¿Pertenece a alguna asociación?"] == 'Si':
             hoja['AA8'] = 'X'
-
+            hoja['AO8'] = fila["Otro, ¿Cuál?"]
+            
         elif fila["¿Pertenece a alguna asociación?"] == 'No':
             hoja['AC8'] = 'X'
 
-        hoja['AO8'] = fila["Otro, ¿Cuál?"]
+        
 
         actividad = fila['¿Qué tipo de servicio de transporte ofrece?']
         if actividad == 'Transporte público':
@@ -85,16 +86,17 @@ class InformeSeptimo:
         if fila["¿Presta los servicios al sector de hidrocarburos?"] == 'Si':
             hoja['AM12'] = 'X'
 
+            if fila["¿El pago por parte del prestador de hidrocarburos es oportuno?"] == 'Si':
+                hoja['AM15'] = 'X'
+
+            elif fila["¿El pago por parte del prestador de hidrocarburos es oportuno?"] == 'No':
+                hoja['AO15'] = 'X'
+
+            hoja['AI16'] = fila['Observaciones']
+
         elif fila["¿Presta los servicios al sector de hidrocarburos?"] == 'No':
             hoja['AO12'] = 'X'
 
-        if fila["¿El pago por parte del prestador de hidrocarburos es oportuno?"] == 'Si':
-            hoja['AM15'] = 'X'
-
-        elif fila["¿El pago por parte del prestador de hidrocarburos es oportuno?"] == 'No':
-            hoja['AO15'] = 'X'
-
-        hoja['AI16'] = fila['Observaciones']
 
 
         if fila["Sobre la actividad, piensa: Continuidad"] == "Continuar con la actividad":
@@ -116,11 +118,20 @@ class InformeSeptimo:
         if fila["Se encuentra afiliado a alguna empresa y/o cooperativa de transporte:"] == 'Si':
             hoja['H24'] = 'X'
 
+            hoja['D25'] = fila['¿Cuál?.1']
+            hoja['R25'] = fila['Número de Contacto']
+
+
+            hoja['A31'] = fila['¿Cuál es el porcentaje pagado a la cooperativa por cada servicio? (%)']
+
+            hoja['C37'] = fila['Cuántos afiliados tiene la cooperativa y/o empresa de transporte']
+
+            hoja['AC37'] = fila['¿Cuál es el porcentaje cobrado a los afiliados por cada servicio prestado? (%)']
+
+
         elif fila["Se encuentra afiliado a alguna empresa y/o cooperativa de transporte:"] == 'No':
             hoja['J24'] = 'X'
 
-        hoja['D25'] = fila['¿Cuál?.1']
-        hoja['R25'] = fila['Número de Contacto']
 
         if fila["¿Es propietario del vehículo?"] == 'Si':
             hoja['H28'] = 'X'
@@ -128,7 +139,6 @@ class InformeSeptimo:
         elif fila["¿Es propietario del vehículo?"] == 'No':
             hoja['J28'] = 'X'
 
-        hoja['A31'] = fila['¿Cuál es el porcentaje pagado a la cooperativa por cada servicio? (%)']
         hoja['A33'] = fila['Durante la última semana cuántos Km recorrió']
         hoja['AP22'] = fila['Hace cuánto presta servicios de transporte']
         
@@ -143,22 +153,20 @@ class InformeSeptimo:
 
         if fila["¿El estado de las vías le genera sobre costos?"] == 'Si':
             hoja['AN32'] = 'X'
-
+            hoja['AL33'] = fila['Costos Incurridos']
         elif fila["¿El estado de las vías le genera sobre costos?"] == 'No':
             hoja['AP32'] = 'X'
 
-        hoja['AL33'] = fila['Costos Incurridos']
-        hoja['C37'] = fila['Cuántos afiliados tiene la cooperativa y/o empresa de transporte']
         hoja['D40'] = fila['Costo 1']
         hoja['Q40'] = fila['Valor']
         hoja['D41'] = fila['Costo 2']
         hoja['Q41'] = fila['Valor.1']
         hoja['D42'] = fila['Costo 3']
         hoja['Q42'] = fila['Valor.2']
-        hoja['AC37'] = fila['¿Cuál es el porcentaje cobrado a los afiliados por cada servicio prestado? (%)']
 
         if fila["Emplea directamente algún tipo de mano de obra (si la respuesta es SI, diligenciar el título G)"] == 'Si':
             hoja['AN40'] = 'X'
+            
             #### Persona 1 ####
             if fila["Tipo de mano de obra"] == "Familiar":
                 hoja['B64'] = 'X'

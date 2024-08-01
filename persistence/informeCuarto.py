@@ -55,10 +55,9 @@ class InformeCuarto:
 
         if fila["¿Pertenece a alguna asociación?"] == 'Si':
             hoja['AB8'] = 'X'
+            hoja['AO8'] = fila["Otro, ¿Cuál?"]
         elif fila["¿Pertenece a alguna asociación?"] == 'No':
             hoja['AD8'] = 'X'
-
-        hoja['AO8'] = fila["Otro, ¿Cuál?"]
 
         actividad = fila['¿Qué tipo de servicios oferta?']
         if actividad == 'Restaurante, cafetería':
@@ -72,7 +71,7 @@ class InformeCuarto:
         elif actividad == 'Servicio de giros y/o financieros':
             hoja['P19'] = 'X'
         elif actividad == 'Hospedaje (diligenciar título E)':
-            hoja['P22'] = 'X'
+            hoja['P21'] = 'X'
 
             ################
             #### Hoja E ####
@@ -103,7 +102,7 @@ class InformeCuarto:
             hoja['P22'] = 'X'
         elif actividad == 'Otros':
             hoja['P23'] = 'X'
-            hoja['J24'] = fila['Otro, ¿Cuáles?']
+            hoja['J24'] = fila['Otros, ¿Cuáles?']
 
         if fila["Vende principalmente en:"] =='Sitio':
             hoja['I28'] = 'X'
@@ -113,7 +112,7 @@ class InformeCuarto:
             hoja['I30'] = 'X'
         if fila["Vende principalmente en:"] =='Otros Municipios y/o Veredas':
             hoja['T28'] = 'X'
-            hoja['P30'] = fila['Otro, ¿Cuáles?.1']
+            hoja['P30'] = fila['Otros, ¿Cuáles?.1']
 
 
         hoja['AB13'] = fila["Servicio 1"]
@@ -167,6 +166,8 @@ class InformeCuarto:
             hoja['N34'] = 'X'
             hoja['AG33'] = 'X'
 
+        hoja['AO34'] = fila['¿Por qué?']
+
         actividad6 = fila['¿De dónde se abastece del recurso hídrico?']
         if actividad6 == 'Aljibe':
             hoja['W36'] = 'X'
@@ -200,10 +201,9 @@ class InformeCuarto:
 
         if fila["¿Cuenta con servicio de alcantarillado?"] == "Si":
             hoja['AB40'] = 'X'
+            hoja['AO40'] = fila['¿Cuál?']
         elif fila["¿Cuenta con servicio de alcantarillado?"] == "No":
             hoja['AD40'] = 'X'
-        hoja['AO40'] = fila['¿Cuál?']
-
 
         ##### ABASTECIMIENTO DE INSUMOS #####
 

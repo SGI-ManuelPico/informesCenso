@@ -52,11 +52,10 @@ class InformeTercero:
 
         if fila["¿Pertenece a alguna asociación?"] == 'Si':
             hoja['S7'] = "X"
+            hoja['AF7'] = fila["Otro, ¿Cuál?"]
 
         elif fila["¿Pertenece a alguna asociación?"] == 'No':
             hoja['Y7'] = "X"
-
-        hoja['AF7'] = fila["Otro, ¿Cuál?"]
 
         actividad = fila['¿Qué tipo de productos comercializa?']
         if actividad == 'Agrícola':
