@@ -1,6 +1,5 @@
-from openpyxl import load_workbook
 import pandas as pd
-import os
+import os, re
 
 class InformeQuinto:
     def lecturaArchivoQuinto(self):
@@ -25,13 +24,13 @@ class InformeQuinto:
         if pd.notna(df_fila['Fecha']):
             fecha_str = str(df_fila['Fecha'])
             if '/' in fecha_str:
-                ws['AM2'] = fecha_str.split('/')[0]
+                ws['AM2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
                 ws['AO2'] = fecha_str.split('/')[1]
-                ws['AS2'] = fecha_str.split('/')[2]
+                ws['AS2'] = fecha_str.split('/')[0]
             elif '-' in fecha_str:
-                ws['AM2'] = fecha_str.split('-')[0]
+                ws['AM2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
                 ws['AO2'] = fecha_str.split('-')[1]
-                ws['AS2'] = fecha_str.split('-')[2]
+                ws['AS2'] = fecha_str.split('-')[0]
             else:
                 print(f'Formato de fecha inesperado: {fecha_str}')
         else:
@@ -608,17 +607,3 @@ class InformeQuinto:
         ws['Z68'] = df_fila['Salarios pagados a gerentes y directivos']
         ws['Z69'] = df_fila['Total remuneraciones']
 
-        print("Formulario llenado")
-
-
-        if __name__ == "__main__":
-            for index, row in df_enc5.iterrows():
-                print(f"Processing row {index + 1}")
-                wb = load_workbook(form)
-                ws = wb.active
-                
-                llenar_form_5(ws, row)
-                
-                output_path = f"{direc_guardado}form5_lleno_{index + 1}.xlsx"
-                wb.save(output_path)
-                print(f"Saved filled form to {output_path}")

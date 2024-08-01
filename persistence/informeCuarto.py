@@ -33,8 +33,8 @@ class InformeCuarto:
 
         hoja['AO1'] = fila["Encuesta No."]
 
-        if pd.notna(fila['Fecha']):
-            fecha_str = str(fila['Fecha'])
+        if pd.notna(fila['Fecha(DD/MM/AAAA)']):
+            fecha_str = str(fila['Fecha(DD/MM/AAAA)'])
             if '/' in fecha_str:
                 hoja['AN2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
                 hoja['AQ2'] = fecha_str.split('/')[1]
@@ -331,11 +331,11 @@ class InformeCuarto:
             actividad10 = fila['Remuneración']
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AR69'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
+            elif actividad10 == '$901.000 - $1.800.000':
                 hoja['AS69'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AT69'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
+            elif actividad10 == 'superiores a $2.701.000':
                 hoja['AU69'] = 'X'
 
             ##### Persona 2 #####
@@ -387,11 +387,11 @@ class InformeCuarto:
             actividad10 = fila['Remuneración.1']
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AR70'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
+            elif actividad10 == '$901.000 - $1.800.000':
                 hoja['AS70'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AT70'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
+            elif actividad10 == 'superiores a $2.701.000':
                 hoja['AU70'] = 'X'
 
             ##### Persona 3 #####
@@ -443,11 +443,11 @@ class InformeCuarto:
             actividad10 = fila['Remuneración.2']
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AR71'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
+            elif actividad10 == '$901.000 - $1.800.000':
                 hoja['AS71'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AT71'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
+            elif actividad10 == 'superiores a $2.701.000':
                 hoja['AU71'] = 'X'
 
             ##### Persona 4 #####
@@ -499,11 +499,11 @@ class InformeCuarto:
             actividad10 = fila['Remuneración.3']
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AR72'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
+            elif actividad10 == '$901.000 - $1.800.000':
                 hoja['AS72'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AT72'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
+            elif actividad10 == 'superiores a $2.701.000':
                 hoja['AU72'] = 'X'
 
             ##### Persona 5 #####
@@ -555,11 +555,11 @@ class InformeCuarto:
             actividad10 = fila['Remuneración.4']
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AR73'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
+            elif actividad10 == '$901.000 - $1.800.000':
                 hoja['AS73'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AT73'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
+            elif actividad10 == 'superiores a $2.701.000':
                 hoja['AU73'] = 'X'
 
             ##### Persona 6 #####
@@ -611,11 +611,11 @@ class InformeCuarto:
             actividad10 = fila['Remuneración.5']
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AR74'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
+            elif actividad10 == '$901.000 - $1.800.000':
                 hoja['AS74'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AT74'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
+            elif actividad10 == 'superiores a $2.701.000':
                 hoja['AU74'] = 'X'
 
             ##### Persona 7 #####
@@ -667,11 +667,11 @@ class InformeCuarto:
             actividad10 = fila['Remuneración.6']
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AR75'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
+            elif actividad10 == '$901.000 - $1.800.000':
                 hoja['AS75'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AT75'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
+            elif actividad10 == 'superiores a $2.701.000':
                 hoja['AU75'] = 'X'
 
             ##### Persona 8 #####
@@ -723,11 +723,11 @@ class InformeCuarto:
             actividad10 = fila['Remuneración.7']
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AR76'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
+            elif actividad10 == '$901.000 - $1.800.000':
                 hoja['AS76'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AT76'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
+            elif actividad10 == 'superiores a $2.701.000':
                 hoja['AU76'] = 'X'
 
             ##### Persona 9 #####
@@ -779,11 +779,11 @@ class InformeCuarto:
             actividad10 = fila['Remuneración.8']
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AR77'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
+            elif actividad10 == '$901.000 - $1.800.000':
                 hoja['AS77'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AT77'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
+            elif actividad10 == 'superiores a $2.701.000':
                 hoja['AU77'] = 'X'
 
             ##### Persona 10 #####
@@ -835,11 +835,11 @@ class InformeCuarto:
             actividad10 = fila['Remuneración.9']
             if actividad10 == 'Inferiores a $900.000':
                 hoja['AR78'] = 'X'
-            elif actividad10 == '$901.000- a $1.800.000':
+            elif actividad10 == '$901.000 - $1.800.000':
                 hoja['AS78'] = 'X'
             elif actividad10 == '$1.801.000 - $2.700.000':
                 hoja['AT78'] = 'X'
-            elif actividad10 == 'Superiores s a $2.701.000':
+            elif actividad10 == 'superiores a $2.701.000':
                 hoja['AU78'] = 'X'
 
 

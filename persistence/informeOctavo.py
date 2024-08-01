@@ -33,8 +33,8 @@ class InformeOctavo:
 
         hoja['AO1'] = fila["Encuesta No."]
 
-        if pd.notna(fila['Fecha']):
-            fecha_str = str(fila['Fecha'])
+        if pd.notna(fila['Fecha(DD/MM/AAAA)']):
+            fecha_str = str(fila['Fecha(DD/MM/AAAA)'])
             if '/' in fecha_str:
                 hoja['AN2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
                 hoja['AQ2'] = fecha_str.split('/')[1]

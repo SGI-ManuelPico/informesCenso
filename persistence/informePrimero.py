@@ -1,5 +1,5 @@
 import pandas as pd
-import os
+import os, re
 
 
 class InformePrimero:
@@ -20,16 +20,16 @@ class InformePrimero:
 
     def crearArchivoPrimero(self, ws, df_fila):
         ws['T1'] = df_fila['Encuesta No.']
-        if pd.notna(df_fila['Fecha']):
-            fecha_str = str(df_fila['Fecha'])
+        if pd.notna(df_fila['Fecha(DD/MM/AAAA)']):
+            fecha_str = str(df_fila['Fecha(DD/MM/AAAA)'])
             if '/' in fecha_str:
-                ws['W2'] = fecha_str.split('/')[0]
+                ws['W2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
                 ws['Z2'] = fecha_str.split('/')[1]
-                ws['AD2'] = fecha_str.split('/')[2]
+                ws['AD2'] = fecha_str.split('/')[0]
             elif '-' in fecha_str:
-                ws['W2'] = fecha_str.split('-')[0]
+                ws['W2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
                 ws['Z2'] = fecha_str.split('-')[1]
-                ws['AD2'] = fecha_str.split('-')[2]
+                ws['AD2'] = fecha_str.split('-')[0]
             else:
                 print(f'Formato de fecha inesperado: {fecha_str}')
         else:

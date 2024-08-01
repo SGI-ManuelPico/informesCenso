@@ -1,5 +1,5 @@
 import pandas as pd
-import os
+import os, re
 
 class InformeSegundo:
     def valorCol(self, base_name, index, df_fila):
@@ -32,16 +32,16 @@ class InformeSegundo:
         # A. IDENTIFICACIÓN ENTREVISTADO
         ws['AO1'] = df_fila['Encuesta No.']
 
-        if pd.notna(df_fila['Fecha']):
-            fecha_str = str(df_fila['Fecha'])
+        if pd.notna(df_fila['Fecha(DD/MM/AAAA)']):
+            fecha_str = str(df_fila['Fecha(DD/MM/AAAA)'])
             if '/' in fecha_str:
-                ws['AL2'] = fecha_str.split('/')[0]
+                ws['AL2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
                 ws['AO2'] = fecha_str.split('/')[1]
-                ws['AU2'] = fecha_str.split('/')[2]
+                ws['AU2'] = fecha_str.split('/')[0]
             elif '-' in fecha_str:
-                ws['AM2'] = fecha_str.split('-')[0]
+                ws['AM2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
                 ws['AP2'] = fecha_str.split('-')[1]
-                ws['AU2'] = fecha_str.split('-')[2]
+                ws['AU2'] = fecha_str.split('-')[0]
             else:
                 print(f'Formato de fecha inesperado: {fecha_str}')
         else:
