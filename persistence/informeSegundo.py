@@ -32,41 +32,32 @@ class InformeSegundo:
         else:
             return df_fila.get(f'{base_name}.{index}', '')
 
-    def determinarMayoríaUnidad(self, unidades):
+    def determinar_mayoria_unidad(self, unidades):
         """
         Esta función determina la unidad mayoritaria en una lista de unidades.
         """
         return max(set(unidades), key=unidades.count)
 
-    xl = pd.ExcelFile(r"C:\Users\ACER\Documents\Formatos\Censo Económico Maute.xlsm") # Cambiar por la ruta en donde estén las encuestas.
-
-    direc_guardado = r"C:\Users\ACER\Documents\Formatos\Forms llenos\prueba" # Cambiar a la ruta en la que quieran que se guarden los forms.
-
-    form = r"C:\Users\Soporte\Documents\Formatos\FORMATO 2 AGROPECUARIO - Aprobado.xlsx" # Cambiar por ruta en la que tengan el formato
-
-
-
-    def llenar_form_2(self, ws, df_fila):
+    def crearArchivoSegundo(self, ws, df_fila):
         # A. IDENTIFICACIÓN ENTREVISTADO
         ws['AO1'] = df_fila['Encuesta No.']
 
         if pd.notna(df_fila['Fecha(DD/MM/AAAA)']):
             fecha_str = str(df_fila['Fecha(DD/MM/AAAA)'])
             if '/' in fecha_str:
-                ws['AM2'] = fecha_str.split('/')[0]
-                ws['AP2'] = fecha_str.split('/')[1]
-                ws['AU2'] = fecha_str.split('/')[2]
+                ws['AL2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
+                ws['AO2'] = fecha_str.split('/')[1]
+                ws['AU2'] = fecha_str.split('/')[0]
             elif '-' in fecha_str:
-                ws['AM2'] = fecha_str.split('-')[0]
+                ws['AM2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
                 ws['AP2'] = fecha_str.split('-')[1]
-                ws['AU2'] = fecha_str.split('-')[2]
+                ws['AU2'] = fecha_str.split('-')[0]
             else:
                 print(f'Formato de fecha inesperado: {fecha_str}')
         else:
-            print('Campo de fecha vacío')  
+            print('Campo de fecha vacío')   
         
         ws['AL3'] = df_fila['Encuestador']
-
         ws['E7'] = df_fila['Nombre']
         ws['AC7'] = df_fila['Empresa']
         ws['AQ7'] = df_fila['Cargo']
