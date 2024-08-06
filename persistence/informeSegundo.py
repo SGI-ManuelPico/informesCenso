@@ -1,5 +1,4 @@
 import pandas as pd
-from openpyxl import load_workbook
 import os, re
 
 
@@ -65,7 +64,7 @@ class InformeSegundo:
 
         pertenece_asociacion = df_fila['¿Pertenece a alguna asociación?']
         if pd.notna(pertenece_asociacion):
-            if pertenece_asociacion == 'Sí':
+            if pertenece_asociacion == 'Si':
                 ws['M8'] = 'X'
                 ws['W8'] = df_fila['¿Cuál?']
             elif pertenece_asociacion == 'No':
@@ -584,7 +583,7 @@ class InformeSegundo:
 
         alcantarillado = df_fila['¿Cuenta con servicio de alcantarillado?']
         if pd.notna(alcantarillado):
-            if alcantarillado == 'Sí':
+            if alcantarillado == 'Si':
                 ws['U116'] = 'X'
                 ws['AM116'] = df_fila['¿Cuál?.2']  
             elif alcantarillado == 'No':
@@ -612,7 +611,7 @@ class InformeSegundo:
         ws['L119'] = df_fila['¿Cuál es el manejo de aguas residuales y sólidos?']
 
         mano_obra = df_fila['Contrata algún tipo de mano de obra']
-        if mano_obra == 'Sí':
+        if mano_obra == 'Si':
             ws['U120'] = 'X'
         elif mano_obra == 'No':
             ws['AC120'] = 'X'  
@@ -703,7 +702,7 @@ class InformeSegundo:
             # ¿Contrata persona por jornal? 
         contrata_persona = df_fila['¿Contrata persona por jornal?']
         if pd.notna(contrata_persona):
-            if contrata_persona == 'Sí':
+            if contrata_persona == 'Si':
                 ws['N80'] = 'X'
             elif contrata_persona == 'No':
                 ws['P80'] = 'X'
