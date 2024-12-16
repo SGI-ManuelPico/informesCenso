@@ -7,89 +7,41 @@ plantilla = r'censos\FORMATO 1 IDENTIFICACIÓN - Aprobado.xlsx'
 wb = load_workbook(plantilla)
 ws = wb.active
 
+# Leer datos sin renombrar las columnas
 datos = pd.read_excel(r'censos\Encuesta 1 Identificación.xlsx')
-mapeo_columnas = {
-    'data-num_encuesta': 'Encuesta No.',
-    'data-fecha': 'Fecha(DD/MM/AAAA)',
-    'data-encuestador': 'Encuestador',
-    'data-departamento': 'Departamento',
-    'data-municipio': 'Municipio',
-    'data-vereda_centro_poblado': 'Vereda/Centro Poblado',
-    'data-permite_entrevista': 'Permite Entrevista',
-    'data-coordenadas': 'Coordenada Norte',
-    'data-coordenadas-altitude': 'Coordenada Este',
-    'data-nombre_establecimiento': 'Nombre del establecimiento',
-    'data-direccion': 'Dirección',
-    'data-telefono_contacto': 'Teléfono de contacto',
-    'data-actividad_economica': 'Actividad económica principal',
-    'data-inicio_actividad': '¿En qué año inició la actividad?',
-    'data-propietario': 'Propietario',
-    'data-procedencia_propietario': 'Procedencia',
-    'data-lugar_residencia': 'Lugar de Residencia',
-    'data-administrador': 'Administrador',
-    'data-procedencia_administrador': 'Procedencia.1',
-    'data-lugar_residencia_admin': 'Lugar de Residencia.1',
-    'data-actividad_tipo': 'Este establecimiento desarrolla su actividad como',
-    'data-tipo_actividad': 'Tipo de actividad',
-    'data-producto_principal': '¿Cuál es el principal producto o servicio que oferta?',
-    'data-tenencia_propiedad': 'Tenencia de la propiedad',
-    'data-tenencia_propiedad_other': '¿Cuál?.1',
-    'data-canon_arrendamiento': 'Canon de arrendamiento',
-    'data-actividad_ingresos': '¿De que actividad proviene la mayor parte de ingresos obtenidos en la unidad económica?',
-    'data-frecuencia_ingresos': 'Frecuencia con la que recibe ingresos por actividad',
-    'data-ingresos': '¿Cuál es la cantidad de ingresos recibidos por la actividad?',
-    'data-ingresos_other': '¿Cuál?.3',
-    'data-horario_actividad': '¿En qué horario desempeña la actividad?',
-    'data-tiene_registro': '¿Tiene registro de cámara y comercio?',
-    'data-lugares_comercializa': '¿En qué lugares comercializa?',
-    'data-lugares_comercializa_other': '¿Dónde?',
-    'data-compra_vereda': '¿Compra productos o insumos en la vereda?',
-    'data-comercializa_otra_vereda': '¿Comercializa productos o insumos en otras veredas?',
-    'data-donde_comercializa': '¿En qué lugares?',
-    'data-estrato': 'Estrato',
-    'data-servicios_publicos': '¿Cuánto pagó el último mes por concepto de servicios públicos?'
-}
 
-    # Renombrar las columnas en la fila para usar los nombres esperados en la plantilla
-datos = datos.rename(columns=mapeo_columnas)
-def crearArchivoPrimero(ws, df_fila):
-    ws['Y1'] = df_fila['Encuesta No.']
-    if pd.notna(df_fila['Fecha(DD/MM/AAAA)']):
-        fecha_valor = df_fila['Fecha(DD/MM/AAAA)']  # Objeto datetime64[ns]
-        
-        # Extraer día, mes y año y asignar como cadenas
-        ws['X2'] = str(fecha_valor.day)    # Día como string
-        ws['Z2'] = str(fecha_valor.month)  # Mes como string
-        ws['AD2'] = str(fecha_valor.year)  # Año como string
+def llenarInforme1(ws, df_fila):
+    ws['Y1'] = df_fila['data-num_encuesta']
+    if pd.notna(df_fila['data-fecha']):  # Verificar que no sea NaT
+        fecha_valor = df_fila['data-fecha']
+        ws['X2'] = str(fecha_valor.day)
+        ws['Z2'] = str(fecha_valor.month)
+        ws['AD2'] = str(fecha_valor.year)
     else:
-        print("Campo de fecha vacío.")
+        print("Campo de fecha vacío o inválido.")
 
+    ws['W3'] = df_fila['data-encuestador']
+    ws['A8'] = df_fila['data-departamento']
+    ws['N8'] = df_fila['data-municipio']
+    ws['U8'] = df_fila['data-vereda_centro_poblado']
+    ws['A10'] = f"{df_fila['data-coordenadas']}, {df_fila['data-coordenadas-altitude']}"
 
-    ws['W3'] = df_fila['Encuestador']
-    ws['A8'] = df_fila['Departamento']
-    ws['N8'] = df_fila['Municipio']
-    ws['U8'] = df_fila['Vereda/Centro Poblado']
-    ws['A10'] = f"{df_fila['Coordenada Norte']}, {df_fila['Coordenada Este']}"
-
-    # Campo "Permite entrevista"
-    if df_fila['Permite Entrevista'] == 'yes':
+    if df_fila['data-permite_entrevista'] == 'yes':
         ws['W10'] = 'X'
 
-        # Sección B: Identificación
-        ws['G14'] = df_fila['Nombre del establecimiento']
-        ws['D15'] = df_fila['Dirección']
-        ws['U15'] = df_fila['Teléfono de contacto']
-        ws['G16'] = df_fila['Actividad económica principal']
-        ws['W16'] = df_fila['¿En qué año inició la actividad?']
-        ws['D17'] = df_fila['Propietario']
-        ws['Q17'] = df_fila['Procedencia']
-        ws['Y17'] = df_fila['Lugar de Residencia']
-        ws['D18'] = df_fila['Administrador']
-        ws['Q18'] = df_fila['Procedencia.1']
-        ws['Z18'] = df_fila['Lugar de Residencia.1']
+        ws['G14'] = df_fila['data-nombre_establecimiento']
+        ws['D15'] = df_fila['data-direccion']
+        ws['U15'] = df_fila['data-telefono_contacto']
+        ws['G16'] = df_fila['data-actividad_economica']
+        ws['W16'] = df_fila['data-inicio_actividad']
+        ws['D17'] = df_fila['data-propietario']
+        ws['Q17'] = df_fila['data-procedencia_propietario']
+        ws['Y17'] = df_fila['data-lugar_residencia']
+        ws['D18'] = df_fila['data-administrador']
+        ws['Q18'] = df_fila['data-procedencia_administrador']
+        ws['Z18'] = df_fila['data-lugar_residencia_admin']
 
-        # Sección C: Descripción
-        actividad = df_fila['Este establecimiento desarrolla su actividad como']
+        actividad = df_fila['data-actividad_tipo']
         mapeo_actividad = {
             'natural': 'G23',
             'sociedad_hecho': 'N23',
@@ -102,10 +54,9 @@ def crearArchivoPrimero(ws, df_fila):
         if actividad in mapeo_actividad:
             ws[mapeo_actividad[actividad]] = 'X'
             if actividad == 'other':
-                ws['K26'] = df_fila['¿Cuál?.1']
+                ws['K26'] = df_fila['data-tenencia_propiedad_other']
 
-        # Tipo de actividad
-        actividad2 = df_fila['Tipo de actividad']
+        actividad2 = df_fila['data-tipo_actividad']
         mapeo_tipo_actividad = {
             'agricola': 'G30',
             'pecuaria': 'G31',
@@ -118,38 +69,86 @@ def crearArchivoPrimero(ws, df_fila):
         if actividad2 in mapeo_tipo_actividad:
             ws[mapeo_tipo_actividad[actividad2]] = 'X'
 
-        # Tenencia de la propiedad
-        tenencia = df_fila['Tenencia de la propiedad']
+        ws['B37'] = df_fila['data-producto_principal']
+
+        tenencia = df_fila['data-tenencia_propiedad']
         mapeo_tenencia = {
-            'Propia': 'E40',
-            'Administrada': 'E41',
-            'Arrendada*  Responder 16': 'E42',
-            'Otra': 'E44'
+            'propia': 'E40',
+            'administrada': 'E41',
+            'arrendada': 'E42',
+            'other': 'E44'
         }
         if tenencia in mapeo_tenencia:
             ws[mapeo_tenencia[tenencia]] = 'X'
-            if tenencia == 'Arrendada*  Responder 16':
-                ws['J41'] = df_fila['Canon de arrendamiento']
-            if tenencia == 'Otra':
-                ws['C45'] = df_fila['¿Cuál?.1']
+            if tenencia == 'arrendada':
+                ws['J41'] = df_fila['data-canon_arrendamiento']
+            if tenencia == 'other':
+                ws['C45'] = df_fila['data-tenencia_propiedad_other']
 
-        # Frecuencia de ingresos
-        frecuencia = df_fila['Frecuencia con la que recibe ingresos por actividad']
+        ws['A48'] = df_fila['data-actividad_ingresos']
+
+        ingresos = df_fila['data-ingresos']
+        mapeo_ingresos = {
+            'inferior_600k': 'Y23',
+            'entre_601k_1500k' : 'Y24',
+            'entre_1501k_3000k' : 'Y25',
+            'superior_3000k' : 'Y26',
+            'other' : 'AD24'
+        }
+        if ingresos in mapeo_ingresos:
+            ws[mapeo_ingresos[ingresos]] = 'X'
+            if ingresos == 'other':
+                ws['AA25'] = df_fila['data-ingresos_other']
+        
+        ws['P30'] = df_fila['data-horario_actividad']
+
+        if df_fila['data-tiene_registro'] == 'yes':
+            ws['T33'] = 'X'
+        else:
+            ws['W33'] = 'X'
+
+        lugares_comercializa = df_fila['data-lugares_comercializa']
+        mapeo_lugares_comercializa = {
+            'sitio': 'X39',
+            'empresa': 'X40',
+            'mercado': 'X41',
+            'acopio': 'X43',
+            'other': 'X44'
+        }
+        if lugares_comercializa in mapeo_lugares_comercializa:
+            ws[mapeo_lugares_comercializa[lugares_comercializa]] = 'X'
+            if lugares_comercializa == 'other':
+                ws['K50'] = df_fila['data-lugares_comercializa_other']
+
+
+        frecuencia = df_fila['data-frecuencia_ingresos']
         mapeo_frecuencia = {
-            'Diario': 'E53',
-            'Semanal': 'E54',
-            'Quincenal': 'E55',
-            'Mensual': 'M53',
-            'Semestral': 'M54',
-            'Otra': 'M55'
+            'diario': 'E53',
+            'semanal': 'E54',
+            'quincenal': 'E55',
+            'mensual': 'M53',
+            'semestral': 'M54',
+            'other': 'M55'
         }
         if frecuencia in mapeo_frecuencia:
             ws[mapeo_frecuencia[frecuencia]] = 'X'
-            if frecuencia == 'Otra':
-                ws['K56'] = df_fila['¿Cuál?.2']
+            if frecuencia == 'other':
+                ws['K56'] = df_fila['data-ingresos_other']
 
-        # Estrato
-        estrato = df_fila['Estrato']
+
+        if df_fila['data-compra_vereda'] == 'yes':
+            ws['T48'] = 'X'
+        else:
+            ws['W48'] = 'X'
+
+
+        if df_fila['data-comercializa_otra_vereda'] == 'yes':
+            ws['U53'] = 'X'
+            ws['U55'] = df_fila['data-donde_comercializa']
+        else:
+            ws['Y53'] = 'X'
+
+        estrato = int(df_fila['data-estrato'])
         mapeo_estrato = {
             1: 'R59',
             2: 'T59',
@@ -158,18 +157,17 @@ def crearArchivoPrimero(ws, df_fila):
         if estrato in mapeo_estrato:
             ws[mapeo_estrato[estrato]] = 'X'
 
-        ws['Y59'] = df_fila['¿Cuánto pagó el último mes por concepto de servicios públicos?']
+        ws['Y59'] = df_fila['data-servicios_publicos']
 
-    elif df_fila['Permite Entrevista'] == 'no':
+    elif df_fila['data-permite_entrevista'] == 'no':
         ws['Z10'] = 'X'
-    
+
 
 if __name__ == '__main__':
     for index, fila in datos.iterrows():
         print(f"Llenando datos para la fila {index + 1}...")
-        crearArchivoPrimero(ws, fila)  # Llamar a la función para llenar la plantilla
+        llenarInforme1(ws, fila)
 
-        # Guardar la plantilla con un nombre único para cada registro
-        archivo_salida = f"plantilla_ejemlo_{index + 1}.xlsx"
+        archivo_salida = f"plantilla_ejemplo_{index + 1}.xlsx"
         wb.save(archivo_salida)
         print(f"Archivo guardado: {archivo_salida}")
