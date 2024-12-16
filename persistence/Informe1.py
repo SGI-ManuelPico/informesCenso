@@ -53,16 +53,14 @@ mapeo_columnas = {
     # Renombrar las columnas en la fila para usar los nombres esperados en la plantilla
 datos = datos.rename(columns=mapeo_columnas)
 def crearArchivoPrimero(ws, df_fila):
-    # Diccionario de mapeo de columnas ODK -> Plantilla
-    # Llenar campos básicos
     ws['Y1'] = df_fila['Encuesta No.']
     if pd.notna(df_fila['Fecha(DD/MM/AAAA)']):
-        fecha_valor = df_fila['Fecha(DD/MM/AAAA)']
+        fecha_valor = df_fila['Fecha(DD/MM/AAAA)']  # Objeto datetime64[ns]
         
-        # Extraer día, mes y año
-        ws['X2'] = fecha_valor.day    # Día
-        ws['Z2'] = fecha_valor.month  # Mes
-        ws['AD2'] = fecha_valor.year   # Año
+        # Extraer día, mes y año y asignar como cadenas
+        ws['X2'] = str(fecha_valor.day)    # Día como string
+        ws['Z2'] = str(fecha_valor.month)  # Mes como string
+        ws['AD2'] = str(fecha_valor.year)  # Año como string
     else:
         print("Campo de fecha vacío.")
 
