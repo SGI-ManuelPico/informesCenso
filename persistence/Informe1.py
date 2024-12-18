@@ -3,12 +3,6 @@ import re
 from openpyxl import load_workbook
 from datetime import datetime
 
-plantilla = r'censos\FORMATO 1 IDENTIFICACIÓN - Aprobado.xlsx'
-wb = load_workbook(plantilla)
-ws = wb.active
-
-# Leer datos sin renombrar las columnas
-datos = pd.read_excel(r'censos\Encuesta 1 Identificación.xlsx')
 
 def llenarInforme1(ws, df_fila):
     ws['Y1'] = df_fila['data-num_encuesta']
@@ -161,13 +155,3 @@ def llenarInforme1(ws, df_fila):
 
     elif df_fila['data-permite_entrevista'] == 'no':
         ws['Z10'] = 'X'
-
-
-if __name__ == '__main__':
-    for index, fila in datos.iterrows():
-        print(f"Llenando datos para la fila {index + 1}...")
-        llenarInforme1(ws, fila)
-
-        archivo_salida = f"plantilla_ejemplo_{index + 1}.xlsx"
-        wb.save(archivo_salida)
-        print(f"Archivo guardado: {archivo_salida}")
