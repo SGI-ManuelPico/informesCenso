@@ -35,7 +35,7 @@ def llenarInforme1(ws, df_fila):
         ws['Q18'] = df_fila['data-procedencia_administrador']
         ws['Z18'] = df_fila['data-lugar_residencia_admin']
 
-        actividad = df_fila['data-actividad_tipo']
+        actividad = df_fila['data-actividad_como']
         mapeo_actividad = {
             'natural': 'G23',
             'sociedad_hecho': 'N23',
