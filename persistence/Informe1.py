@@ -6,7 +6,7 @@ from datetime import datetime
 
 def llenarInforme1(ws, df_fila):
     ws['Y1'] = df_fila['data-num_encuesta']
-    if pd.notna(df_fila['data-fecha']):  # Verificar que no sea NaT
+    if pd.notna(df_fila['data-fecha']):
         fecha_valor = df_fila['data-fecha']
         ws['X2'] = str(fecha_valor.day)
         ws['Z2'] = str(fecha_valor.month)
@@ -155,3 +155,34 @@ def llenarInforme1(ws, df_fila):
 
     elif df_fila['data-permite_entrevista'] == 'no':
         ws['Z10'] = 'X'
+
+
+def llenarFichaPredial(ws, df_fila):
+    pass
+
+def llenarUsosUsuarios(ws, df_fila):
+    pass
+
+def llenarInforme2(ws, df_fila):
+    pass
+
+def llenarInforme3(ws, df_fila):
+    pass
+
+def llenarInforme4(ws, df_fila):
+    pass
+
+def llenarInforme5(ws, df_fila):
+    pass    
+
+def llenarInforme6(ws, df_fila):    
+    pass
+
+def llenarInforme7(ws, df_fila):
+    pass
+
+def llenarInforme8(ws, df_fila):
+    pass
+
+def llenarInforme9(ws, df_fila):
+    pass
