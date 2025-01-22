@@ -1,26 +1,14 @@
-from util.archivoPrimero import ArchivoPrimero
-from util.archivoSegundo import ArchivoSegundo
-from util.ArchivoTercero import ArchivoTercero
-from util.ArchivoCuarto import ArchivoCuarto
-from util.archivoSexto import ArchivoSexto
-from util.archivoQuinto import ArchivoQuinto
-from util.ArchivoSeptimo import ArchivoSeptimo
-from util.ArchivoOctavo import ArchivoOctavo
-from util.archivoNoveno import ArchivoNoveno
-
-def main():
-
-    ArchivoPrimero().crearArchivoPrimero()
-    ArchivoSegundo().crearArchivoSegundo()
-    ArchivoTercero().crearArchivoTercero()
-    ArchivoCuarto().crearArchivoCuarto()
-    ArchivoQuinto().crearArchivoQuinto()
-    ArchivoSexto().crearArchivoSexto()
-    ArchivoSeptimo().crearArchivoSeptimo()
-    ArchivoOctavo().crearArchivoOctavo()
-    ArchivoNoveno().crearArchivoNoveno()
-
-
+from googleApi.api import GoogleSheetsAExcel
 
 if __name__ == "__main__":
-    main()
+    # Configuración
+    SERVICE_ACCOUNT_FILE = r'googleApi\censos-maute-d48ff1e9060b.json'
+    SPREADSHEET_ID = '1Z2HXcI6iDcO9JLBxB2cil3QC8mLNRuyzp-00uesukkk'
+    RANGE_NAME = 'Sheet1!A1:AP10000'
+    PLANTILLA_PATH = r'censos\FORMATO 1 IDENTIFICACIÓN - Aprobado.xlsx'
+    DRIVE_FOLDER_ID = '1pe3OAni1kG5lO4XrB5juq9SRnjoDVSqT'
+
+    # Inicializar y ejecutar
+    servicio = GoogleSheetsAExcel(SERVICE_ACCOUNT_FILE, SPREADSHEET_ID, RANGE_NAME, PLANTILLA_PATH, DRIVE_FOLDER_ID)
+    servicio.inicializarServicios()
+    servicio.llenarYSubirPlantillas()
