@@ -326,7 +326,6 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila):
     else:
         ws['U50'] = df1_fila['data-start_servicios_publicos-contador_energia_other']
 
-    # TODO If del mapa contador energia
 
     map_cocina = {
         'gas': 'E52',
@@ -336,14 +335,17 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila):
         'other': 'R52'
     }
 
-    # TODO If del mapa cocina
+    if df1_fila['data-start_servicios_publicos-tipo_cocina'] != 'other': # ¿Tiene cocina?
+        ws[map_cocina.get(df1_fila['data-start_servicios_publicos-tipo_cocina'], '')] = 'X' if df1_fila['data-start_servicios_publicos-tipo_cocina'] is not None else ''
+    else:
+        ws['R52'] = df1_fila['data-start_servicios_publicos-tipo_cocina_other']
 
     map_acueducto = {
         'yes': 'E54',
         'no': 'G54'
     }   
 
-    # TODO If del mapa acueducto
+    ws[map_acueducto.get(df1_fila['data-start_servicios_publicos-acueducto'], '')] = 'X' if df1_fila['data-start_servicios_publicos-acueducto'] is not None else '' # ¿Tiene acueducto?
 
     # SUMINISTRO DE AGUA
     map_fuente_agua = {
@@ -353,13 +355,15 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila):
         'conex_domici': 'V56',
     }
 
-    # TODO If del mapa fuente agua
+    ws[map_fuente_agua.get(df1_fila['data-start_servicios_publicos-suministro_agua'], '')] = 'X' if df1_fila['data-start_servicios_publicos-suministro_agua'] is not None else '' # ¿Cuál es la fuente de agua?
 
     # ALCANTARILLADO
     map_alcantarillado = {
         'yes': 'E58',
         'no': 'G58'
     }
+
+    ws[map_alcantarillado.get(df1_fila['data-start_servicios_publicos-alcantarillado'], '')] = 'X' if df1_fila['data-start_servicios_publicos-alcantarillado'] is not None else '' # ¿Tiene alcantarillado?
 
     # DISPOSICION DE AGUAS RESIDUALES
 
@@ -369,8 +373,9 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila):
         'campo_abierto': 'V58',
         'pozo_septico': 'V60',
     }
-
-    # TODO If del mapa disposicion agua
+    if df1_fila['data-start_servicios_publicos-disposicion_aguas'] is not None:
+        for key in df1_fila['data-start_servicios_publicos-disposicion_aguas'].split(','):
+            ws[map_disposicion_aguas.get(key, '')] = 'X'
 
     mapa_manejo_basuras = {
         'recoleccion': 'H62',
@@ -381,8 +386,13 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila):
         'otro': 'T64'
     }
 
-    # TODO If del mapa manejo basuras
-
+    if df1_fila['data-start_servicios_publicos-manejo_basura'] is not None:
+        for key in df1_fila['data-start_servicios_publicos-manejo_basura'].split(','):
+            if key != 'other':
+                ws[mapa_manejo_basuras.get(key, '')] = 'X'
+            else:
+                ws['T64'] = df1_fila['data-start_servicios_publicos-manejo_basura_other']
+        
     # TELECOMUNICACIONES
     keys_map_telecom = df1_fila['data-start_servicios_publicos-telecomunicaciones'].split(',')
     map_telecom = {
@@ -398,7 +408,7 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila):
         else: 
             ws[map_telecom[key]] = df1_fila['data-start_servicios_publicos-telecomunicaciones_other']
 
-    ws['B72'] = 'Observaciones sobre servicios públicos'
+    ws['B72'] = df1_fila['data-start_servicios_publicos-observaciones_servicios_pub'] if df1_fila['data-start_servicios_publicos-observaciones_servicios_pub'] is not None else '' # Observaciones servicios públicos
     
     # 4. SERVICIOS SOCIALES
 
@@ -407,18 +417,18 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila):
         'contributivo': 'U78',
     }
 
-    # TODO If del mapa regimen salud dueños
+    ws[mapa_regimen_salud_dueños.get(df1_fila['data-start_servicios_sociales-regimen_salud_duenos'], '')] = 'X' if df1_fila['data-start_servicios_sociales-regimen_salud_duenos'] is not None else '' # ¿Cuál es el régimen de salud de
 
     mapa_regimen_salud_habitantes = {
         'subsidiado': 'P80',
         'contributivo': 'U80',
     }   
 
-    # TODO If del mapa regimen salud habitantes
+    ws[mapa_regimen_salud_habitantes.get(df1_fila['data-start_servicios_sociales-regimen_salud_habitantes'], '')] = 'X' if df1_fila['data-start_servicios_sociales-regimen_salud_habitantes'] is not None else '' # ¿Cuál es el régimen de salud de
 
-    ws['J82'] = 'Empresa o entidad prestadora del servicio:'
-    ws['J84']
-    ws['T84']
+    ws['J82'] = str(df1_fila['data-start_servicios_sociales-entidad_prestadora_duenos']) + ', ' + str(df1_fila['data-start_servicios_sociales-entidad_prestadora_habitantes']) if df1_fila['data-start_servicios_sociales-entidad_prestadora_duenos'] is not None and df1_fila['data-start_servicios_sociales-entidad_prestadora_habitantes'] is not None else '' # ¿Cuál es la entidad prestadora de salud?
+    ws['J84'] = df1_fila['data-start_servicios_sociales-centro_salud'] if df1_fila['data-start_servicios_sociales-centro_salud'] is not None else 'Hospital o centro de salud más cercano'
+    ws['T84'] = 'Localizado en'
 
        # MATERIAL DE CONSTRUCCIÓN
 
