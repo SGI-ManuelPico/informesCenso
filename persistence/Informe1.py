@@ -427,36 +427,37 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila):
     ws[mapa_regimen_salud_habitantes.get(df1_fila['data-start_servicios_sociales-regimen_salud_habitantes'], '')] = 'X' if df1_fila['data-start_servicios_sociales-regimen_salud_habitantes'] is not None else '' # ¿Cuál es el régimen de salud de
 
     ws['J82'] = str(df1_fila['data-start_servicios_sociales-entidad_prestadora_duenos']) + ', ' + str(df1_fila['data-start_servicios_sociales-entidad_prestadora_habitantes']) if df1_fila['data-start_servicios_sociales-entidad_prestadora_duenos'] is not None and df1_fila['data-start_servicios_sociales-entidad_prestadora_habitantes'] is not None else '' # ¿Cuál es la entidad prestadora de salud?
-    ws['J84'] = df1_fila['data-start_servicios_sociales-centro_salud'] if df1_fila['data-start_servicios_sociales-centro_salud'] is not None else 'Hospital o centro de salud más cercano'
-    ws['T84'] = 'Localizado en'
+    ws['J84'] = df1_fila['data-start_servicios_sociales-hospital_mas_cercano'] if df1_fila['data-start_servicios_sociales-hospital_mas_cercano'] is not None else '' # Hospital o centro de salud más cercano
+    ws['T84'] = df1_fila['data-start_servicios_sociales-hospital_localizado'] if df1_fila['data-start_servicios_sociales-hospital_localizado'] is not None else 'Localizado en'
 
        # MATERIAL DE CONSTRUCCIÓN
 
-    ws['J86'] = 'Paredes'
-    ws['O86'] = 'Techos'
-    ws['T86'] = 'Pisos'
-
+    ws['J86'] = df1_fila['data-start_servicios_sociales-material_paredes'] if df1_fila['data-start_servicios_sociales-material_paredes'] is not None else '' # Material de las paredes
+    ws['O86'] = df1_fila['data-start_servicios_sociales-material_techos'] if df1_fila['data-start_servicios_sociales-material_techos'] is not None else ''   # Material de los techos
+    ws['T86'] = df1_fila['data-start_servicios_sociales-material_pisos'] if df1_fila['data-start_servicios_sociales-material_pisos'] is not None else ''     # Material de los pisos
+ 
        # DISTRIBUCIÓN VIVIENDA
      
-    ws['J88'] = 'Número de habitaciones'
-    ws['O88'] = '¿Tiene sala?'
-    ws['S88'] = '¿Tiene comedor?'
-    ws['W88'] = '¿Tiene cocina?'
-    ws['I90'] =  'Área total de la vivienda (m2)'
-    ws['R90'] = 'Personas que habitan la vivienda'
-    ws['F92'] = 'Estado de la vivienda'
-    ws['B96'] = 'Observaciones sobre servicios sociales'
+    ws['J88'] = df1_fila['data-start_servicios_sociales-num_habitaciones'] if df1_fila['data-start_servicios_sociales-num_habitaciones'] is not None else '' # Número de habitaciones
+    ws['O88'] = df1_fila['data-start_servicios_sociales-distribucion_sala'] if df1_fila['data-start_servicios_sociales-distribucion_sala'] is not None else '' # ¿Tiene sala?
+    ws['S88'] = df1_fila['data-start_servicios_sociales-distribucion_comedor'] if df1_fila['data-start_servicios_sociales-distribucion_comedor'] is not None else '' # ¿Tiene comedor?
+    ws['W88'] = df1_fila['data-start_servicios_sociales-distribucion_cocina'] if df1_fila['data-start_servicios_sociales-distribucion_cocina'] is not None else '' # '¿Tiene cocina?'
+    ws['I90'] = df1_fila['data-start_servicios_sociales-area_vivienda'] if df1_fila['data-start_servicios_sociales-area_vivienda'] is not None else '' # 'Área total de la vivienda (m2)'
+    ws['R90'] = df1_fila['data-start_carac_poblacion-num_personas'] if df1_fila['data-start_carac_poblacion-num_personas'] is not None else '' # 'Personas que habitan la vivienda'
+    ws['F92'] = df1_fila['data-start_servicios_sociales-estado_vivienda'] if df1_fila['data-start_servicios_sociales-estado_vivienda'] is not None else '' # 'Estado de la vivienda'
+    ws['B96'] = df1_fila['data-start_servicios_sociales-observaciones'] if df1_fila['data-start_servicios_sociales-observaciones'] is not None else '' # 'Observaciones sobre servicios sociales'
 
     # 5. CARACTERISTICAS DE LA POBLACIÓN (Habitantes de la vivienda)
     num_personas = df1_fila['data-start_carac_poblacion-num_personas']
     for i in range(num_personas):
         ws[f'B{102+i}'] = 'Nombre'
         ws[f'I{102+i}'] = 'Edad'
-        # TODO LÓGICA PARA EL GÉNERO 
+
         if df_pob_fila[f'data-start_carac_poblacion-caracteristicas_poblacion-genero'] == 'M':
             ws[f'L{102+i}'] = 'X'
-        else:
+        elif df_pob_fila[f'data-start_carac_poblacion-caracteristicas_poblacion-genero'] == 'F':
             ws[f'K{102+i}'] = 'X'
+
         ws[f'M{102+i}'] = 'Escolaridad'
         ws[f'P{102+i}'] = 'Relación con el encargado'
         ws[f'T{102+i}'] = 'Actividad'
@@ -467,15 +468,18 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila):
         'asociacion_empleados': 'Q114',
         'other': 'U114'
     }
-
-    # TODO If del mapa participacion comunitaria
     
-    ws['E116'] = 'Presencia institucional'
+    if df1_fila['data-start_carac_poblacion-participacion_comunal'] != 'other':
+        ws[map_participacion_com[df1_fila['data-start_carac_poblacion-participacion_comunal']]] = 'X'
+    else:
+        ws['U114'] = df1_fila['data-start_carac_poblacion-participacion_comunal_other']
+    
+    ws['E116'] = df1_fila['data-start_carac_poblacion-presencia_institucional'] if df1_fila['data-start_carac_poblacion-presencia_institucional'] is not None else '' # 'Presencia institucional'
 
     # 6. USOS DEL SUELO
-    ws['E120'] = 'Area total del predio (ha)'
+    ws['E120'] = df1_fila['data-start_uso_suelo-area_predio'] if df1_fila['data-start_uso_suelo-area_predio'] is not None else '' # 'Area total del predio (ha)'
     ws['K120'] = 'X' # Hectáreas por defecto, en la base de datos está el dato en fanegadas.
-    ws['V120'] = 'Estrato socioeconómico del predio'
+    ws['V120'] = df1_fila['data-start_uso_suelo-estrato'] if df1_fila['data-start_uso_suelo-estrato'] is not None else '' # 'Estrato socioeconómico del predio'
 
     map_uso_suelo = {
         'ganaderia': 'F122',
@@ -485,20 +489,27 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila):
         'other': 'F124'
     }
 
-    # TODO If del mapa uso suelo
+    for key in df1_fila['data-start_uso_suelo-uso_suelo'].split(','):
+        if key != 'other':
+            ws[map_uso_suelo[key]] = 'X'
+        else:
+            ws['F124'] = df1_fila['data-start_uso_suelo-uso_suelo_other']
+
 
     
-    ws['P126'] = 'Actividades complementarias'
-    ws['B131'] = 'Actividades culturales'
-    ws['B135'] = 'En caso de reasentamiento'
-    ws['B143'] = 'Expectativas de la familia frente al proyecto'
-    ws['B151'] = 'Observaciones generales'
+    ws['P126'] = df1_fila['data-start_uso_suelo-actividades_complementarias'] if df1_fila['data-start_uso_suelo-actividades_complementarias'] is not None else '' # 'Actividades complementarias'
+    ws['B131'] = df1_fila['data-start_uso_suelo-actividades_culturales'] if df1_fila['data-start_uso_suelo-actividades_culturales'] is not None else '' # 'Actividades culturales'
+    ws['B135'] = df1_fila['data-start_usos_suelo-alternativas_reasentamiento'] if df1_fila['data-start_usos_suelo-alternativas_reasentamiento'] is not None else '' # 'En caso de reasentamiento'
+    ws['B143'] = df1_fila['data-start_usos_suelo-expectativas_familia_proyecto'] if df1_fila['data-start_usos_suelo-expectativas_familia_proyecto'] is not None else '' # 'Expectativas de la familia frente al proyecto'
+    ws['B151'] = df1_fila['data-start_usos_suelo-observaciones'] if df1_fila['data-start_usos_suelo-observaciones'] is not None else '' # 'Observaciones generales'
 
     # TODO Toca ver como traer la firma del campo del drive.
     ws['S157'] = 'Firma de quien responde'
-    ws['G159'] = 'C.C. de quien responde'
+    ws['G159'] = df1_fila['data-start_usos_suelo-cc_responsable'] if df1_fila['data-start_usos_suelo-cc_responsable'] is not None else '' # 'C.C. de quien responde'
 
     # 7. FOTOGRAFÍA DE LA VIVIENDA
+
+    # !! Toca ver como traer la foto de la vivienda
 
     ws['B163'] = 'Fotografía de la vivienda'
 
@@ -506,33 +517,34 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila):
     mapa_genera_actividad = {
         'yes': 'B182',
         'no': 'O182'
-
     }
 
-    # TODO If del mapa genera actividad
-    ws['K183'] = 'ID encuesta censo económico'
+    ws[mapa_genera_actividad.get(df1_fila['data-genera_actividad'], '')] = 'X' if df1_fila['data-genera_actividad'] is not None else '' # ¿Genera actividad económica?
+
+    ws['K183'] = df1_fila['data-info_general-num_encuesta'] if df1_fila['data-info_general-num_encuesta'] is not None else 'ID encuesta censo económico'
 
 # 9. USOS Y USUARIOS (BIENES Y SERVICIOS AMBIENTALES)
 
     mapa_capta_aguas_sup = {
         'yes': 'I188',
         'no': 'L188'
-    
     }
+    ws[mapa_capta_aguas_sup.get(df1_fila['data-capta_fuentes_superf'], '')] = 'X' if df1_fila['data-capta_fuentes_superf'] is not None else '' # ¿El predio capta aguas superficiales?
 
-    # TODO If del mapa capta aguas superficiales
-
-    ws['S188'] = 'ID Usos y Usuarios'
+    ws['S188'] = df1_fila['data-info_general-num_encuesta'] if df1_fila['data-info_general-num_encuesta'] is not None else '' # ID Usos y usuarios
 
     mapa_capta_aguas_sub = {
         'yes': 'I189',
         'no': 'L189'
     }
 
-    # TODO If del mapa capta aguas subterráneas
-    ws['S189'] = 'ID FUNIAS'
+    ws[mapa_capta_aguas_sub.get(df1_fila['data-capta_fuentes_subt'], '')] = 'X' if df1_fila['data-capta_fuentes_subt'] is not None else '' # ¿El predio capta aguas subterráneas?
+
+    ws['S189'] = df1_fila['data-id_funias'] if df1_fila['data-id_funias'] is not None else '' # ID FUNIAS
 
 def llenarUsosUsuarios(ws, df_fila):
+
+    
     pass
 
 def llenarInforme2(ws, df_fila):
