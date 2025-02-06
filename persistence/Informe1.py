@@ -656,15 +656,15 @@ def llenarUsosUsuarios(ws, df1_fila, df_usos):
 
         
 
-def llenarFormatoAgropecuario(ws, df_fila):
+def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola, df_info_laboral, df_agricola_cult, df_explot_porcina, df_detalle_jornal):
 
-    ws['AO1'] = df_fila['Encuesta No.']
+    ws['AO1'] = df_fila['data-datos_encuesta-num_encuesta']
 
-    if pd.notna(df_fila['Fecha(DD/MM/AAAA)']):
+    if pd.notna(df_fila['data-datos_encuesta-fecha']):
         fecha_str = str(df_fila['Fecha(DD/MM/AAAA)'])
         if '/' in fecha_str:
-            ws['AL2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
-            ws['AO2'] = fecha_str.split('/')[1]
+            ws['AM2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
+            ws['AP2'] = fecha_str.split('/')[1]
             ws['AU2'] = fecha_str.split('/')[0]
         elif '-' in fecha_str:
             ws['AM2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
@@ -675,41 +675,40 @@ def llenarFormatoAgropecuario(ws, df_fila):
     else:
         print('Campo de fecha vacío')   
     
-    ws['AL3'] = df_fila['Encuestador']
-    ws['E7'] = df_fila['Nombre']
-    ws['AC7'] = df_fila['Empresa']
-    ws['AQ7'] = df_fila['Cargo']
+    ws['AL3'] = df_fila['data-datos_encuesta-encuestador']
+    ws['E7'] = df_fila['data-ident_entrevistado-nombre']
+    ws['AC7'] = df_fila['data-ident_entrevistado-empresa']
+    ws['AQ7'] = df_fila['data-ident_entrevistado-cargo']
+
+    map_pertenece_asoc = {  
+
+        'yes': 'M8',
+        'no': 'AO8'
+    }
+
+    ws[map_pertenece_asoc.get(df_fila['data-ident_entrevistado-pertenencia_asociacion'], '')] = 'X'
+    ws['W8'] = valSeguro(df_fila['data-ident_entrevistado-asociacion_cual'])
 
 
-    pertenece_asociacion = df_fila['¿Pertenece a alguna asociación?']
-    if pd.notna(pertenece_asociacion):
-        if pertenece_asociacion == 'Si':
-            ws['M8'] = 'X'
-            ws['W8'] = df_fila['¿Cuál?']
-        elif pertenece_asociacion == 'No':
-            ws['AO8'] = 'X'
-    else:
-        print("Campo vacío")
 
     # B. INFORMACIÓN E IDENTIFICACIÓN GENERAL DEL PREDIO
 
     # Área Total
-    ws['G11'] = df_fila['Área Total (Ha)']
-
+    ws['G11'] = valSeguro(df_fila['data-info_general_predio-area_total'])
     # Tipo de uso
-    ws['G14'] = df_fila['Cultivos (Ha)']
-    ws['G15'] = df_fila['Pastos (Ha)']
-    ws['G16'] = df_fila['Bosque natural (Ha)']
-    ws['G17'] = df_fila['Rastrojo (Ha)']
-    ws['G18'] = df_fila['Bosque plantado (Ha)']
-    ws['AB14'] = df_fila['Tierras erosionadas (Ha)']
-    ws['AB15'] = df_fila['Lagos y lagunas (m2)']
-    ws['AB16'] = df_fila['Reservorios (m2)']
-    ws['AB17'] = df_fila['Construcciones (m2)']
-    ws['Y18'] = df_fila['Otros']
+    ws['G14'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_cultivos'])
+    ws['G15'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_pastos'])
+    ws['G16'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_bosque_natural'])
+    ws['G17'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_rastrojo'])
+    ws['G18'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_bosque_plantado'])
+    ws['AB14'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_tierras_erosionadas'])
+    ws['AB15'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_lagos_lagunas'])
+    ws['AB16'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_reservorios'])
+    ws['AB17'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_construcciones'])
+    ws['Y18'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_otros_area'])
 
     # Precio de arrendamiento por Ha
-    ws['AN13'] = df_fila['Precio de arrendamiento por Ha']
+    ws['AN13'] = valSeguro(df_fila['data-info_general_predio-precio_arrendamiento'])
 
     # Observaciones
     ws['AM16'] = df_fila['Observaciones']
