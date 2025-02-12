@@ -16,7 +16,7 @@ def valSeguro(val):
 def llenarInforme1(ws, df_fila):
     ws['Y1'] = df_fila['data-info_general-num_encuesta']
     if pd.notna(df_fila['data-info_general-fecha']):
-        fecha_valor = df_fila['data-info_general-fecha']
+        fecha_valor = pd.to_datetime(df_fila['data-info_general-fecha'])
         ws['X2'] = str(fecha_valor.day)
         ws['Z2'] = str(fecha_valor.month)
         ws['AD2'] = str(fecha_valor.year)
@@ -32,7 +32,7 @@ def llenarInforme1(ws, df_fila):
     if df_fila['data-start_act_economica-permite_entrevista'] == 'yes':
         ws['W10'] = 'X'
 
-        ws['G14'] = df_fila['data-start_act_economica-start_act_economica-nombre_establecimiento']
+        ws['G14'] = df_fila['data-start_act_economica-nombre_establecimiento']
         ws['D15'] = df_fila['data-start_act_economica-direccion']
         ws['U15'] = df_fila['data-start_act_economica-telefono_contacto']
         ws['G16'] = df_fila['data-start_act_economica-actividad_economica']
@@ -103,7 +103,7 @@ def llenarInforme1(ws, df_fila):
             if ingresos == 'other':
                 ws['AA25'] = df_fila['data-start_act_economica-ingresos_other']
         
-        ws['P30'] = df_fila['data-start_act_economica-horario_actividad']
+        ws['P30'] = str(df_fila['data-start_act_economica-horario_inicio']) + ', ' + str(df_fila['data-start_act_economica-horario_fin'])
 
         if df_fila['data-start_act_economica-tiene_registro'] == 'yes':
             ws['T33'] = 'X'

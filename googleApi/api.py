@@ -113,7 +113,7 @@ class GoogleSheetsAExcel:
         pdfConv = Pdf()
 
         for index, fila in datos.iterrows():
-            fecha = fila['data-fecha']
+            fecha = pd.to_datetime(fila['data-info_general-fecha'])
             fecha_str = fecha.strftime('%Y-%m-%d') if pd.notna(fecha) else 'SinFecha'
 
             # Verificar o crear carpeta
