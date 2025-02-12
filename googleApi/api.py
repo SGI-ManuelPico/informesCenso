@@ -4,7 +4,7 @@ from google.oauth2 import service_account
 import pandas as pd
 from openpyxl import load_workbook
 from datetime import datetime
-from persistence.Informe1 import llenarInforme1
+from func.llenarPlantillas import llenarInforme1
 import os
 from util.Pdf import Pdf
 

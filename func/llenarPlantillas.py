@@ -1,9 +1,17 @@
 import pandas as pd
 import re
+import requests
+import io
 from openpyxl import load_workbook
+from openpyxl.drawing.image import Image
 from datetime import datetime
 
-
+def obtener_url_directa(url):
+    m = re.search(r'/d/([a-zA-Z0-9_-]+)', url)
+    if m:
+        file_id = m.group(1)
+        return f"https://drive.google.com/uc?export=download&id={file_id}"
+    return url
 def valorCol(base_name, index, df_fila):
     if index == 0:
         return df_fila.get(base_name, '')
@@ -13,7 +21,15 @@ def valSeguro(val):
     """Retorna val si no es nulo/NaN, de lo contrario retorna ''. """
     return val if (pd.notna(val) and val is not None) else ''
 
+
 def llenarInforme1(ws, df_fila):
+    """
+    Llena la plantilla de identificación con los valores de una fila de la base de datos.
+
+    Args:
+        ws: Plantilla en la que se va a llenar el informe.
+        df_fila: Fila de la base de datos que contiene los valores a llenar en el informe.
+    """
     ws['Y1'] = df_fila['data-info_general-num_encuesta']
     if pd.notna(df_fila['data-info_general-fecha']):
         fecha_valor = pd.to_datetime(df_fila['data-info_general-fecha'])
@@ -512,15 +528,53 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila):
     ws['B143'] = df1_fila['data-start_usos_suelo-expectativas_familia_proyecto'] if df1_fila['data-start_usos_suelo-expectativas_familia_proyecto'] is not None else '' # 'Expectativas de la familia frente al proyecto'
     ws['B151'] = df1_fila['data-start_usos_suelo-observaciones'] if df1_fila['data-start_usos_suelo-observaciones'] is not None else '' # 'Observaciones generales'
 
-    # TODO Toca ver como traer la firma del campo del drive.
-    ws['S157'] = 'Firma de quien responde'
+    # ! Falta por testear -----------------------------------
+
+    url_imagen_firma = df1_fila.get('data-start_usos_suelo-firma_responsable')
+    if url_imagen_firma:
+        url_directa = obtener_url_directa(url_imagen_firma)
+        try:
+            response = requests.get(url_directa)
+            if response.status_code == 200:
+                img_data = io.BytesIO(response.content)
+                imagen = Image(img_data)
+                ws.add_image(imagen, 'S157')
+            else:
+                print("Error al descargar la imagen. Código:", response.status_code)
+                ws['S157'] = 'Error al cargar la firma'
+        except Exception as e:
+            print("Error al descargar la imagen:", e)
+            ws['S157'] = 'Error al cargar la firma'
+    
+    # ! ------------------------------------------------------
+    
+
+    
     ws['G159'] = df1_fila['data-start_usos_suelo-cc_responsable'] if df1_fila['data-start_usos_suelo-cc_responsable'] is not None else '' # 'C.C. de quien responde'
 
     # 7. FOTOGRAFÍA DE LA VIVIENDA
 
-    # !! Toca ver como traer la foto de la vivienda
+    # ! Falta por testear -----------------------------------
 
-    ws['B163'] = 'Fotografía de la vivienda'
+    url_imagen_vivienda = df1_fila.get('data-foto_vivienda')
+    if url_imagen_vivienda:
+        url_directa = obtener_url_directa(url_imagen_vivienda)
+        try:
+            response = requests.get(url_directa)
+            if response.status_code == 200:
+                img_data = io.BytesIO(response.content)
+                imagen = Image(img_data)
+                ws.add_image(imagen, 'B163')
+            else:
+                print("Error al descargar la imagen. Código:", response.status_code)
+                ws['B163'] = 'Error al cargar la foto'
+        except Exception as e:
+            print("Error al descargar la imagen:", e)
+            ws['B163'] = 'Error al cargar la foto'
+    else:
+        ws['B163'] = 'No se encontró foto de la vivienda'
+    
+    #! -----------------------------------------------------
 
     # 8. ACTIVIDAD ECONÓMICA
     mapa_genera_actividad = {
