@@ -8,7 +8,6 @@ import os
 from func.llenarPlantillas import llenarInforme1, llenarFichaPredial
 from util.Pdf import Pdf
 
-
 class GoogleSheetsAExcel:
     def __init__(
         self,
@@ -23,15 +22,6 @@ class GoogleSheetsAExcel:
     ) -> None:
         """
         Constructor de la clase GoogleSheetsAExcel.
-
-        :param service_account_file: Ruta al archivo .json con las credenciales.
-        :param spreadsheet_id: ID de la hoja de cálculo en Google Sheets.
-        :param drive_folder_id: ID de la carpeta padre en Google Drive donde subir PDF/carpeta.
-        :param range_informe1: Rango en la hoja para el Informe1 (Por ejemplo: "Sheet1!A1:Z1000").
-        :param range_ficha1: Rango en la hoja para FichaPredial (tabla "padre").
-        :param range_ficha2: Rango en la hoja para FichaPredial (tabla "hija").
-        :param plantilla_informe1: Ruta local al .xlsx de la plantilla Informe1.
-        :param plantilla_ficha: Ruta local al .xlsx de la plantilla FichaPredial.
         """
         self.service_account_file = service_account_file
         self.spreadsheet_id = spreadsheet_id
@@ -112,13 +102,21 @@ class GoogleSheetsAExcel:
 
     def subirArchivo(self, file_path: str, nombre_archivo: str, folder_id: str):
         """
-        Sube un archivo a la carpeta 'folder_id' en Drive.
+        Sube un archivo a la carpeta 'folder_id' en Drive,
+        usando el MIME correcto según sea PDF o Excel.
         """
+        # Detectar la extensión
+        extension = os.path.splitext(file_path)[1].lower()
+        if extension == '.pdf':
+            mime_type = 'application/pdf'
+        else:
+            mime_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
         archivo_metadata = {
             'name': nombre_archivo,
             'parents': [folder_id]
         }
-        media = MediaFileUpload(file_path, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        media = MediaFileUpload(file_path, mimetype=mime_type)
         self.drive_service.files().create(body=archivo_metadata, media_body=media, fields='id').execute()
         print(f"[OK] Subido '{nombre_archivo}' a carpeta (id: {folder_id}).")
 
@@ -136,7 +134,7 @@ class GoogleSheetsAExcel:
         return len(archivos) > 0
 
     # -------------------------------------------------------------------------
-    #  Métodos específicos para “Informe de actividad económica” y “Ficha Predial”
+    #  ! Métodos para llenar las encuestas y subirlas al Drive.
     # -------------------------------------------------------------------------
     def llenarYSubirInforme1(self):
         """
@@ -169,7 +167,7 @@ class GoogleSheetsAExcel:
             # 5) Llenar plantilla
             wb = load_workbook(self.plantilla_informe1)
             ws = wb.active
-            llenarInforme1(ws, fila)  # tu función custom
+            llenarInforme1(ws, fila) 
 
             # 6) Guardar Excel local
             nombre_excel = f"{codigo}_informe1.xlsx"
@@ -185,13 +183,14 @@ class GoogleSheetsAExcel:
             os.remove(ruta_pdf)
             print(f"[OK] Se generó y subió {nombre_pdf} en la carpeta '{codigo}'.")
 
+
     def llenarYSubirFichaPredial(self):
         """
         Lee 'df_ficha1' y 'df_ficha2' (range_ficha1, range_ficha2).
         Para cada fila de df_ficha1:
           - Saca el codigo (columna data-info_general-num_encuesta) y la KEY.
           - Filtra df_ficha2 con PARENT_KEY == KEY para tener un subconjunto.
-          - Llama a 'llenarFichaPredial(ws, fila_ficha1, subset_ficha2)', 
+          - Llama a 'llenarFichaPredial(ws, row_ficha1, subset_ficha2)', 
             donde subset_ficha2 llena la tabla en la misma hoja (1 PDF total).
           - Sube el PDF a la subcarpeta correspondiente al 'codigo'.
         """
@@ -228,7 +227,7 @@ class GoogleSheetsAExcel:
 
             llenarFichaPredial(ws, row_ficha1, subset_ficha2)
 
-            # 6) Guardar Excel local
+            # Guardar Excel local
             nombre_excel = f"{codigo}_fichaPredial.xlsx"
             wb.save(nombre_excel)
 

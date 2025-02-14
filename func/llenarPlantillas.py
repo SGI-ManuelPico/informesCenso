@@ -138,10 +138,10 @@ def llenarInforme1(ws, df_fila):
 
         ingresos = df_fila['data-start_act_economica-ingresos']
         mapeo_ingresos = {
-            'inferior_600k': 'Y23',
-            'entre_601k_1500k' : 'Y24',
-            'entre_1501k_3000k' : 'Y25',
-            'superior_3000k' : 'Y26',
+            'inferior_smlv': 'Y23',
+            'igual_smlv' : 'Y24',
+            'entre_1y2_smlv' : 'Y25',
+            'superior_2' : 'Y26',
             'other' : 'AD24'
         }
         if ingresos in mapeo_ingresos:
@@ -215,6 +215,7 @@ def llenarInforme1(ws, df_fila):
 def llenarFichaPredial(ws, df1_fila, df_pob_fila):
 
     # 1. DATOS GENERALES DE LA FICHA PREDIAL
+    
     ws['U8'] = safe_str(df1_fila['data-info_general-num_encuesta'])
     ws['C8'] = safe_str(df1_fila['data-info_general-fecha'])
     
@@ -249,7 +250,7 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila):
     mapa_escriturada = {
         'yes': 'D18',
         'no': 'G18',
-        'no_sabe': 'J18'
+        'no_sabe': 'J18' 
     }
     marcarXdict(ws, mapa_escriturada, df1_fila['data-info_general-escriturada'])
     
@@ -483,39 +484,39 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila):
     ws['I90'] = safe_str(df1_fila['data-start_servicios_sociales-area_vivienda'])
     ws['R90'] = safe_str(df1_fila['data-start_carac_poblacion-num_personas'])
     ws['F92'] = safe_str(df1_fila['data-start_servicios_sociales-estado_vivienda'])
-    ws['B96'] = safe_str(df1_fila['data-start_servicios_sociales-observaciones'])
+    ws['B96'] = safe_str(df1_fila['data-start_servicios_sociales-observaciones_servicios'])
 
-    # Empecemos a escribir en la fila 102 de Excel
-    row_start_excel = 102
+    # La fila 102 es donde comienza la tabla de características de la población, acá iteramos sobre cada fila del df_pob_fila
 
-    # Iterar sobre cada fila “población” del subconjunto
-    # (p.ej. df_pob_fila puede tener 0, 1 o varias filas)
+    df_pob_fila = df_pob_fila.reset_index(drop=True) 
+
+    fila_tabla = 102
+
     for i, row_pob in df_pob_fila.iterrows():
-        # Calcular la fila de Excel a usar
-        fila_excel = row_start_excel + i
+        fila_excel = fila_tabla + i
+        print("Escribiendo en fila:", fila_excel)
 
-        # Ahora escribes la info en esas celdas
         # 1) Nombre
-        ws[f"B{fila_excel}"] = row_pob.get('data-start_carac_poblacion-caracteristicas_poblacion-nombre', '')
+        ws[f"B{fila_excel}"] = row_pob['data-start_carac_poblacion-caracteristicas_poblacion-nombre']
 
         # 2) Edad
-        ws[f"I{fila_excel}"] = row_pob.get('data-start_carac_poblacion-caracteristicas_poblacion-edad', '')
+        ws[f"I{fila_excel}"] = row_pob['data-start_carac_poblacion-caracteristicas_poblacion-edad']
 
         # 3) Género
-        genero = row_pob.get('data-start_carac_poblacion-caracteristicas_poblacion-genero', None)
+        genero = row_pob['data-start_carac_poblacion-caracteristicas_poblacion-genero']
         if genero == 'M':
             ws[f"L{fila_excel}"] = 'X'
         elif genero == 'F':
             ws[f"K{fila_excel}"] = 'X'
 
         # 4) Escolaridad
-        ws[f"M{fila_excel}"] = row_pob.get('data-start_carac_poblacion-caracteristicas_poblacion-escolaridad', '')
+        ws[f"M{fila_excel}"] = row_pob['data-start_carac_poblacion-caracteristicas_poblacion-escolaridad']
 
         # 5) Relación con el encargado
-        ws[f"P{fila_excel}"] = row_pob.get('data-start_carac_poblacion-caracteristicas_poblacion-relacion', '')
+        ws[f"P{fila_excel}"] = row_pob['data-start_carac_poblacion-caracteristicas_poblacion-relacion_encargado']
 
         # 6) Actividad
-        ws[f"T{fila_excel}"] = row_pob.get('data-start_carac_poblacion-caracteristicas_poblacion-actividad', '')
+        ws[f"T{fila_excel}"] = row_pob['data-start_carac_poblacion-caracteristicas_poblacion-actividad']
 
     map_participacion_com = {
         'junta_padres': 'F114',
@@ -533,9 +534,9 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila):
     ws['E116'] = safe_str(df1_fila['data-start_carac_poblacion-presencia_institucional'])
 
     # 6. USOS DEL SUELO
-    ws['E120'] = safe_str(df1_fila['data-start_uso_suelo-area_predio'])
+    ws['E120'] = safe_str(df1_fila['data-start_usos_suelo-area_total_predio'])
     ws['K120'] = 'X'  # Hectáreas por defecto
-    ws['V120'] = safe_str(df1_fila['data-start_uso_suelo-estrato'])
+    ws['V120'] = safe_str(df1_fila['data-start_usos_suelo-estrato'])
 
     map_uso_suelo = {
         'ganaderia': 'F122',
@@ -544,19 +545,19 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila):
         'pancoger': 'F123',
         'other': 'F124'
     }
-    val_uso_suelo = df1_fila.get('data-start_uso_suelo-uso_suelo', None)
+    val_uso_suelo = df1_fila.get('data-start_usos_suelo-uso_suelo', None)
     if val_uso_suelo:
         for key in val_uso_suelo.split(','):
             key = key.strip()
             if key == 'other':
-                ws['F124'] = safe_str(df1_fila['data-start_uso_suelo-uso_suelo_other'])
+                ws['F124'] = safe_str(df1_fila['data-start_usos_suelo-uso_suelo_other'])
             else:
                 cell_uso = map_uso_suelo.get(key, None)
                 if cell_uso:
                     ws[cell_uso] = 'X'
     
-    ws['P126'] = safe_str(df1_fila['data-start_uso_suelo-actividades_complementarias'])
-    ws['B131'] = safe_str(df1_fila['data-start_uso_suelo-actividades_culturales'])
+    ws['P126'] = safe_str(df1_fila['data-start_usos_suelo-actividades_complementarias'])
+    ws['B131'] = safe_str(df1_fila['data-start_usos_suelo-actividades_culturales'])
     ws['B135'] = safe_str(df1_fila['data-start_usos_suelo-alternativas_reasentamiento'])
     ws['B143'] = safe_str(df1_fila['data-start_usos_suelo-expectativas_familia_proyecto'])
     ws['B151'] = safe_str(df1_fila['data-start_usos_suelo-observaciones'])

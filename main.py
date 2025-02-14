@@ -31,5 +31,5 @@ if __name__ == "__main__":
     servicio.inicializarServicios()
 
     # 6. Ejecutar procesos de llenado y subida para cada plantilla
-    # servicio.llenarYSubirInforme1()
+    servicio.llenarYSubirInforme1()
     servicio.llenarYSubirFichaPredial()
