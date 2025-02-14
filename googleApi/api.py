@@ -8,6 +8,7 @@ import os
 from func.llenarPlantillas import llenarInforme1, llenarFichaPredial
 from util.Pdf import Pdf
 
+
 class GoogleSheetsAExcel:
     def __init__(
         self,
@@ -52,6 +53,7 @@ class GoogleSheetsAExcel:
         self.sheet_service = build('sheets', 'v4', credentials=self.credentials)
         self.drive_service = build('drive', 'v3', credentials=self.credentials)
 
+    
     def fetchDatos(self, rango: str) -> pd.DataFrame:
         """
         Retorna un DataFrame con los datos del rango especificado en la hoja de cálculo.
@@ -225,7 +227,7 @@ class GoogleSheetsAExcel:
             wb = load_workbook(self.plantilla_ficha)
             ws = wb.active
 
-            llenarFichaPredial(ws, row_ficha1, subset_ficha2)
+            llenarFichaPredial(ws, row_ficha1, subset_ficha2, self.drive_service)
 
             # Guardar Excel local
             nombre_excel = f"{codigo}_fichaPredial.xlsx"

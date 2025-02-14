@@ -5,7 +5,44 @@ import io
 from openpyxl import load_workbook
 from openpyxl.drawing.image import Image
 from datetime import datetime
+from util.descargas import descargarImagenDrive, parseFileId
+from PIL import Image as PILImage
+from openpyxl.drawing.image import Image as OpenpyxlImage
 
+def procesar_e_insertar_imagen(ws, file_id, fila, columna, drive_service):
+    """
+    Descarga la imagen con 'file_id', la rota o escala y la inserta en 'ws'
+    en la celda que inicie en (fila, columna).
+    """
+    # 1) Descargar la imagen en un BytesIO (ejemplo con tu método descargarImagenDrive)
+    img_bytes_original = descargarImagenDrive(drive_service, file_id)
+
+    # 2) Cargarla con Pillow
+    with PILImage.open(img_bytes_original) as pil_img:
+        # 3) Ajustes:
+        #  - Rotar 90° a la derecha => pil_img.rotate(-90, expand=True)
+        #  - Rotar 90° a la izquierda => pil_img.rotate(90, expand=True)
+        #  - Redimensionar => pil_img.resize((nuevo_ancho, nuevo_alto))
+
+        # Ejemplo: rotar 90 a la derecha y redimensionar a 400x300 px
+        # (Ajusta a tus necesidades)
+        pil_img = pil_img.rotate(-90, expand=True)
+        pil_img = pil_img.resize((400, 300))
+
+        # 4) Guardar la imagen transformada en un nuevo BytesIO
+        img_bytes_transformada = io.BytesIO()
+        pil_img.save(img_bytes_transformada, format=pil_img.format or "JPEG")  
+        # (Si no hay un 'format' en la original, usa “JPEG” o “PNG”)
+
+    # Importante: volver al inicio del buffer
+    img_bytes_transformada.seek(0)
+
+    # 5) Crear la imagen para openpyxl
+    imagen_para_excel = OpenpyxlImage(img_bytes_transformada)
+
+    # 6) Ubicarla en la celda deseada (por ejemplo, "B163")
+    celda_destino = f"{columna}{fila}"
+    ws.add_image(imagen_para_excel, celda_destino)
 
 def safe_str(value):
     """
@@ -212,7 +249,7 @@ def llenarInforme1(ws, df_fila):
         ws['Z10'] = 'X'
 
 
-def llenarFichaPredial(ws, df1_fila, df_pob_fila):
+def llenarFichaPredial(ws, df1_fila, df_pob_fila, drive_service):
 
     # 1. DATOS GENERALES DE LA FICHA PREDIAL
     
@@ -562,6 +599,7 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila):
     ws['B143'] = safe_str(df1_fila['data-start_usos_suelo-expectativas_familia_proyecto'])
     ws['B151'] = safe_str(df1_fila['data-start_usos_suelo-observaciones'])
 
+    
     # [Ejemplo] Cargar imagen de la firma, si existe
     url_imagen_firma = df1_fila.get('data-start_usos_suelo-firma_responsable')
     if url_imagen_firma:
@@ -582,17 +620,12 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila):
     # 7. FOTOGRAFÍA DE LA VIVIENDA
     url_imagen_vivienda = df1_fila.get('data-foto_vivienda')
     if url_imagen_vivienda:
-        url_directa = obtener_url_directa(url_imagen_vivienda)
-        try:
-            response = requests.get(url_directa)
-            if response.status_code == 200:
-                img_data = io.BytesIO(response.content)
-                imagen = Image(img_data)
-                ws.add_image(imagen, 'B163')
-            else:
-                ws['B163'] = f"Error {response.status_code} al cargar la foto"
-        except Exception as e:
-            ws['B163'] = f"Error al descargar la imagen: {str(e)}"
+        file_id = parseFileId(url_imagen_vivienda)
+        if file_id:
+            procesar_e_insertar_imagen(ws, file_id, 163, 'B', drive_service)
+        else:
+            ws['B163'] = 'No se pudo extraer file_id del link'
+
     else:
         ws['B163'] = 'No se encontró foto de la vivienda'
 
