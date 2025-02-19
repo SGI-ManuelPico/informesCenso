@@ -5,9 +5,8 @@ import pandas as pd
 from openpyxl import load_workbook
 from datetime import datetime
 import os
-from func.llenarPlantillas import llenarInforme1, llenarFichaPredial, llenarUsosUsuarios
+from func.llenarPlantillas import llenarInforme1, llenarFichaPredial, llenarUsosUsuarios, llenarFormatoAgropecuario
 from util.Pdf import Pdf
-
 
 class GoogleSheetsAExcel:
     def __init__(
@@ -20,9 +19,17 @@ class GoogleSheetsAExcel:
         range_ficha2: str = None,
         range_usos1: str = None,
         range_usos2: str = None,
+        range_formato_agro: str = None,         
+        range_info_comercial: str = None,
+        range_explot_avicola: str = None,
+        range_info_laboral: str = None,
+        range_explot_agricola: str = None,
+        range_explot_porcina: str = None,
+        range_detalle_jornal: str = None,
         plantilla_informe1: str = None,
         plantilla_ficha: str = None,
-        plantilla_usos_usuarios: str = None
+        plantilla_usos_usuarios: str = None,
+        plantilla_formato_agro: str = None
     ) -> None:
         """
         Constructor de la clase GoogleSheetsAExcel.
@@ -31,15 +38,29 @@ class GoogleSheetsAExcel:
         self.spreadsheet_id = spreadsheet_id
         self.drive_folder_id = drive_folder_id
 
+        # Rangos anteriores
         self.range_informe1 = range_informe1
         self.range_ficha1 = range_ficha1
         self.range_ficha2 = range_ficha2
         self.range_usos1 = range_usos1
         self.range_usos2 = range_usos2
 
+        # Rangos para el Formato Agropecuario
+        self.range_formato_agro = range_formato_agro
+        self.range_info_comercial = range_info_comercial
+        self.range_explot_avicola = range_explot_avicola
+        self.range_info_laboral = range_info_laboral
+        self.range_explot_agricola = range_explot_agricola
+        self.range_explot_porcina = range_explot_porcina
+        self.range_detalle_jornal = range_detalle_jornal
+
+        # Plantillas anteriores
         self.plantilla_informe1 = plantilla_informe1
         self.plantilla_ficha = plantilla_ficha
         self.plantilla_usos_usuarios = plantilla_usos_usuarios
+
+        # Plantilla Formato Agropecuario
+        self.plantilla_formato_agro = plantilla_formato_agro
 
         self.scopes = [
             'https://www.googleapis.com/auth/spreadsheets.readonly',
@@ -309,6 +330,86 @@ class GoogleSheetsAExcel:
             pdfConv.excelPdf(nombre_excel, ruta_pdf)
 
             # 9) Subir el PDF y limpiar
+            self.subirArchivo(ruta_pdf, nombre_pdf, folder_id)
+            os.remove(nombre_excel)
+            os.remove(ruta_pdf)
+
+            print(f"[OK] Se generó y subió {nombre_pdf} en la carpeta '{codigo}'.")
+
+
+    def llenarYSubirFormatoAgropecuario(self):
+        """
+        Lee el rango 'range_formato_agro' como la tabla principal,
+        donde cada fila tiene 'KEY' y 'data-info_general-num_encuesta' (código).
+        Luego filtra los DataFrames secundarios (info_comercial, avícola, laboral,
+        agrícola, porcina, jornal) usando 'PARENT_KEY == KEY'.
+        Llama a 'llenarFormatoAgropecuario' y sube el PDF resultante a Drive.
+        """
+        # 1) Validar que estén configurados el rango principal y la plantilla
+        if not self.range_formato_agro or not self.plantilla_formato_agro:
+            print("No están configurados 'range_formato_agro' o 'plantilla_formato_agro'.")
+            return
+
+        # 2) Cargar DF principal
+        df_principal = self.fetchDatos(self.range_formato_agro)
+
+        # 3) Cargar DFs secundarios
+        df_info_com = self.fetchDatos(self.range_info_comercial)
+        df_avicola = self.fetchDatos(self.range_explot_avicola)
+        df_laboral = self.fetchDatos(self.range_info_laboral)
+        df_agricola = self.fetchDatos(self.range_explot_agricola)
+        df_porcina = self.fetchDatos(self.range_explot_porcina)
+        df_jornal = self.fetchDatos(self.range_detalle_jornal)
+
+        pdfConv = Pdf()
+
+        # 4) Iterar sobre cada fila del DF principal
+        for idx, df_fila in df_principal.iterrows():
+            # Tomamos el código y KEY
+            codigo = str(df_fila['data-info_general-num_encuesta'])
+            key = df_fila['KEY']
+
+            # 4a) Filtrar cada DF secundario por 'PARENT_KEY' == key
+            subset_info_com = df_info_com[df_info_com['PARENT_KEY'] == key]
+            subset_avicola = df_avicola[df_avicola['PARENT_KEY'] == key]
+            subset_laboral = df_laboral[df_laboral['PARENT_KEY'] == key]
+            subset_agricola = df_agricola[df_agricola['PARENT_KEY'] == key]
+            subset_porcina = df_porcina[df_porcina['PARENT_KEY'] == key]
+            subset_jornal = df_jornal[df_jornal['PARENT_KEY'] == key]
+
+            # 5) Crear/obtener la carpeta en Drive
+            folder_id = self.obtenerOCrearCarpetaPorCodigo(codigo)
+
+            # 6) Definir nombre del PDF y chequear si existe
+            nombre_pdf = f"{codigo}_formatoAgropecuario.pdf"
+            if self.archivoExiste(nombre_pdf, folder_id):
+                print(f"El archivo {nombre_pdf} ya existe en '{codigo}'. Omitiendo...")
+                continue
+
+            # 7) Cargar plantilla de Excel
+            wb = load_workbook(self.plantilla_formato_agro)
+            ws = wb.active
+
+            # 8) Llamar función de llenado
+            llenarFormatoAgropecuario(
+                ws, 
+                df_fila,
+                subset_info_com,
+                subset_avicola,
+                subset_laboral,
+                subset_agricola,
+                subset_porcina,
+                subset_jornal
+            )
+
+            # 9) Guardar Excel temporal y convertir a PDF
+            nombre_excel = f"{codigo}_formatoAgropecuario.xlsx"
+            wb.save(nombre_excel)
+
+            ruta_pdf = f"{codigo}_formatoAgropecuario.pdf"
+            pdfConv.excelPdf(nombre_excel, ruta_pdf)
+
+            # 10) Subir PDF y limpiar archivos locales
             self.subirArchivo(ruta_pdf, nombre_pdf, folder_id)
             os.remove(nombre_excel)
             os.remove(ruta_pdf)
