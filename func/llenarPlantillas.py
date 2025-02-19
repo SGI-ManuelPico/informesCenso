@@ -63,12 +63,12 @@ def insertarImagenConOffset(
     ws.add_image(image_para_excel)
 
 
-def safe_str(value):
+def safe_str(value) -> str:
     """
     Retorna '' si value es None, de lo contrario el valor original.
     """
     return '' if value is None else str(value)
-def marcarXdict(ws, dictionary, df_value):
+def marcarXdict(ws, dictionary, df_value) -> None:
     """
     Busca en 'dictionary' la celda a usar según 'df_value'.
     Si encuentra una celda válida (por ejemplo "A10"), escribe 'X'.
@@ -79,7 +79,7 @@ def marcarXdict(ws, dictionary, df_value):
     cell_addr = dictionary.get(df_value, None)
     if cell_addr:
         ws[cell_addr] = 'X'
-def marcarXdict_multiple(ws, dictionary, df_value):
+def marcarXdict_multiple(ws, dictionary, df_value) -> None:
     """
     Similar a marcarXdict, pero maneja varios valores separados por comas.
     Ej: df_value = "gas,leña" => Se buscan en el diccionario las celdas
@@ -92,13 +92,13 @@ def marcarXdict_multiple(ws, dictionary, df_value):
         cell_addr = dictionary.get(part, None)
         if cell_addr:
             ws[cell_addr] = 'X'
-def obtener_url_directa(url):
+def obtener_url_directa(url) -> str:
     m = re.search(r'/d/([a-zA-Z0-9_-]+)', url)
     if m:
         file_id = m.group(1)
         return f"https://drive.google.com/uc?export=download&id={file_id}"
     return url
-def valorCol(base_name, index, df_fila):
+def valorCol(base_name, index, df_fila) -> str:
     if index == 0:
         return df_fila.get(base_name, '')
     else:
@@ -108,7 +108,7 @@ def valSeguro(val):
     return val if (pd.notna(val) and val is not None) else ''
 
 
-def llenarInforme1(ws, df_fila):
+def llenarInforme1(ws, df_fila) -> None:
     """
     Llena la plantilla de identificación con los valores de una fila de la base de datos.
 
@@ -649,9 +649,9 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila, drive_service):
                 offset_y_px=0
             )
         else:
-            ws['G159'] = 'No se pudo extraer file_id del link'
+            ws['G157'] = 'No se pudo extraer file_id del link'
     else:
-        ws['G159'] = 'No se encontró firma del responsable'
+        ws['G157'] = 'No se encontró firma del responsable'
 
     # 7. FOTOGRAFÍA DE LA VIVIENDA #Fila 163, Columna B
     url_imagen_vivienda = df1_fila.get('data-foto_vivienda')
@@ -671,9 +671,9 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila, drive_service):
                 offset_y_px=10000   # Desplazar 1000 píxeles hacia abajo
             )
         else:
-            ws['G165'] = 'No se pudo extraer file_id del link'
+            ws['B163'] = 'No se pudo extraer file_id del link'
     else:
-        ws['G165'] = 'No se encontró fotografía de la vivienda'
+        ws['B163'] = 'No se encontró fotografía de la vivienda'
 
 
     # 8. ACTIVIDAD ECONÓMICA
@@ -771,8 +771,6 @@ def llenarUsosUsuarios(ws, df1_fila, df_usos, drive_service):
         'vertimientos':            36
     }
 
-    # Recorremos cada uso (igual que antes)
-    # --------------------------------------------------
     for idx in df_usos.index:
         uso_actual = df_usos.loc[idx, 'data-start_bienes_serv-informacion_usos-uso_actual']
         uso_tipo   = df_usos.loc[idx, 'data-start_bienes_serv-informacion_usos-tipo_uso_agua']
@@ -796,10 +794,7 @@ def llenarUsosUsuarios(ws, df1_fila, df_usos, drive_service):
             ws[f'{col_este}{fila_excel}']  = val_este
             ws[f'{col_norte}{fila_excel}'] = val_norte
             ws[f'{col_cota}{fila_excel}']  = val_cota
-        # else: no hace nada
-
-    # Partes finales
-    # --------------------------------------------------
+ 
     ws['B39'] = safe_str(df1_fila.get('data-start_bienes_serv-descripcion'))
     ws['B48'] = safe_str(df1_fila.get('data-start_bienes_serv-observacion'))
 
@@ -1015,7 +1010,7 @@ def llenarUsosUsuarios(ws, df1_fila, df_usos, drive_service):
 
         
 
-def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola, df_info_laboral, df_agricola_cult, df_explot_porcina, df_detalle_jornal):
+def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola, df_info_laboral, df_explot_agricola, df_explot_porcina, df_detalle_jornal):
 
     ws['AO1'] = df_fila['data-datos_encuesta-num_encuesta']
 
@@ -1046,7 +1041,7 @@ def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola,
     }
 
     ws[map_pertenece_asoc.get(df_fila['data-ident_entrevistado-pertenencia_asociacion'], '')] = 'X'
-    ws['W8'] = valSeguro(df_fila['data-ident_entrevistado-asociacion_cual'])
+    ws['W8'] = safe_str(df_fila['data-ident_entrevistado-asociacion_cual'])
 
 
 
@@ -1070,286 +1065,257 @@ def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola,
     ws['AN13'] = valSeguro(df_fila['data-info_general_predio-precio_arrendamiento'])
 
     # Observaciones
-    ws['AM16'] = df_fila['Observaciones']
+    ws['AM16'] = df_fila['data-info_general_predio-observaciones']
 
     # ACTIVIDADES AGROPECUARIAS
 
-    # Producto
-    ws['F23'] = df_fila['Producto']
-
-    # Columna inicial para cada cultivo
-    cultivo_col_start = ['V', 'AF', 'AN']
-
-    # Listas para almacenar las unidades de cada categoría
-    unidades_area_cultivada = []
-    unidades_establecimiento = []
-    unidades_mantenimiento = []
-    unidades_cosecha = []
-    unidades_precio = []
-    unidades_autoconsumo = []
-
-    for i in range(3):  # Hay tres cultivos
-        cultivo_prefix = cultivo_col_start[i]
-
-        # Área cultivada
-        ws[f'{cultivo_prefix}24'] = valorCol('Área cultivada', i, df_fila)
-        
-        # Unidad de Área cultivada
-        unidad_area_cultivada = valorCol('Unidad', 6 * i, df_fila)
-        unidades_area_cultivada.append(unidad_area_cultivada)
-        
-        # Número de cosechas por año
-        ws[f'{cultivo_prefix}25'] = valorCol('No. de cosechas por año', i, df_fila)
-        
-        # Costos de establecimiento
-        ws[f'{cultivo_prefix}26'] = valorCol('Costos de establecimiento', i, df_fila)
-        
-        # Unidad de Costos de establecimiento
-        unidad_establecimiento = valorCol('Unidad', 6 * i + 1, df_fila)
-        unidades_establecimiento.append(unidad_establecimiento)
-        
-        # Costos de mantenimiento
-        ws[f'{cultivo_prefix}27'] = valorCol('Costos de mantenimiento', i, df_fila)
-        
-        # Unidad de Costos de mantenimiento
-        unidad_mantenimiento = valorCol('Unidad', 6 * i + 2, df_fila)
-        unidades_mantenimiento.append(unidad_mantenimiento)
-        
-        # Costos de cosecha
-        ws[f'{cultivo_prefix}28'] = valorCol('Costos de cosecha', i, df_fila)
-        
-        # Unidad de Costos de cosecha
-        unidad_cosecha = valorCol('Unidad', 6 * i + 3, df_fila)
-        unidades_cosecha.append(unidad_cosecha)
-        
-        # Volumen de producción
-        ws[f'{cultivo_prefix}29'] = valorCol('Volumen de producción', i, df_fila)
-        
-        # Precio de venta
-        ws[f'{cultivo_prefix}30'] = valorCol('Precio de venta', i, df_fila)
-        
-        # Unidad de Precio de venta
-        unidad_precio = valorCol('Unidad', 6 * i + 4, df_fila)
-        unidades_precio.append(unidad_precio)
-
-        # Autoconsumo
-        ws[f'{cultivo_prefix}31'] = valorCol('Autoconsumo', i, df_fila)
-        
-        # Unidad de Autoconsumo
-        unidad_autoconsumo = valorCol('Unidad', 6 * i + 5, df_fila)
-        unidades_autoconsumo.append(unidad_autoconsumo)
+        # Explotación agrícola
     
+    map_filas = {
+        'data-begin_agricola-cultivo-producto': 23,          
+        'data-begin_agricola-cultivo-area_cultivada': 24,     
+        'data-begin_agricola-cultivo-cosechas_anuales': 25,  
+        'data-begin_agricola-cultivo-costos_establecimiento': 26,
+        'data-begin_agricola-cultivo-costos_mantenimiento': 27,
+        'data-begin_agricola-cultivo-costos_cosecha': 28,
+        'data-begin_agricola-cultivo-volumen_produccion':29,
+        'data-begin_agricola-cultivo-precio_venta': 30,
+        'data-begin_agricola-cultivo-autoconsumo': 31,
+        'data-begin_agricola-cultivo-destino_producto': 32
+    }
 
-    ws['L32'] = df_fila['¿Destino final del producto?']
-    
+    # Las columnas, una por cada cultivo
+    cultivo_col_start = ['V', 'AF', 'AN']   
 
-    continuidad = df_fila['Sobre la actividad, piensa: Continuidad']
-    if pd.notna(continuidad):
-        if continuidad == 'Continuar con la actividad':
-            ws['G36'] = 'X'
-            ws['AP36'] = 'X'
-        elif continuidad == 'Finalizar la actividad':
-            ws['I36'] = 'X'
-            ws['AN36'] = 'X'  
-    else:
-        print('Campo vacío') 
-
-    produccion = df_fila['Sobre la actividad, piensa: Producción']
-    if pd.notna(produccion):
-        if produccion == 'Ampliar la producción':
-            ws['Q36'] = 'X'
-            ws['AF36'] = 'X'               
-        elif produccion == 'Permanecer con la misma producción':
-            ws['S36'] = 'X'
-            ws['AD36'] = 'X'   
-    else:
-        print('Campo vacío') 
-
-    ws['AS36'] = df_fila['¿Por qué']
+    if df_fila['data-explota_agricola'] == 'yes':
+        df_explot_agricola = df_explot_agricola.reset_index(drop=True).head(3)
+        for i, row_cultivo in df_explot_agricola.iterrows():
+            col_cultivo = cultivo_col_start[i]
+            # Para cada campo en map_filas, escribimos en su fila correspondiente
+            for key_campo, fila_destino in map_filas.items():
+                valor = row_cultivo.get(key_campo, "")
+                celda = f"{col_cultivo}{fila_destino}"
+                ws[celda] = valor
 
 
+        ws['L32'] = df_fila['¿Destino final del producto?']
+        
 
-# Llenar raza y # de cabezas
-    for i in range(3):
-        # Leche o Cría
-        ws[f'N{41 + i}'] = valorCol('Raza', i, df_fila)
-        ws[f'AB{41 + i}'] = valorCol('# de cabezas', i, df_fila)
+        continuidad = df_fila['data-begin_agricola-begin_sobre_act-continuar_actividad']
+        if pd.notna(continuidad):
+            if continuidad == 'yes':
+                ws['G36'] = 'X'
+                ws['AP36'] = 'X'
+            elif continuidad == 'no':
+                ws['I36'] = 'X'
+                ws['AN36'] = 'X'  
+        else:
+            print('Campo vacío') 
 
-        # Carne
-        ws[f'AJ{41 + i}'] = valorCol('Raza', i + 3, df_fila)
-        ws[f'AT{41 + i}'] = valorCol('# de cabezas', i + 3, df_fila)
+        produccion = df_fila['data-begin_agricola-begin_sobre_act-ampliar_produccion']
+        if pd.notna(produccion):
+            if produccion == 'yes':
+                ws['Q36'] = 'X'
+                ws['AF36'] = 'X'               
+            elif produccion == 'no':
+                ws['S36'] = 'X'
+                ws['AD36'] = 'X'   
+        else:
+            print('Campo vacío') 
 
-    # Número de terneros    
-    ws['Q44'] = valorCol('Número de reses en producción', df_fila)
-    ws['AK44'] = valorCol('Número de reses en producción.1', df_fila)
+        ws['AS36'] = 'Continuar:' + df_fila['data-begin_agricola-begin_sobre_act-porque_continuar'] + ' ' + 'Ampliar:' + df_fila['data-begin_agricola-begin_sobre_act-porque_ampliar']
 
-    ws['Q45'] = valorCol('Número de terneros', df_fila)
-    ws['AK45'] = valorCol('Número de terneros.1', df_fila)  
+    if df_fila['data-explota_avicola'] == 'yes': ## Hoja data-begin_explot_avicola
 
-    # Número de novillos
-    ws['Q46'] = valorCol('Número de novillos', df_fila)
-    ws['AK46'] = valorCol('Número de novillos.1', df_fila)
+        # -------------------------------
+        # SECCIÓN LECHE (Leche o Cría)
+        # -------------------------------
 
-    # Número de novillas
-    ws['Q47'] = valorCol('Número de novillas', df_fila)
-    ws['AK47'] = valorCol('Número de novillas.1', df_fila)
+        razas_leche = [
+            ('data-parametros_pecuarios-leche_o_cria-raza_leche_1',
+            'data-parametros_pecuarios-leche_o_cria-numero_cabezas_leche_1'),
+            ('data-parametros_pecuarios-leche_o_cria-raza_leche_2',
+            'data-parametros_pecuarios-leche_o_cria-numero_cabezas_leche_2'),
+            ('data-parametros_pecuarios-leche_o_cria-raza_leche_3',
+            'data-parametros_pecuarios-leche_o_cria-numero_cabezas_leche_3'),
+        ]
 
-    # Número de reproductores
-    ws['Q48'] = valorCol('Número de reproductores', df_fila)
-    ws['AK48'] = valorCol('Número de reproductores.1', df_fila)
+        for i, (col_raza, col_cabezas) in enumerate(razas_leche):
+            row_f = 41 + i
+            # Asignar la raza en N(row_f)
+            raza_val = df_fila.get(col_raza, "")
+            ws[f'N{row_f}'] = raza_val
+            
+            # Asignar el # de cabezas en AB(row_f)
+            cabezas_val = df_fila.get(col_cabezas, "")
+            ws[f'AB{row_f}'] = cabezas_val
 
-    # Número de partos al año
-    ws['Q49'] = valorCol('Número de partos al año', df_fila)
-    ws['AK49'] = valorCol('Número de partos al año.1', df_fila)
+        # 17. Número de reses en producción 
+        ws['Q44'] = df_fila.get('data-parametros_pecuarios-leche_o_cria-reses_produccion_leche', "")
+        # 18. Número de terneros
+        ws['Q45'] = df_fila.get('data-parametros_pecuarios-leche_o_cria-numero_terneros_leche', "")
+        # 19. Número de novillos
+        ws['Q46'] = df_fila.get('data-parametros_pecuarios-leche_o_cria-numero_novillos_leche', "")
+        # 20. Número de novillas
+        ws['Q47'] = df_fila.get('data-parametros_pecuarios-leche_o_cria-numero_novillas_leche', "")
+        # 21. Número de reproductores
+        ws['Q48'] = df_fila.get('data-parametros_pecuarios-leche_o_cria-numero_reproductores_leche', "")
+        # 22. Número de partos al año
+        ws['Q49'] = df_fila.get('data-parametros_pecuarios-leche_o_cria-partos_anio_leche', "")
+        # 23. Número de vacas para ordeño
+        ws['Q50'] = df_fila.get('data-parametros_pecuarios-leche_o_cria-vacas_ordeño_leche', "")
+        # 24. Tiempo de venta después destetado
+        ws['Q51'] = df_fila.get('data-parametros_pecuarios-leche_o_cria-tiempo_venta_leche', "")
+        # 25. Peso promedio de venta
+        ws['Q52'] = df_fila.get('data-parametros_pecuarios-leche_o_cria-peso_promedio_venta_leche', "")
+        # 26. Precio promedio ($)
+        #  Asegúrate de que encaje con tu plantilla actual)
+        ws['N53'] = df_fila.get('data-parametros_pecuarios-leche_o_cria-precio_promedio_leche', "")
 
-    # Número de vacas para ordeño
-    ws['Q50'] = valorCol('Número de vacas para ordeño', df_fila)
-    ws['AK50'] = valorCol('Número de vacas para ordeño.1', df_fila)
+        # 27. ¿Cada cuánto produce? (Diario, Semanal, etc.)
+        frecuencia_leche = df_fila.get('data-parametros_pecuarios-leche_o_cria-frecuencia_produccion_leche')
+        if pd.notna(frecuencia_leche):
+            # Ejemplo: si es "Diario" => ws['P54'] = 'X'
+            if frecuencia_leche == 'diario':
+                ws['P54'] = 'X'
+            elif frecuencia_leche == 'semanal':
+                ws['W54'] = 'X'
+            elif frecuencia_leche == 'otro' or 'other':
+                ws['AD54'] = 'X'
+            # etc. Ajusta columnas según tu plantilla
 
-    # Tiempo de venta después destetado
-    ws['Q51'] = valorCol('Tiempo de venta después destetado', df_fila)
-    ws['AK51'] = valorCol('Tiempo de venta después destetado.1', df_fila)
+        # 28. Promedio de producción (Litros, Botellas)
+        ws['M55'] = df_fila.get('data-parametros_pecuarios-leche_o_cria-promedio_produccion_leche', "")
+        # Si manejas varios tipos (Litro/Botella), ajústalo a tu layout actual
 
-    # Peso promedio para la venta en Kg
-    ws['Q52'] = valorCol('Peso promedio para la venta en Kg', df_fila)
-    ws['AK52'] = valorCol('Peso promedio para la venta en Kg.1', df_fila)
 
-    # Precio promedio
+        # ------------------------------------------------------------------
+        # SECCIÓN CARNE
+        # ------------------------------------------------------------------
+        if df_fila.get('data-explota_carne') == 'yes':
+            # Razas carne (similar a leche)
+            razas_carne = [
+                ('data-carne-raza_carne_1', 'data-carne-numero_cabezas_carne_1'),
+                ('data-carne-raza_carne_2', 'data-carne-numero_cabezas_carne_2'),
+                ('data-carne-raza_carne_3', 'data-carne-numero_cabezas_carne_3'),
+            ]
+            for i, (col_raza, col_cabezas) in enumerate(razas_carne):
+                row_f = 41 + i
+                ws[f'AJ{row_f}'] = df_fila.get(col_raza, "")
+                ws[f'AT{row_f}'] = df_fila.get(col_cabezas, "")
 
-    ws['N53'] = df_fila['Precio promedio: Litro']
-    ws['X53'] = df_fila['Precio promedio: Botella']
-    ws['AH53'] = df_fila['Precio promedio: Kg']
-    ws['AQ53'] = df_fila['Precio promedio: Cabeza']
+            # Números de reses en producción, terneros, novillos, etc.
+            ws['AK44'] = df_fila.get('data-carne-reses_produccion_carne', "")
+            ws['AK45'] = df_fila.get('data-carne-numero_terneros_carne', "")
+            ws['AK46'] = df_fila.get('data-carne-numero_novillos_carne', "")
+            ws['AK47'] = df_fila.get('data-carne-numero_novillas_carne', "")
+            ws['AK48'] = df_fila.get('data-carne-numero_reproductores_carne', "")
+            ws['AK49'] = df_fila.get('data-carne-partos_anio_carne', "")
+            ws['AK50'] = df_fila.get('data-carne-vacas_ordeño_carne', "")
+            ws['AK51'] = df_fila.get('data-carne-tiempo_venta_carne', "")
+            ws['AK52'] = df_fila.get('data-carne-peso_promedio_venta_carne', "")
 
-    # ¿Cada cuánto produce? 
+            # Precio promedio
+            ws['AQ53'] = df_fila.get('data-carne-precio_promedio_carne', "")
 
-    frecuencia_leche = df_fila['¿Cada cuánto produce?']
-    if pd.notna(frecuencia_leche):
-        if frecuencia_leche == 'Diario':
-            ws['P54'] = 'X'
-        elif frecuencia_leche == 'Semanal':
-            ws['W54'] = 'X'
-        elif frecuencia_leche == 'Otro':
-            ws['AD54'] = 'X'
+            # Frecuencia (¿Cada cuánto produce? Mensual, Trimestral, etc.)
+            frecuencia_carne = df_fila.get('data-carne-frecuencia_produccion_carne')
+            if pd.notna(frecuencia_carne):
+                if frecuencia_carne == 'mensual':
+                    ws['AJ54'] = 'X'
+                elif frecuencia_carne == 'trimestral':
+                    ws['AO54'] = 'X'
+                elif frecuencia_carne == 'otro' or 'other':
+                    ws['AU54'] = 'X'
 
-    # Frecuencia de producción para Carne
-    frecuencia_carne = df_fila['¿Cada cuánto produce?.1']
-    if pd.notna(frecuencia_carne):
-        if frecuencia_carne == 'Mensual':
-            ws['AJ54'] = 'X'
-        elif frecuencia_carne == 'Trimestral':
-            ws['AO54'] = 'X'
-        elif frecuencia_carne == 'Otro':
-            ws['AU54'] = 'X'
+            # Promedio de producción (Kg, Cabezas)
+            ws['AG55'] = df_fila.get('data-carne-promedio_produccion_carne', "")
 
-    # Litros y Botella para Leche o Cría
-    promedio_produccion_litro = df_fila['Promedio de producción Litro']
-    if pd.notna(promedio_produccion_litro):
-        ws['M55'] = promedio_produccion_litro
+            # Continuidad y Ampliación
+        if df_fila['data-carne-destino_final_carne']:
+            ws['L56'] = df_fila['data-carne-destino_final_carne'] 
 
-    promedio_produccion_botella = df_fila['Promedio de producción Botella']
-    if pd.notna(promedio_produccion_botella):
-        ws['W55'] = promedio_produccion_botella
+        continuidad2 = df_fila['data-carne-begin_sobre_act3-continuar_actividad3']
+        if pd.notna(continuidad2):
+            if continuidad2 == 'Continuar con la actividad':
+                ws['G60'] = 'X'
+                ws['AP60'] = 'X'
+            elif continuidad2 == 'Finalizar la actividad':
+                ws['I60'] = 'X'
+                ws['AN60'] = 'X'  
+        else:
+            print('Campo vacío') 
 
-    # Kg y Cabezas para Carne
-    promedio_produccion_kg = df_fila['Promedio de producción Kg']
-    if pd.notna(promedio_produccion_kg):
-        ws['AG55'] = promedio_produccion_kg
+        produccion2 = df_fila['data-carne-begin_sobre_act3-ampliar_produccion3']
+        if pd.notna(produccion2):
+            if produccion2 == 'Ampliar la producción':
+                ws['Q60'] = 'X'
+                ws['AF60'] = 'X'               
+            elif produccion2 == 'Permanecer con la misma producción':
+                ws['S60'] = 'X'
+                ws['AD60'] = 'X'   
+        else:
+            print('Campo vacío') 
 
-    promedio_produccion_cabezas = df_fila['Promedio de producción Cabezas']
-    if pd.notna(promedio_produccion_cabezas):
-        ws['AP55'] = promedio_produccion_cabezas   
-
-    if (pd.notna(df_fila['¿Destino final del producto?.1'])) & (pd.notna(df_fila['¿Destino final del producto?.2'])):
-        ws['L56'] = 'Leche o cría: ' + df_fila['¿Destino final del producto?.1'] + ' Carne: ' + df_fila['¿Destino final del producto?.2']
-
-    continuidad2 = df_fila['Sobre la actividad, piensa: Continuidad.1']
-    if pd.notna(continuidad2):
-        if continuidad2 == 'Continuar con la actividad':
-            ws['G60'] = 'X'
-            ws['AP60'] = 'X'
-        elif continuidad2 == 'Finalizar la actividad':
-            ws['I60'] = 'X'
-            ws['AN60'] = 'X'  
-    else:
-        print('Campo vacío') 
-
-    produccion2 = df_fila['Sobre la actividad, piensa: Producción.1']
-    if pd.notna(produccion2):
-        if produccion2 == 'Ampliar la producción':
-            ws['Q60'] = 'X'
-            ws['AF60'] = 'X'               
-        elif produccion2 == 'Permanecer con la misma producción':
-            ws['S60'] = 'X'
-            ws['AD60'] = 'X'   
-    else:
-        print('Campo vacío') 
-
-    ws['AS77'] = df_fila['¿Por qué.1']
+        ws['AS77'] = df_fila['¿Por qué.1']
 
     #Raza
 
-    ws[f'T64'] = valorCol('Raza', 6, df_fila)
-    ws[f'AF64'] = valorCol('Raza', 7, df_fila)
-    ws[f'AO64'] = valorCol('Raza', 8, df_fila)
+    if df_explot_porcina is not None:
 
-    # Número de Hembras
-    ws[f'T65'] = valorCol('# Hembras', 0, df_fila)
-    ws[f'AF65'] = valorCol('# Hembras', 1, df_fila)
-    ws[f'AO65'] = valorCol('# Hembras', 2, df_fila)
+        # 1) Mapeo para decidir qué columna de Excel usar según la 'categoría'
+        map_categoria_a_columna = {
+            'cria': 'T',
+            'levante': 'AF',
+            'ceba': 'AO'
+        }
 
-    # Número de machos
-    ws[f'T66'] = valorCol('# Machos', 0, df_fila)
-    ws[f'AF66'] = valorCol('# Machos', 1, df_fila)
-    ws[f'AO66'] = valorCol('# Machos', 2, df_fila)
+        # 2) Mapeo de cada campo a la fila donde se escribe.
+        map_campo_a_fila = {
+            # 31. Raza
+            'data-explotacion_porcina-categoria_porquina-raza': 64,
+            # 32. Número de Hembras
+            'data-explotacion_porcina-categoria_porquina-numero_hembras': 65,
+            # 33. Número de machos
+            'data-explotacion_porcina-categoria_porquina-numero_machos': 66,
+            # 34. ¿Tiene marranos para la venta?
+            'data-explotacion_porcina-categoria_porquina-tiene_marranos_venta': 67,
+            # 35. Peso promedio para la venta
+            'data-explotacion_porcina-categoria_porquina-peso_promedio_venta': 68,
+            # 36. Nº promedio de animales vendidos por año
+            'data-explotacion_porcina-categoria_porquina-promedio_vendidos_anio': 69,
+            # 37. Cantidad empleada para autoconsumo
+            'data-explotacion_porcina-categoria_porquina-autoconsumo': 70,
+            # 38. Precio unitario de venta
+            'data-explotacion_porcina-categoria_porquina-precio_unitario': 71,
+            # 39. Costo aproximado de producción
+            'data-explotacion_porcina-categoria_porquina-costo_produccion': 72,
+            # 40. ¿Destino final del producto?
+            'data-explotacion_porcina-categoria_porquina-destino_producto': 73,
+        }
 
-    # Tiene Marranos para la venta
-    ws[f'T67'] = valorCol('TTiene Marranos para la venta', 0, df_fila)
-    ws[f'AE67'] = valorCol('TTiene Marranos para la venta', 1, df_fila)
-    ws[f'AM67'] = valorCol('TTiene Marranos para la venta', 2, df_fila)
+        # 3) Iterar sobre cada fila de df_explot_porcina
+        for idx, fila_porcina in df_explot_porcina.iterrows():
+            # Tomar la categoría (cria/levante/ceba) para decidir columna
+            categoria = str(fila_porcina.get(
+                'data-explotacion_porcina-categoria_porquina-tipo_categoria',
+                ''
+            )).lower()
 
-    # Peso promedio para la venta por animal (Kg)
-    ws[f'T68'] = valorCol('Peso promedio para la venta por animal (Kg)', 0, df_fila)
-    ws[f'AF68'] = valorCol('Peso promedio para la venta por animal (Kg)', 1, df_fila)
-    ws[f'AO68'] = valorCol('Peso promedio para la venta por animal (Kg)', 2, df_fila)
+            # Buscar la columna en map_categoria_a_columna
+            col_excel = map_categoria_a_columna.get(categoria)
+            if not col_excel:
+                # Si la categoría no coincide (o está vacía), omitir
+                continue
 
-    # Número promedio de animales vendidos por año
-    ws[f'T69'] = valorCol('# Promedio de animales vendidos por año', 0, df_fila) + valorCol('# Promedio de animales vendidos por año', 1, df_fila) + valorCol('# Promedio de animales vendidos por año', 2, df_fila)
-
-    # Cantidad empleada para autoconsumo (Kg)
-    ws[f'T70'] = valorCol('Cantidad empleada para autoconsumo', 0, df_fila)
-    ws[f'AF70'] = valorCol('Cantidad empleada para autoconsumo', 1, df_fila)
-    ws[f'AO70'] = valorCol('Cantidad empleada para autoconsumo', 2, df_fila)
-
-    # Precio unitario de venta
-    ws[f'T71'] = valorCol('Precio unitario de venta', 0, df_fila)
-    ws[f'AF71'] = valorCol('Precio unitario de venta', 1, df_fila)
-    ws[f'AO71'] = valorCol('Precio unitario de venta', 2, df_fila)
-
-    # Costo aproximado de producción
-    ws[f'T72'] = valorCol('Costo aproximado de producción', 0, df_fila)
-    ws[f'AF72'] = valorCol('Costo aproximado de producción', 1, df_fila)
-    ws[f'AO72'] = valorCol('Costo aproximado de producción', 2, df_fila)
-
-    # Obtener las unidades para 'Precio unitario de venta'
-    unidades_precio_venta = [
-        df_fila.get('Unidad.18', ''), 
-        df_fila.get('Unidad.19', ''), 
-        df_fila.get('Unidad.20', '')
-    ]
-
-    # Obtener las unidades para 'Costo aproximado de producción'
-    unidades_costo_produccion = [
-        df_fila.get('Unidad.21', ''), 
-        df_fila.get('Unidad.22', ''), 
-        df_fila.get('Unidad.23', '')
-    ]
-
-    if pd.notna(df_fila['¿Destino final del producto?.3']):
-        ws['T73'] = df_fila['¿Destino final del producto?.3']
+            # 4) Asignar cada campo a su fila
+            for campo, fila_excel in map_campo_a_fila.items():
+                valor = fila_porcina.get(campo, "")
+                celda = f"{col_excel}{fila_excel}"
+                ws[celda] = valor
 
 
-    continuidad3 = df_fila['Sobre la actividad, piensa: Continuidad.2']
+    continuidad3 = df_fila['data-explotacion_porcina-begin_sobre_act4-continuar_actividad4']
     if pd.notna(continuidad3):
         if continuidad3 == 'Continuar con la actividad':
             ws['G77'] = 'X'
@@ -1360,7 +1326,7 @@ def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola,
     else:
         print('Campo vacío') 
 
-    produccion3 = df_fila['Sobre la actividad, piensa: Producción.2']
+    produccion3 = df_fila['data-explotacion_porcina-begin_sobre_act4-ampliar_produccion4']
     if pd.notna(produccion3):
         if produccion3 == 'Ampliar la producción':
             ws['Q77'] = 'X'
@@ -1371,43 +1337,80 @@ def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola,
     else:
         print('Campo vacío') 
 
-    ws['AS77'] = df_fila['¿Por qué.2']
+    ws['AS77'] = df_fila['data-explotacion_porcina-begin_sobre_act4-porque_continuar4']
 
     # Explotación Avícola
 
-    tipo_explotacion = valorCol('Tipo de explotación', 0, df_fila)
-    if pd.notna(tipo_explotacion):
-        if tipo_explotacion == 'Cría':
-            ws['R80'] = 'X'
-        elif tipo_explotacion == 'Engorde':
-            ws['AC80'] = 'X'
-        elif tipo_explotacion == 'Ponedoras':
-            ws['AK80'] = 'X'
-        elif tipo_explotacion == 'Gallina campesina':
-            ws['AU80'] = 'X'
-    else:
-        print('Campo vacío')
+    if df_explot_avicola is not None:
 
-    campos = ['# Animales', 'Producción mensual (Aves)', 'Unidades vendidas al mes (Aves)', 'Valor unitario de venta', 'Costo por animal', 'Cantidad empleada para autoconsumo/Mes (Aves)']
-    columnas = ['N', 'AB', 'AM']
+    # 1) Definir el mapeo de categoría => columnas “normales”
+        map_categoria_a_col_normal = {
+            'Engorde': 'N',
+            'Ponedoras': 'AB',
+            'Gallina campesina': 'AM'
+        }
+        # 2) Definir el mapeo de categoría => columnas “costo por animal”
+        map_categoria_a_col_costo = {
+            'Engorde': 'O',
+            'Ponedoras': 'AC',
+            'Gallina campesina': 'AN'
+        }
 
-    for i, col in enumerate(columnas):
-        for j, campo in enumerate(campos):
-            if campo != 'Cantidad empleada para autoconsumo/Mes (Aves)':
-                cell = f'{col}{82+j}'
-                ws[cell] = valorCol(campo, i, df_fila)
+        # 3) Definir mapeo de campo => fila (ajusta según tu plantilla)
+        map_campo_a_fila = {
+            # 43. Número de animales (fila 82)
+            'data-explotacion_avicola-tipo_explotacion-numero_animales': 82,
+            # 44. Producción mensual (fila 83)
+            'data-explotacion_avicola-tipo_explotacion-produccion_mensual': 83,
+            # 45. Unidades vendidas al mes (fila 84)
+            'data-explotacion_avicola-tipo_explotacion-unidades_vendidas_mes': 84,
+            # 46. Valor unitario de venta (fila 85)
+            'data-explotacion_avicola-tipo_explotacion-valor_unitario_venta': 85,
+            # 47. Costo por animal (fila 86) -> va a columnas O/AC/AN
+            'data-explotacion_avicola-tipo_explotacion-costo_por_animal': 86,
+            # 48. Cantidad empleada para autoconsumo/mes (fila 87)
+            'data-explotacion_avicola-tipo_explotacion-autoconsumo_mes': 87,
+            # 49. ¿Destino final del producto? (fila 88)
+            'data-explotacion_avicola-tipo_explotacion-destino_producto': 88
+        }
+
+        # 4) Recorrer cada fila (categoría) del DF
+        for idx, fila_avicola in df_explot_avicola.iterrows():
+            # Tomamos la categoría
+            categoria = str(
+                fila_avicola.get('data-explotacion_avicola-tipo_explotacion-categoria_avicola', '')
+            )
+            # Solo procesamos si es Engorde / Ponedoras / Gallina campesina
+            if categoria not in map_categoria_a_col_normal:
+                # 'Cría' (u otra) se ignora
+                continue
+            col_normal = map_categoria_a_col_normal[categoria]
+            # Columna “costo” (O/AC/AN)
+            col_costo = map_categoria_a_col_costo[categoria]
+
+            # 5) Marcar con “X” el tipo de explotación en la fila 80
+            if categoria == 'Engorde':
+                ws['N80'] = 'X'   # o donde se marque Engorde
+            elif categoria == 'Ponedoras':
+                ws['AB80'] = 'X'  # …
+            elif categoria == 'Gallina campesina':
+                ws['AM80'] = 'X'
+
+            # 6) Rellenar valores en filas 82..88
+            for campo_df, fila_excel in map_campo_a_fila.items():
+                valor = fila_avicola.get(campo_df, "")
+
+                if campo_df.endswith('-costo_por_animal'):
+                    # Caso especial => usar col_costo (O/AC/AN)
+                    celda = f"{col_costo}{fila_excel}"
+                else:
+                    # Caso normal => usar col_normal (N/AB/AM)
+                    celda = f"{col_normal}{fila_excel}"
+
+                ws[celda] = valor
                 
-            else:
-                cell = f'{col}{83+j}'              
-                ws[cell] = valorCol(campo, i, df_fila)
 
-    # Costo por animal
-    ws['O86'] = valorCol('Costo por animal', 0, df_fila)
-    ws['AC86'] = valorCol('Costo por animal', 1, df_fila)
-    ws['AN86'] = valorCol('Costo por animal', 2, df_fila)
-                
-
-    continuidad3 = df_fila['Sobre la actividad, piensa: Continuidad.3']
+    continuidad3 = df_fila['data-explotacion_avicola-sobre_la_actividad5-continuar_actividad5']
     if pd.notna(continuidad3):
         if continuidad3 == 'Continuar con la actividad':
             ws['G92'] = 'X'
@@ -1418,7 +1421,7 @@ def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola,
     else:
         print('Campo vacío') 
 
-    produccion3 = df_fila['Sobre la actividad, piensa: Producción.3']
+    produccion3 = df_fila['data-explotacion_avicola-sobre_la_actividad5-ampliar_produccion5']
     if pd.notna(produccion3):
         if produccion3 == 'Ampliar la producción':
             ws['Q92'] = 'X'
@@ -1429,223 +1432,255 @@ def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola,
     else:
         print('Campo vacío') 
 
-    ws['AS92'] = df_fila['¿Por qué.3']
+    ws['AS92'] = df_fila['data-explotacion_avicola-sobre_la_actividad5-razon_ampliar5']
 
-    # Nombre actividad 
-    for i in range(1, 14):
-        ws[f'F{98 + i}'] = valorCol('Nombre', i, df_fila)
+    # INFORMACIÓN COMERCIAL
+    # Asegurarte de no pasarte de 13 filas (o las que permita tu plantilla).
+    df_info_comercial = df_info_comercial.head(13).reset_index(drop=True)
 
-    for i in range(13):
-        valor_unidad = valorCol('Unidad de Medida', i, df_fila)
-        fila = 99 + i
-        if pd.notna(valor_unidad):
-            if valor_unidad == 'Kg':
-                ws[f'M{fila}'] = 'X'
-            elif valor_unidad == 'Bulto':
-                ws[f'Q{fila}'] = 'X'
-            elif valor_unidad == '@':
-                ws[f'S{fila}'] = 'X'
-            elif valor_unidad == 'Lt':
-                ws[f'U{fila}'] = 'X'
-            elif valor_unidad == 'Gn':
-                ws[f'W{fila}'] = 'X'
-        else:
-            print('Campo vacío')
+    for i, fila_insumo in df_info_comercial.iterrows():
+        # La fila en Excel donde irá este insumo
+        excel_row = 99 + i
 
-    for i in range(13):
-        
-        ws[f'X{99 + i}'] = valorCol('Nombre', i, df_fila)
+        # 1) Nombre del insumo => columna F
+        nombre_insumo = fila_insumo.get('data-informacion_comercial-insumos_actividad-nombre_insumo', "")
+        ws[f'F{excel_row}'] = nombre_insumo
 
-    for i in range(13):
-        valor_frec = valorCol('Frecuencia de compra', i, df_fila)
-        fila = 99 + i
-        if pd.notna(valor_frec):
-            if valor_frec == 'Única':
-                ws[f'AC{fila}'] = 'X'
-            elif valor_frec == 'Diario':
-                ws[f'AE{fila}'] = 'X'
-            elif valor_frec == 'Semanal':
-                ws[f'AG{fila}'] = 'X'
-            elif valor_frec == 'Quincenal':
-                ws[f'AJ{fila}'] = 'X'
-            elif valor_frec == 'Mensual':
-                ws[f'AL{fila}'] = 'X'
-            elif valor_frec == 'Trimestral':
-                ws[f'AN{fila}'] = 'X'            
-        else:
-            print('Campo vacío')
+        # 2) Unidad de medida => marcar X en M, Q, S, U, W dependiendo
+        unidad_medida = fila_insumo.get('data-informacion_comercial-insumos_actividad-unidad_medida', "")
+        if pd.notna(unidad_medida):
+            if unidad_medida == 'Kg':
+                ws[f'M{excel_row}'] = 'X'
+            elif unidad_medida == 'Bulto':
+                ws[f'Q{excel_row}'] = 'X'
+            elif unidad_medida == '@':
+                ws[f'S{excel_row}'] = 'X'
+            elif unidad_medida == 'Lt':
+                ws[f'U{excel_row}'] = 'X'
+            elif unidad_medida == 'Gn':
+                ws[f'W{excel_row}'] = 'X'
+        # Si hubiera un "unidad_medida_other", podrías ponerlo aparte
 
-    for i in range(13):
-        
-        ws[f'AQ{99 + i}'] = valorCol('Precio compra/unidad', i, df_fila)      
+        # 3) Cantidad de insumo => columna X
+        cantidad_insumo = fila_insumo.get('data-informacion_comercial-insumos_actividad-cantidad_insumo', "")
+        ws[f'X{excel_row}'] = cantidad_insumo
 
-    for i in range(13):
-        
-        ws[f'AT{99 + i}'] = valorCol('Lugar de compra', i, df_fila)   
+        # 4) Frecuencia de compra => marcar X en AC, AE, AG, AJ, AL, AN
+        frecuencia = fila_insumo.get('data-informacion_comercial-insumos_actividad-frecuencia_compra', "")
+        if pd.notna(frecuencia):
+            if frecuencia == 'unica':
+                ws[f'AC{excel_row}'] = 'X'
+            elif frecuencia == 'diario':
+                ws[f'AE{excel_row}'] = 'X'
+            elif frecuencia == 'semanal':
+                ws[f'AG{excel_row}'] = 'X'
+            elif frecuencia == 'quincenal':
+                ws[f'AJ{excel_row}'] = 'X'
+            elif frecuencia == 'mensual':
+                ws[f'AL{excel_row}'] = 'X'
+            elif frecuencia == 'trimestral':
+                ws[f'AN{excel_row}'] = 'X'
+
+        # 5) Precio de compra/unidad => columna AQ
+        precio_compra = fila_insumo.get('data-informacion_comercial-insumos_actividad-precio_compra', "")
+        ws[f'AQ{excel_row}'] = precio_compra
+
+        # 6) Lugar de compra => columna AT
+        lugar_compra = fila_insumo.get('data-informacion_comercial-insumos_actividad-lugar_compra', "")
+        ws[f'AT{excel_row}'] = lugar_compra
     
-    ws['L112'] = df_fila['¿Dónde guarda los productos?']
+    ws['L112'] = df_fila['data-informacion_comercial-almacenamiento_productos']
 
-    ws['L113'] = df_fila['Procedencia de los compradores']
+    ws['L113'] = df_fila['data-informacion_comercial-procedencia_compradores']
 
-    agua_fuente = df_fila['¿De dónde se abastece del recurso hídrico?']
+    agua_fuente = df_fila['data-informacion_comercial-recurso_hidrico']
     if pd.notna(agua_fuente):
-        if agua_fuente == 'Aljibe':
+        if agua_fuente == 'aljibe':
             ws['P114'] = 'X'
-        elif agua_fuente == 'Acueducto veredal':
+        elif agua_fuente == 'acueducto':
             ws['AC114'] = 'X'
-        elif agua_fuente == 'Otro':
+        elif agua_fuente == 'otro':
             ws['AJ114'] = 'X'
-            ws['AP114'] = df_fila['¿Cuál?.1']    
+            ws['AP114'] = df_fila['data-informacion_comercial-recurso_hidrico_otro']    
 
-    ws['T115'] = df_fila['Forma de extracción']
+    # ws['T115'] = df_fila['Forma de extracción']
 
-    ws['AN115'] = df_fila['Cantidad estimada (m3)']
+    # ws['AN115'] = df_fila['Cantidad estimada (m3)']
 
-    alcantarillado = df_fila['¿Cuenta con servicio de alcantarillado?']
+    alcantarillado = df_fila['data-informacion_comercial-cuenta_alcantarillado']
     if pd.notna(alcantarillado):
-        if alcantarillado == 'Si':
+        if alcantarillado == 'yes':
             ws['U116'] = 'X'
-            ws['AM116'] = df_fila['¿Cuál?.2']  
-        elif alcantarillado == 'No':
+            ws['AM116'] = df_fila['data-informacion_comercial-cual_alcantarillado']  
+        elif alcantarillado == 'no':
             ws['AC116'] = 'X'
 
-    energia = df_fila['¿Qué tipo de energía utiliza?']
-    if energia == 'Energía Eléctrica':
-        ws['T117'] = 'X'
-    elif energia == 'Energía Solar':
-        ws['AI117'] = 'X'
-    elif energia == 'Otro':
-        ws['AP117'] = df_fila['¿Cuál?.3']
+    mapa_energia = {
+        'electrica': 'T117',
+        'energia_solar': 'AI117',
+        'otro': 'AP117'
+    }
+    energia = df_fila['data-informacion_comercial-energia_utiliza'].split(',')
+    for tipo_energia in energia:
+        if tipo_energia.strip() in mapa_energia and tipo_energia != 'otro':
+            ws[mapa_energia.get(tipo_energia, '')] = 'X'
+        else:
+            ws['AP117'] = df_fila['data-informacion_comercial-energia_otro']
 
 
-    energia_coccion = df_fila['¿De dónde proviene la energía que utiliza para la cocción de alimentos?']
-    if energia_coccion == 'Energía Eléctrica':
+    energia_coccion = df_fila['data-informacion_comercial-energia_coccion']
+    if energia_coccion == 'electrica':
         ws['AB118'] = 'X'
-    elif energia_coccion == 'Leña':
+    elif energia_coccion == 'lenia':
         ws['AG118'] = 'X'
-    elif energia_coccion == 'Gas':
+    elif energia_coccion == 'gas':
         ws['AK118'] = 'X'
-    elif energia_coccion == 'Otro':       
-        ws['AQ118'] = df_fila['¿Cuál?.4']
+    elif energia_coccion == 'other':       
+        ws['AQ118'] = df_fila['data-informacion_comercial-energia_coccion_other']
 
-    ws['L119'] = df_fila['¿Cuál es el manejo de aguas residuales y sólidos?']
+    ws['L119'] = df_fila['data-informacion_comercial-manejo_aguas']
 
-    mano_obra = df_fila['Contrata algún tipo de mano de obra']
-    if mano_obra == 'Si':
+    mano_obra = df_fila['data-informacion_comercial-contrata_mano_obra']
+    if mano_obra == 'yes':
         ws['U120'] = 'X'
-    elif mano_obra == 'No':
+    elif mano_obra == 'no':
         ws['AC120'] = 'X'  
 
     # E. Información Laboral 
 
-    for i in range(10):
-        prefijo_persona = 124 + i
-        ws[f'E{prefijo_persona}'] = valorCol('Cargo', i, df_fila)
-        ws[f'J{prefijo_persona}'] = valorCol('Edad (años)', i, df_fila)
-        ws[f'K{prefijo_persona}'] = valorCol('Duración jornada (horas)', i, df_fila)
+    df_info_laboral = df_info_laboral.head(10).reset_index(drop=True)
 
-        manoObra = valorCol('Tipo de mano de obra', i, df_fila)
-        if pd.notna(manoObra):
-            if manoObra == 'Familiar':
-                ws[f'B{prefijo_persona}'] = 'X'
-            elif manoObra == 'Contratado':
-                ws[f'D{prefijo_persona}20'] = 'X'
+    for i, fila_lab in df_info_laboral.iterrows():
+        excel_row = 124 + i  # Filas 124..133
 
-        # Genero
-        genero = valorCol('Género', i,df_fila)
+        # 1) Cargo => Columna E
+        cargo = fila_lab.get('data-informacion_laboral-cargo', "")
+        ws[f'E{excel_row}'] = cargo
+
+        # 2) Edad => Columna J
+        edad = fila_lab.get('data-informacion_laboral-edad', "")
+        ws[f'J{excel_row}'] = edad
+
+        # 3) Duración jornada => Columna K
+        dur_jornada = fila_lab.get('data-informacion_laboral-duracion_jornada', "")
+        ws[f'K{excel_row}'] = dur_jornada
+
+        # 4) Tipo de mano de obra => “familiar” => B, “contratado” => D
+        tipo_mano_obra = fila_lab.get('data-informacion_laboral-tipo_mano_obra', "")
+        if pd.notna(tipo_mano_obra):
+            if tipo_mano_obra.lower() == 'familiar':
+                ws[f'B{excel_row}'] = 'X'
+            elif tipo_mano_obra.lower() == 'contratado':
+                ws[f'D{excel_row}'] = 'X'
+
+        # 5) Género => “M” => I, “F” => G
+        genero = fila_lab.get('data-informacion_laboral-genero', "")
         if pd.notna(genero):
-            if genero == 'Masculino':
-                ws[f'I{prefijo_persona}20'] = 'X'
-            elif genero ==  'Femenino':
-                ws[f'G{prefijo_persona}'] = 'X'
+            if genero.upper() == 'M':
+                ws[f'I{excel_row}'] = 'X'
+            elif genero.upper() == 'F':
+                ws[f'G{excel_row}'] = 'X'
 
-        # Escolaridad 
-        escolaridad = valorCol('Escolaridad', i, df_fila)
-        if pd.notna(escolaridad):
-            if escolaridad:
-                if escolaridad == 'Primaria':
-                    ws[f'M{prefijo_persona}'] = 'X'
-                elif escolaridad == 'Bachillerato':
-                    ws[f'O{prefijo_persona}'] = 'X'
-                elif escolaridad == 'Técnico':
-                    ws[f'Q{prefijo_persona}'] = 'X'
-                elif escolaridad == 'Pregrado':
-                    ws[f'S{prefijo_persona}'] = 'X'
-                elif escolaridad == 'Posgrado':
-                    ws[f'U{prefijo_persona}'] = 'X'
-        else:
-            print(f'Campo vacio')
+        # 6) Escolaridad => “primaria” => M, “bachillerato” => O, “tecnico” => Q, 
+        #    “pregrado” => S, “posgrado” => U
+        esc = fila_lab.get('data-informacion_laboral-escolaridad', "")
+        if pd.notna(esc):
+            esc_lower = esc.lower()
+            if esc_lower == 'primaria':
+                ws[f'M{excel_row}'] = 'X'
+            elif esc_lower == 'bachillerato':
+                ws[f'O{excel_row}'] = 'X'
+            elif esc_lower == 'tecnico':
+                ws[f'Q{excel_row}'] = 'X'
+            elif esc_lower == 'pregrado':
+                ws[f'S{excel_row}'] = 'X'
+            elif esc_lower == 'posgrado':
+                ws[f'U{excel_row}'] = 'X'
 
-        # Contrato 
-        contrato = valorCol('Contrato', i,df_fila)
-        if contrato:
-            if contrato == 'Tem.':
-                ws[f'AA{prefijo_persona}'] = valorCol('Contrato', i, df_fila)
-            elif contrato == 'Fij':
-                ws[f'AC{prefijo_persona}'] = 'X'
-        else:
-            print(f'Campo vacio')
+        # 7) Contrato => “temporal” => AA, “fijo” => AC
+        contrato = fila_lab.get('data-informacion_laboral-contrato', "")
+        if pd.notna(contrato):
+            contrato_lower = contrato.lower()
+            if contrato_lower == 'temporal':
+                # En tu código anterior parecía que escribías el valor, 
+                # pero si sólo quieres marcar X, haz:
+                ws[f'AA{excel_row}'] = 'X'
+            elif contrato_lower == 'fijo':
+                ws[f'AC{excel_row}'] = 'X'
 
-        # Pago de seguridad social 
-        pago_seguridad = valorCol('Pago de seguridad social', i, df_fila)
-        if pago_seguridad:
-            if pago_seguridad == 'Si':
-                ws[f'AE{prefijo_persona}'] = 'X'
-            elif pago_seguridad == 'No':
-                ws[f'AG{prefijo_persona}'] = 'X'
-        else:
-            print(f'Campo vacio')
+        # 8) Pago de seguridad social => “yes” => AE, “no” => AG
+        pago_seg = fila_lab.get('data-informacion_laboral-pago_seguridad_social', "")
+        if pd.notna(pago_seg):
+            pago_seg_lower = pago_seg.lower()
+            if pago_seg_lower == 'yes':
+                ws[f'AE{excel_row}'] = 'X'
+            elif pago_seg_lower == 'no':
+                ws[f'AG{excel_row}'] = 'X'
 
-        # Remuneración 
-        remuneracion = valorCol('Remuneración', i, df_fila)
-        if remuneracion:
-            if remuneracion == 'Inferiores a $900.000':
-                ws[f'AS{prefijo_persona}'] = 'X'
-            elif remuneracion == '$900.000 a $1.800.000':
-                ws[f'AT{prefijo_persona}'] = 'X'
-            elif remuneracion == '$1.801.000 a $2.700.000':
-                ws[f'AU{prefijo_persona}'] = 'X'
-            elif remuneracion == 'Superiores a $2.701.000':
-                ws[f'AV{prefijo_persona}'] = 'X'
-        else:
-            print(f'Campo vacio')
+        # 9) Remuneración => “inferior_smlv” => AS, “igual_smlv” => AT, 
+        #    “entre_1y2_smlv” => AU, “superior_2” => AV
+        remuneracion = fila_lab.get('data-informacion_laboral-remuneracion', "")
+        if pd.notna(remuneracion):
+            if remuneracion == 'inferior_smlv':
+                ws[f'AS{excel_row}'] = 'X'
+            elif remuneracion == 'igual_smlv':
+                ws[f'AT{excel_row}'] = 'X'
+            elif remuneracion == 'entre_1y2_smlv':
+                ws[f'AU{excel_row}'] = 'X'
+            elif remuneracion == 'superior_2':
+                ws[f'AV{excel_row}'] = 'X'
 
-        # Información adicional
-        
-        ws[f'AH{prefijo_persona}'] = valorCol('Procedencia', i, df_fila)
-        ws[f'AJ{prefijo_persona}'] = valorCol('Residencia', i, df_fila)
-        ws[f'AL{prefijo_persona}'] = valorCol('Tiempo trabajado', i, df_fila)
-        ws[f'AM{prefijo_persona}'] = valorCol('# Personas núcleo familiar', i, df_fila)
-        ws[f'AN{prefijo_persona}'] = valorCol('Personas a cargo', i, df_fila)
-        ws[f'AO{prefijo_persona}'] = valorCol('Lugar de residencia familiar', i,df_fila)
+        # 10) Otros campos
+        procedencia = fila_lab.get('data-informacion_laboral-procedencia', "")
+        ws[f'AH{excel_row}'] = procedencia
+
+        residencia = fila_lab.get('data-informacion_laboral-residencia', "")
+        ws[f'AJ{excel_row}'] = residencia
+
+        tiempo_trab = fila_lab.get('data-informacion_laboral-tiempo_trabajado', "")
+        ws[f'AL{excel_row}'] = tiempo_trab
+
+        nucleo_familiar = fila_lab.get('data-informacion_laboral-nucleo_familiar', "")
+        ws[f'AM{excel_row}'] = nucleo_familiar
+
+        personas_a_cargo = fila_lab.get('data-informacion_laboral-personas_a_cargo', "")
+        ws[f'AN{excel_row}'] = personas_a_cargo
+
+        lugar_res_fam = fila_lab.get('data-informacion_laboral-lugar_residencia_familiar', "")
+        ws[f'AO{excel_row}'] = lugar_res_fam
 
         # ¿Contrata persona por jornal? 
-    contrata_persona = df_fila['¿Contrata persona por jornal?']
-    if pd.notna(contrata_persona):
-        if contrata_persona == 'Si':
-            ws['N80'] = 'X'
-        elif contrata_persona == 'No':
-            ws['P80'] = 'X'
+    df_detalle_jornal = df_detalle_jornal.head(3).reset_index(drop=True)
 
-        # Pregunta 81: Tipo de obra o labor
-    ws['A138'] = df_fila.get('Tipo de obra o labor', '')
+    for i, fila_jornal in df_detalle_jornal.iterrows():
+        # Fila en Excel donde pondremos la info
+        excel_row = 138 + i
 
-    # Pregunta 82: Frecuencia de contratación /año
-    ws['G138'] = df_fila.get('Frecuencia de contratación/año', '')
+        # 1) Tipo de obra o labor => columna A
+        tipo_obra = fila_jornal.get('data-detalle_jornal-jornal_detalle-tipo_obra_labor', "")
+        ws[f'A{excel_row}'] = tipo_obra
 
-    # Pregunta 83: Duración en jornales del contrato
-    ws['Q138'] = df_fila.get('Duración en Jornales del contrato', '')
+        # 2) Frecuencia de contratación/año => columna G
+        frecuencia = fila_jornal.get('data-detalle_jornal-jornal_detalle-frecuencia_contratacion', "")
+        ws[f'G{excel_row}'] = frecuencia
 
-    # Pregunta 84: Valor del jornal
-    ws['Y138'] = df_fila.get('Valor del jornal', '')
+        # 3) Duración en jornales del contrato => columna Q
+        duracion = fila_jornal.get('data-detalle_jornal-jornal_detalle-duracion_jornales', "")
+        ws[f'Q{excel_row}'] = duracion
 
-    # Pregunta 85: Cantidad de jornaleros empleados por contrato
-    ws['AG138'] = df_fila.get('Cantidad de jornaleros empleados por contrato', '')
+        # 4) Valor del jornal => columna Y
+        valor_jornal = fila_jornal.get('data-detalle_jornal-jornal_detalle-valor_jornal', "")
+        ws[f'Y{excel_row}'] = valor_jornal
 
-    # Pregunta 86: Residencia de los jornaleros
-    ws['AN138'] = df_fila.get('Residencia de los jornaleros', '')
+        # 5) Cantidad de jornaleros empleados => columna AG
+        cant_jornaleros = fila_jornal.get('data-detalle_jornal-jornal_detalle-cantidad_jornaleros', "")
+        ws[f'AG{excel_row}'] = cant_jornaleros
 
-def llenarInforme3(ws, df_fila):
+        # 6) Residencia de los jornaleros => columna AN
+        residencia = fila_jornal.get('data-detalle_jornal-jornal_detalle-residencia_jornaleros', "")
+        ws[f'AN{excel_row}'] = residencia
+
+def llenarFormatoComercial(ws, df_fila):
         ws['AI1'] = df_fila["Encuesta No."]
 
         fecha_str = str(df_fila['Fecha(DD/MM/AAAA)'])

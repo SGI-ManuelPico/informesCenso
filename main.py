@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
 
     # 3. Rutas a las plantillas
-    PLANTILLA_INFORME1         = r"censos\FORMATO 1 IDENTIFICACION - Aprobado.xlsx"
+    PLANTILLA_INFORME1         = r"censos\FORMATO 1 IDENTIFICACIÓN - Aprobado.xlsx"
     PLANTILLA_FICHA            = r"censos\FICHA_PREDIAL_FINAL.xlsm"
     PLANTILLA_USOS_USUARIOS    = r"censos\Formato_Usos_Usuarios_agua.xlsx"
 
@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     servicio.inicializarServicios()
 
-    # servicio.llenarYSubirInforme1()
+    servicio.llenarYSubirInforme1()
     servicio.llenarYSubirFichaPredial()
-    # servicio.llenarYSubirUsosUsuarios()
+    servicio.llenarYSubirUsosUsuarios()
 
