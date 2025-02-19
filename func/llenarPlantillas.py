@@ -8,7 +8,7 @@ from util.descargas import descargarImagenDrive, parseFileId
 from PIL import Image as PILImage
 from openpyxl.drawing.image import Image as OpenpyxlImage
 
-def insertarImagen(ws, file_id, fila, columna, drive_service):
+def insertarImagen(ws, file_id, fila, columna, drive_service, dimensiones=(400, 300), orientacion=-90):
     """
     Descarga la imagen con 'file_id', la rota o escala y la inserta en 'ws'
     en la celda que inicie en (fila, columna).
@@ -19,8 +19,8 @@ def insertarImagen(ws, file_id, fila, columna, drive_service):
     # 2) Cargarla con Pillow
     with PILImage.open(img_bytes_original) as pil_img:
         
-        pil_img = pil_img.rotate(-90, expand=True)
-        pil_img = pil_img.resize((400, 300))
+        pil_img = pil_img.rotate(orientacion, expand=True)
+        pil_img = pil_img.resize(dimensiones)
 
         # 4) Guardar la imagen transformada en un nuevo BytesIO
         img_bytes_transformada = io.BytesIO()
@@ -596,7 +596,7 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila, drive_service):
     if url_imagen_firma:
         file_id = parseFileId(url_imagen_firma)
         if file_id:
-            insertarImagen(ws, file_id, 157, 'S', drive_service)
+            insertarImagen(ws, file_id, 157, 'S', drive_service, dimensiones=(200, 100), orientacion=0)
         else:
             ws['G159'] = 'No se pudo extraer file_id del link'
     else:
