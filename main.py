@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     servicio.inicializarServicios()
 
-    servicio.llenarYSubirInforme1()
+    # servicio.llenarYSubirInforme1()
     servicio.llenarYSubirFichaPredial()
-    servicio.llenarYSubirUsosUsuarios()
+    # servicio.llenarYSubirUsosUsuarios()
 

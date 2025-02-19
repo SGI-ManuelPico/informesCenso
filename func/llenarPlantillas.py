@@ -392,7 +392,10 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila, drive_service):
     }
     marcarXdict(ws, mapa_estad_via_fluvial, df1_fila['data-info_especifica-via_fluvial_estado'])
 
-    ws['I43'] = safe_str(df1_fila['data-info_especifica-utilizable_tiempo'])
+    if df1_fila['data-info_especifica-utilizable_tiempo'] == 'yes':
+        ws['I43'] = 'Sí'
+    else:
+        ws['I43'] = 'No'
     ws['K45'] = safe_str(df1_fila['data-info_especifica-cabecera_cercana'])
     ws['K46'] = safe_str(df1_fila['data-info_especifica-distancia_cabecera'])
 
@@ -534,9 +537,18 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila, drive_service):
     ws['T86'] = safe_str(df1_fila['data-start_servicios_sociales-material_pisos'])
 
     ws['J88'] = safe_str(df1_fila['data-start_servicios_sociales-num_habitaciones'])
-    ws['O88'] = safe_str(df1_fila['data-start_servicios_sociales-distribucion_sala'])
-    ws['S88'] = safe_str(df1_fila['data-start_servicios_sociales-distribucion_comedor'])
-    ws['W88'] = safe_str(df1_fila['data-start_servicios_sociales-distribucion_cocina'])
+    if safe_str(df1_fila['data-start_servicios_sociales-distribucion_sala']) == 'yes':
+        ws['O88'] = 'Sí'
+    else:
+        ws['O88'] = 'No'
+    if safe_str(df1_fila['data-start_servicios_sociales-distribucion_comedor']) == 'yes':
+        ws['S88'] = 'Sí'
+    else:
+        ws['S88'] = 'No'
+    if safe_str(df1_fila['data-start_servicios_sociales-distribucion_cocina']) == 'yes':
+        ws['W88'] = 'Sí'
+    else:
+        ws['W88'] = 'No'
     ws['I90'] = safe_str(df1_fila['data-start_servicios_sociales-area_vivienda'])
     ws['R90'] = safe_str(df1_fila['data-start_carac_poblacion-num_personas'])
     ws['F92'] = safe_str(df1_fila['data-start_servicios_sociales-estado_vivienda'])
@@ -630,10 +642,10 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila, drive_service):
                 file_id=file_id,
                 start_row=157,      # Fila donde anclar
                 start_col=19,       # 'S' es la 19
-                width_px=200,       # Ancho deseado en píxeles
-                height_px=100,      # Alto deseado en píxeles
+                width_px=150,       # Ancho deseado en píxeles
+                height_px=35,      # Alto deseado en píxeles
                 rotate_degrees=0,   # Sin rotar
-                offset_x_px=0,      # Ajusta estos si quieres desplazar dentro de la celda
+                offset_x_px=0,     
                 offset_y_px=0
             )
         else:
@@ -652,11 +664,11 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila, drive_service):
                 file_id=file_id,
                 start_row=163,      # Fila donde anclar
                 start_col=2,        # 'B' es la 2
-                width_px=200,       # Ancho deseado en píxeles
-                height_px=100,      # Alto deseado en píxeles
+                width_px=300,       # Ancho deseado en píxeles
+                height_px=150,      # Alto deseado en píxeles
                 rotate_degrees=-90, # Rotar 90 grados
-                offset_x_px=0,      # Ajusta estos si quieres desplazar dentro de la celda
-                offset_y_px=0
+                offset_x_px=0,      
+                offset_y_px=10000   # Desplazar 1000 píxeles hacia abajo
             )
         else:
             ws['G165'] = 'No se pudo extraer file_id del link'
@@ -666,7 +678,7 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila, drive_service):
 
     # 8. ACTIVIDAD ECONÓMICA
     mapa_genera_actividad = {
-        'yes': 'B182',
+        'yes': 'K182',
         'no': 'O182'
     }
     marcarXdict(ws, mapa_genera_actividad, df1_fila['data-genera_actividad'])
@@ -723,8 +735,8 @@ def llenarUsosUsuarios(ws, df1_fila, df_usos, drive_service):
     if fuente_val and fuente_val != 'other':
         marcarXdict(ws, map_tipo_fuente_sup, fuente_val)
 
-    ws['B21'] = 'Nombre de la corriente (Cartografía)' 
-    ws['L21'] = 'Nombre de la corriente (Usuario/local)' 
+    ws['B21'] = safe_str(df1_fila.get('data-start_bienes_serv-nombre_corriente_carto'))
+    ws['L21'] = safe_str(df1_fila.get('data-start_bienes_serv-nombre_corriente_local'))
 
     def get_val(df, idx, col):
         val = df.loc[idx, col]
@@ -1041,18 +1053,18 @@ def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola,
     # B. INFORMACIÓN E IDENTIFICACIÓN GENERAL DEL PREDIO
 
     # Área Total
-    ws['G11'] = valSeguro(df_fila['data-info_general_predio-area_total'])
+    ws['G11'] = safe_str(df_fila['data-info_general_predio-area_total'])
     # Tipo de uso
-    ws['G14'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_cultivos'])
-    ws['G15'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_pastos'])
-    ws['G16'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_bosque_natural'])
-    ws['G17'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_rastrojo'])
-    ws['G18'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_bosque_plantado'])
-    ws['AB14'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_tierras_erosionadas'])
-    ws['AB15'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_lagos_lagunas'])
-    ws['AB16'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_reservorios'])
-    ws['AB17'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_construcciones'])
-    ws['Y18'] = valSeguro(df_fila['data-info_general_predio-tipo_uso_otros_area'])
+    ws['G14'] = safe_str(df_fila['data-info_general_predio-tipo_uso_cultivos'])
+    ws['G15'] = safe_str(df_fila['data-info_general_predio-tipo_uso_pastos'])
+    ws['G16'] = safe_str(df_fila['data-info_general_predio-tipo_uso_bosque_natural'])
+    ws['G17'] = safe_str(df_fila['data-info_general_predio-tipo_uso_rastrojo'])
+    ws['G18'] = safe_str(df_fila['data-info_general_predio-tipo_uso_bosque_plantado'])
+    ws['AB14'] = safe_str(df_fila['data-info_general_predio-tipo_uso_tierras_erosionadas'])
+    ws['AB15'] = safe_str(df_fila['data-info_general_predio-tipo_uso_lagos_lagunas'])
+    ws['AB16'] = safe_str(df_fila['data-info_general_predio-tipo_uso_reservorios'])
+    ws['AB17'] = safe_str(df_fila['data-info_general_predio-tipo_uso_construcciones'])
+    ws['Y18'] = safe_str(df_fila['data-info_general_predio-tipo_uso_otros_area'])
 
     # Precio de arrendamiento por Ha
     ws['AN13'] = valSeguro(df_fila['data-info_general_predio-precio_arrendamiento'])
