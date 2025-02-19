@@ -7,33 +7,61 @@ from datetime import datetime
 from util.descargas import descargarImagenDrive, parseFileId
 from PIL import Image as PILImage
 from openpyxl.drawing.image import Image as OpenpyxlImage
+from openpyxl.drawing.spreadsheet_drawing import AnchorMarker, OneCellAnchor
+from openpyxl.drawing.xdr import XDRPositiveSize2D as PositiveSize2D
 
-def insertarImagen(ws, file_id, fila, columna, drive_service, dimensiones=(400, 300), orientacion=-90):
-    """
-    Descarga la imagen con 'file_id', la rota o escala y la inserta en 'ws'
-    en la celda que inicie en (fila, columna).
-    """
-    # 1) Descargar la imagen en un BytesIO
+def insertarImagenConOffset(
+    ws,
+    drive_service,
+    file_id,
+    start_row=1,
+    start_col=1,
+    width_px=300,
+    height_px=200,
+    rotate_degrees=0,
+    offset_x_px=0,
+    offset_y_px=0
+):
+    # 1) Descarga la imagen (BytesIO).
     img_bytes_original = descargarImagenDrive(drive_service, file_id)
 
-    # 2) Cargarla con Pillow
+    # 2) Procesar la imagen con Pillow (rotar y redimensionar).
     with PILImage.open(img_bytes_original) as pil_img:
-        
-        pil_img = pil_img.rotate(orientacion, expand=True)
-        pil_img = pil_img.resize(dimensiones)
+        if rotate_degrees:
+            pil_img = pil_img.rotate(rotate_degrees, expand=True)
+        pil_img = pil_img.resize((width_px, height_px))
 
-        # 4) Guardar la imagen transformada en un nuevo BytesIO
         img_bytes_transformada = io.BytesIO()
-        pil_img.save(img_bytes_transformada, format=pil_img.format or "JPEG")  
+        pil_img.save(img_bytes_transformada, format="JPEG")
+        img_bytes_transformada.seek(0)
 
-    img_bytes_transformada.seek(0)
+    # 3) Convertir al objeto de openpyxl
+    image_para_excel = OpenpyxlImage(img_bytes_transformada)
 
-    # 5) Crear la imagen para openpyxl
-    imagen_para_excel = OpenpyxlImage(img_bytes_transformada)
+    # 4) Construir el ancla "OneCellAnchor" con offsets
+    row0 = start_row - 1
+    col0 = start_col - 1
 
-    # 6) Ubicarla en la celda deseada
-    celda_destino = f"{columna}{fila}"
-    ws.add_image(imagen_para_excel, celda_destino)
+    # Convertir píxeles a EMUs (1 px ~ 9525 EMUs)
+    colOff = int(offset_x_px * 9525)
+    rowOff = int(offset_y_px * 9525)
+
+    # Tamaño en EMUs
+    cx = int(width_px * 9525)
+    cy = int(height_px * 9525)
+
+    marker_from = AnchorMarker(col=col0, row=row0, colOff=colOff, rowOff=rowOff)
+    size = PositiveSize2D(cx=cx, cy=cy)
+
+    one_cell_anchor = OneCellAnchor(
+        _from=marker_from,
+        ext=size,
+    )
+    image_para_excel.anchor = one_cell_anchor
+
+    # 5) Insertar la imagen en la hoja
+    ws.add_image(image_para_excel)
+
 
 def safe_str(value):
     """
@@ -596,24 +624,45 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila, drive_service):
     if url_imagen_firma:
         file_id = parseFileId(url_imagen_firma)
         if file_id:
-            insertarImagen(ws, file_id, 157, 'S', drive_service, dimensiones=(200, 100), orientacion=0)
+            insertarImagenConOffset(
+                ws=ws,
+                drive_service=drive_service,
+                file_id=file_id,
+                start_row=157,      # Fila donde anclar
+                start_col=19,       # 'S' es la 19
+                width_px=200,       # Ancho deseado en píxeles
+                height_px=100,      # Alto deseado en píxeles
+                rotate_degrees=0,   # Sin rotar
+                offset_x_px=0,      # Ajusta estos si quieres desplazar dentro de la celda
+                offset_y_px=0
+            )
         else:
             ws['G159'] = 'No se pudo extraer file_id del link'
     else:
         ws['G159'] = 'No se encontró firma del responsable'
 
-    ws['G159'] = safe_str(df1_fila['data-start_usos_suelo-cc_responsable'])
-
-    # 7. FOTOGRAFÍA DE LA VIVIENDA
+    # 7. FOTOGRAFÍA DE LA VIVIENDA #Fila 163, Columna B
     url_imagen_vivienda = df1_fila.get('data-foto_vivienda')
     if url_imagen_vivienda:
         file_id = parseFileId(url_imagen_vivienda)
         if file_id:
-            insertarImagen(ws, file_id, 163, 'B', drive_service)
+            insertarImagenConOffset(
+                ws=ws,
+                drive_service=drive_service,
+                file_id=file_id,
+                start_row=163,      # Fila donde anclar
+                start_col=2,        # 'B' es la 2
+                width_px=200,       # Ancho deseado en píxeles
+                height_px=100,      # Alto deseado en píxeles
+                rotate_degrees=-90, # Rotar 90 grados
+                offset_x_px=0,      # Ajusta estos si quieres desplazar dentro de la celda
+                offset_y_px=0
+            )
         else:
-            ws['B163'] = 'No se pudo extraer file_id del link'
+            ws['G165'] = 'No se pudo extraer file_id del link'
     else:
-        ws['B163'] = 'No se encontró foto de la vivienda'
+        ws['G165'] = 'No se encontró fotografía de la vivienda'
+
 
     # 8. ACTIVIDAD ECONÓMICA
     mapa_genera_actividad = {
@@ -641,45 +690,48 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila, drive_service):
 
     ws['S189'] = safe_str(df1_fila['data-id_funias'])
 
-def llenarUsosUsuarios(ws, df1_fila, df_usos):
-
-    ws['H4']  = valSeguro(df1_fila.get('data-info_general-num_encuesta'))       # ID Usos y usuarios
-    ws['H6']  = valSeguro(df1_fila.get('data-start_bienes_serv-profesional'))   # Profesional
-    ws['H8']  = valSeguro(df1_fila.get('data-info_general-fecha'))              # Fecha
-    ws['P4']  = valSeguro(df1_fila.get('data-info_general-departamento'))       # Departamento
-    ws['P6']  = valSeguro(df1_fila.get('data-info_general-municipio'))          # Municipio
-    ws['P8']  = valSeguro(df1_fila.get('data-info_general-vereda'))             # Vereda
-    ws['P10'] = valSeguro(df1_fila.get('data-start_bienes_serv-predio'))        # Predio
-    ws['P12'] = valSeguro(df1_fila.get('data-info_general-nombre_propietario')) # Propietario
+def llenarUsosUsuarios(ws, df1_fila, df_usos, drive_service):
+    # Reemplazamos "valSeguro" por "safe_str"
+    # --------------------------------------------------
+    ws['H4']  = safe_str(df1_fila.get('data-info_general-num_encuesta'))
+    ws['H6']  = safe_str(df1_fila.get('data-start_bienes_serv-profesional'))
+    ws['H8']  = safe_str(df1_fila.get('data-info_general-fecha'))
+    ws['P4']  = safe_str(df1_fila.get('data-info_general-departamento'))
+    ws['P6']  = safe_str(df1_fila.get('data-info_general-municipio'))
+    ws['P8']  = safe_str(df1_fila.get('data-info_general-vereda'))
+    ws['P10'] = safe_str(df1_fila.get('data-start_bienes_serv-predio'))
+    ws['P12'] = safe_str(df1_fila.get('data-info_general-nombre_propietario'))
 
     map_tipo_fuente_sup = {
-        'rio': 'B19',
-        'quebrada': 'C19',
-        'arroyo': 'D19',
-        'caño': 'E19',
-        'canal': 'F19',
-        'lago': 'G19',
-        'laguna': 'H19',
-        'cienaga': 'I19',
-        'pantano': 'K19',
-        'embalse': 'L19',
-        'estero': 'M19',
-        'jagüey': 'O19',
-        'humedal': 'P19',
+        'rio':       'B19',
+        'quebrada':  'C19',
+        'arroyo':    'D19',
+        'caño':      'E19',
+        'canal':     'F19',
+        'lago':      'G19',
+        'laguna':    'H19',
+        'cienaga':   'I19',
+        'pantano':   'K19',
+        'embalse':   'L19',
+        'estero':    'M19',
+        'jagüey':    'O19',
+        'humedal':   'P19',
         'manantial': 'R19',
     }
 
-    if df_usos['data-capta_fuentes_superf-tipo_fuente'] != 'other':
-        ws[map_tipo_fuente_sup.get(df_usos['data-capta_fuentes_superf-tipo_fuente'], '')] = 'X' if df_usos['data-capta_fuentes_superf-tipo_fuente'] is not None else '' # Tipo de fuente
+    fuente_val = df1_fila['data-start_bienes_serv-tipo_fuente_superficial']
+    if fuente_val and fuente_val != 'other':
+        marcarXdict(ws, map_tipo_fuente_sup, fuente_val)
 
     ws['B21'] = 'Nombre de la corriente (Cartografía)' 
     ws['L21'] = 'Nombre de la corriente (Usuario/local)' 
 
     def get_val(df, idx, col):
-        """Si está vacío o es NaN, devolvemos cadena vacía."""
         val = df.loc[idx, col]
         return '' if pd.isna(val) else val
 
+    # Mapeos para armar las celdas (columna + fila)
+    # --------------------------------------------------
     map_tipo_uso = {
         'principal': 'B',
         'secundario': 'F',
@@ -695,54 +747,259 @@ def llenarUsosUsuarios(ws, df1_fila, df_usos):
     }
 
     map_filas_usos = {
-        'consumo_humano': 27,
-        'necesidades_domesticas': 28,
+        'consumo_humano':          27,
+        'necesidades_domesticas':  28,
         'agropecuarios_comunitarios': 29,
         'agropecuarios_individuales': 30,
-        'energia_hidroelectrica': 31,
-        'industriales': 32,
-        'mineros': 33,
-        'recreativos_comunitarios': 34,
-        'recreativos_individuales': 35,
-        'vertimientos': 36
+        'energia_hidroelectrica':  31,
+        'industriales':            32,
+        'mineros':                 33,
+        'recreativos_comunitarios':34,
+        'recreativos_individuales':35,
+        'vertimientos':            36
     }
 
+    # Recorremos cada uso (igual que antes)
+    # --------------------------------------------------
     for idx in df_usos.index:
-        # Tipo de uso (decide la fila a llenar)
         uso_actual = df_usos.loc[idx, 'data-start_bienes_serv-informacion_usos-uso_actual']
-        
-        # Principal/secundario/terciario/otro (decide las columnas)
-        uso_tipo = df_usos.loc[idx, 'data-start_bienes_serv-informacion_usos-tipo_uso_agua']
+        uso_tipo   = df_usos.loc[idx, 'data-start_bienes_serv-informacion_usos-tipo_uso_agua']
 
         fila_excel = map_filas_usos.get(uso_actual, None)
         col_marca  = map_tipo_uso.get(uso_tipo, None)
 
         if fila_excel and col_marca:
-            # Acá marcamos si es principal, secundario, terciario u otro
+            # Marcamos la “X” en la celda adecuada (col + fila)
             ws[f'{col_marca}{fila_excel}'] = 'X'
 
-            # Tomamos las columnas asociadas a las coordenadas para este uso
+            # Tomamos las 3 columnas de coordenadas
             col_este, col_norte, col_cota = map_columnas_coordenadas[uso_tipo]
 
-            # Obtenemos los valores
-            val_este = get_val(df_usos, idx, 'data-start_bienes_serv-informacion_usos-coord_este')
+            # Obtenemos valores
+            val_este  = get_val(df_usos, idx, 'data-start_bienes_serv-informacion_usos-coord_este')
             val_norte = get_val(df_usos, idx, 'data-start_bienes_serv-informacion_usos-coord_norte')
-            val_cota = get_val(df_usos, idx, 'data-start_bienes_serv-informacion_usos-cota_msnm')
+            val_cota  = get_val(df_usos, idx, 'data-start_bienes_serv-informacion_usos-cota_msnm')
 
-            # Asignamos
+            # Asignamos a esas celdas
             ws[f'{col_este}{fila_excel}']  = val_este
             ws[f'{col_norte}{fila_excel}'] = val_norte
             ws[f'{col_cota}{fila_excel}']  = val_cota
+        # else: no hace nada
 
+    # Partes finales
+    # --------------------------------------------------
+    ws['B39'] = safe_str(df1_fila.get('data-start_bienes_serv-descripcion'))
+    ws['B48'] = safe_str(df1_fila.get('data-start_bienes_serv-observacion'))
+
+
+    # **FOTOS
+
+    # Foto Principal 1
+    url_img1 = df1_fila.get('data-start_bienes_serv-registro_fotos-uso_principal-foto1_principal')
+    if url_img1:
+        file_id = parseFileId(url_img1)
+        if file_id:
+            insertarImagenConOffset(
+                ws=ws,
+                drive_service=drive_service,
+                file_id=file_id,
+                start_row=62,      # Fila donde anclar
+                start_col=2,       # Columna B
+                width_px=300,      # Ancho en píxeles
+                height_px=150,     # Alto en píxeles
+                rotate_degrees=-90,
+                offset_x_px=20,    # Desplazamiento dentro de la celda (px)
+                offset_y_px=50
+            )
         else:
-            # Si no tenemos la fila o la columna, no hacemos nada   
-            pass
-        
-    # E. DESCRIPCIONES Y OBSERVACIONES
-    ws['B39'] = 'DESCRIPCION'
-    ws['B48'] = 'OBSERVACIONES'
+            ws['B62'] = 'No se pudo extraer file_id del link'
+    else:
+        ws['B62'] = 'No se encontró foto 1'
 
-    # ! FALTA LA SECCIÓN DE LAS FOTOS. 
+
+    # Foto Principal 2
+    url_img2 = df1_fila.get('data-start_bienes_serv-registro_fotos-uso_principal-foto2_principal')
+    if url_img2:
+        file_id = parseFileId(url_img2)
+        if file_id:
+            insertarImagenConOffset(
+                ws=ws,
+                drive_service=drive_service,
+                file_id=file_id,
+                start_row=65,
+                start_col=2, 
+                width_px=300,
+                height_px=150,
+                rotate_degrees=-90,
+                offset_x_px=20,
+                offset_y_px=50
+            )
+        else:
+            ws['B65'] = 'No se pudo extraer file_id del link'
+    else:
+        ws['B65'] = 'No se encontró foto 2'
+
+
+    # Foto Principal 3
+    url_img3 = df1_fila.get('data-start_bienes_serv-registro_fotos-uso_principal-foto3_principal')
+    if url_img3:
+        file_id = parseFileId(url_img3)
+        if file_id:
+            insertarImagenConOffset(
+                ws=ws,
+                drive_service=drive_service,
+                file_id=file_id,
+                start_row=55,
+                start_col=2, 
+                width_px=300,
+                height_px=150,
+                rotate_degrees=-90,
+                offset_x_px=20,
+                offset_y_px=50
+            )
+        else:
+            ws['B68'] = 'No se pudo extraer file_id del link'
+    else:
+        ws['B68'] = 'No se encontró foto 3'
+
+
+    # Foto secundaria 1
+    url_img4 = df1_fila.get('data-start_bienes_serv-registro_fotos-uso_secundario-foto1_secundario')
+    if url_img4:
+        file_id = parseFileId(url_img4)
+        if file_id:
+            insertarImagenConOffset(
+                ws=ws,
+                drive_service=drive_service,
+                file_id=file_id,
+                start_row=56,
+                start_col=7, 
+                width_px=300,
+                height_px=150,
+                rotate_degrees=-90,
+                offset_x_px=20,
+                offset_y_px=50
+            )
+        else:
+            ws['G62'] = 'No se pudo extraer file_id del link'
+    else:
+        ws['G62'] = 'No se encontró foto 1'
+
+
+    # Foto secundaria 2
+    url_img5 = df1_fila.get('data-start_bienes_serv-registro_fotos-uso_secundario-foto2_secundario')
+    if url_img5:
+        file_id = parseFileId(url_img5)
+        if file_id:
+            insertarImagenConOffset(
+                ws=ws,
+                drive_service=drive_service,
+                file_id=file_id,
+                start_row=57,
+                start_col=7, 
+                width_px=300,
+                height_px=150,
+                rotate_degrees=-90,
+                offset_x_px=20,
+                offset_y_px=500
+            )
+        else:
+            ws['G65'] = 'No se pudo extraer file_id del link'
+    else:
+        ws['G65'] = 'No se encontró foto 2'
+
+
+    # Foto secundaria 3
+    url_img6 = df1_fila.get('data-start_bienes_serv-registro_fotos-uso_secundario-foto3_secundario')
+    if url_img6:
+        file_id = parseFileId(url_img6)
+        if file_id:
+            insertarImagenConOffset(
+                ws=ws,
+                drive_service=drive_service,
+                file_id=file_id,
+                start_row=58,
+                start_col=7, 
+                width_px=300,
+                height_px=150,
+                rotate_degrees=-90,
+                offset_x_px=20,
+                offset_y_px=50
+            )
+        else:
+            ws['G68'] = 'No se pudo extraer file_id del link'
+    else:
+        ws['G68'] = 'No se encontró foto 3'
+
+
+    # Foto terciaria 1
+    url_img7 = df1_fila.get('data-start_bienes_serv-registro_fotos-uso_terciario-foto1_terciario')
+    if url_img7:
+        file_id = parseFileId(url_img7)
+        if file_id:
+            insertarImagenConOffset(
+                ws=ws,
+                drive_service=drive_service,
+                file_id=file_id,
+                start_row=59,
+                start_col=12, 
+                width_px=300,
+                height_px=150,
+                rotate_degrees=-90,
+                offset_x_px=20,
+                offset_y_px=50
+            )
+        else:
+            ws['L62'] = 'No se pudo extraer file_id del link'
+    else:
+        ws['L62'] = 'No se encontró foto 1'
+
+
+    # Foto terciaria 2
+    url_img8 = df1_fila.get('data-start_bienes_serv-registro_fotos-uso_terciario-foto2_terciario')
+    if url_img8:
+        file_id = parseFileId(url_img8)
+        if file_id:
+            insertarImagenConOffset(
+                ws=ws,
+                drive_service=drive_service,
+                file_id=file_id,
+                start_row=60,
+                start_col=12, 
+                width_px=300,
+                height_px=150,
+                rotate_degrees=-90,
+                offset_x_px=20,
+                offset_y_px=50
+            )
+        else:
+            ws['L65'] = 'No se pudo extraer file_id del link'
+    else:
+        ws['L65'] = 'No se encontró foto 2'
+
+
+    # Foto terciaria 3
+    url_img9 = df1_fila.get('data-start_bienes_serv-registro_fotos-uso_terciario-foto3_terciario')
+    if url_img9:
+        file_id = parseFileId(url_img9)
+        if file_id:
+            insertarImagenConOffset(
+                ws=ws,
+                drive_service=drive_service,
+                file_id=file_id,
+                start_row=61,
+                start_col=12, 
+                width_px=300,
+                height_px=150,
+                rotate_degrees=-90,
+                offset_x_px=20,
+                offset_y_px=50
+            )
+        else:
+            ws['L68'] = 'No se pudo extraer file_id del link'
+    else:
+        ws['L68'] = 'No se encontró foto 3'
+
 
         
 

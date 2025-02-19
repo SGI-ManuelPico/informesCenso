@@ -5,7 +5,7 @@ import pandas as pd
 from openpyxl import load_workbook
 from datetime import datetime
 import os
-from func.llenarPlantillas import llenarInforme1, llenarFichaPredial
+from func.llenarPlantillas import llenarInforme1, llenarFichaPredial, llenarUsosUsuarios
 from util.Pdf import Pdf
 
 
@@ -18,8 +18,11 @@ class GoogleSheetsAExcel:
         range_informe1: str = None,
         range_ficha1: str = None,
         range_ficha2: str = None,
+        range_usos1: str = None,
+        range_usos2: str = None,
         plantilla_informe1: str = None,
-        plantilla_ficha: str = None
+        plantilla_ficha: str = None,
+        plantilla_usos_usuarios: str = None
     ) -> None:
         """
         Constructor de la clase GoogleSheetsAExcel.
@@ -31,9 +34,12 @@ class GoogleSheetsAExcel:
         self.range_informe1 = range_informe1
         self.range_ficha1 = range_ficha1
         self.range_ficha2 = range_ficha2
+        self.range_usos1 = range_usos1
+        self.range_usos2 = range_usos2
 
         self.plantilla_informe1 = plantilla_informe1
         self.plantilla_ficha = plantilla_ficha
+        self.plantilla_usos_usuarios = plantilla_usos_usuarios
 
         self.scopes = [
             'https://www.googleapis.com/auth/spreadsheets.readonly',
@@ -241,4 +247,70 @@ class GoogleSheetsAExcel:
             self.subirArchivo(ruta_pdf, nombre_pdf, folder_id)
             os.remove(nombre_excel)
             os.remove(ruta_pdf)
+            print(f"[OK] Se generó y subió {nombre_pdf} en la carpeta '{codigo}'.")
+
+    def llenarYSubirUsosUsuarios(self):
+        """
+        Lee dos rangos self.range_usos1 y self.range_usos2
+        range_usos1 produce un df_usos1 con la columna KEY.
+        range_usos2 produce un df_usos2 con la columna PARENT_KEY.
+        
+        Por cada fila de df_usos1:
+        - obtiene código data-info_general-num_encuesta,
+        - filtra df_usos2 en base a PARENT_KEY == KEY,
+        - llama a llenarUsosUsuarios(ws, fila_principal, subset_usos2, ...).
+        """
+        # 1) Validar que tengas definidos los rangos y la plantilla
+        if not self.range_usos1 or not self.range_usos2 or not self.plantilla_usos_usuarios:
+            print("No están configurados los rangos o la plantilla de usos/usuarios.")
+            return
+
+        # 2) Leer los dos DataFrames
+        df_usos1 = self.fetchDatos(self.range_usos1)  # contiene la columna 'KEY'
+        df_usos2 = self.fetchDatos(self.range_usos2)  # contiene la columna 'PARENT_KEY'
+
+        pdfConv = Pdf()
+
+        # 3) Iterar sobre df_usos1
+        for idx, row_usos1 in df_usos1.iterrows():
+            # 3a) Tomar código y KEY
+            codigo = str(row_usos1['data-info_general-num_encuesta'])
+            key = row_usos1['KEY'] 
+
+            # 3b) Filtrar df_usos2 usando PARENT_KEY == key
+            subset_usos2 = df_usos2[df_usos2['PARENT_KEY'] == key]
+            if subset_usos2.empty:
+                print(f"No hay subfilas en df_usos2 para KEY='{key}'. Omitiendo...")
+                continue
+
+            # 4) Crear/obtener carpeta en Drive
+            folder_id = self.obtenerOCrearCarpetaPorCodigo(codigo)
+
+            # 5) Construir nombre PDF y verificar si ya existe
+            nombre_pdf = f"{codigo}_usosUsuarios.pdf"
+            if self.archivoExiste(nombre_pdf, folder_id):
+                print(f"El archivo {nombre_pdf} ya existe en '{codigo}'. Omitiendo...")
+                continue
+
+            # 6) Cargar la plantilla y llenar
+            wb = load_workbook(self.plantilla_usos_usuarios)
+            ws = wb.active
+
+            # Llamamos a tu función de llenado, 
+            # ajustando parámetros a la firma real que tenga (ej. fila principal + subset)
+            llenarUsosUsuarios(ws, row_usos1, subset_usos2, self.drive_service)
+
+            # 7) Guardar Excel temporal
+            nombre_excel = f"{codigo}_usosUsuarios.xlsx"
+            wb.save(nombre_excel)
+
+            # 8) Convertir a PDF
+            ruta_pdf = f"{codigo}_usosUsuarios.pdf"
+            pdfConv.excelPdf(nombre_excel, ruta_pdf)
+
+            # 9) Subir el PDF y limpiar
+            self.subirArchivo(ruta_pdf, nombre_pdf, folder_id)
+            os.remove(nombre_excel)
+            os.remove(ruta_pdf)
+
             print(f"[OK] Se generó y subió {nombre_pdf} en la carpeta '{codigo}'.")
