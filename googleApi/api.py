@@ -366,7 +366,7 @@ class GoogleSheetsAExcel:
         # 4) Iterar sobre cada fila del DF principal
         for idx, df_fila in df_principal.iterrows():
             # Tomamos el código y KEY
-            codigo = str(df_fila['data-info_general-num_encuesta'])
+            codigo = str(df_fila['data-datos_encuesta-num_encuesta'])
             key = df_fila['KEY']
 
             # 4a) Filtrar cada DF secundario por 'PARENT_KEY' == key

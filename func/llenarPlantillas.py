@@ -1015,7 +1015,7 @@ def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola,
     ws['AO1'] = df_fila['data-datos_encuesta-num_encuesta']
 
     if pd.notna(df_fila['data-datos_encuesta-fecha']):
-        fecha_str = str(df_fila['Fecha(DD/MM/AAAA)'])
+        fecha_str = str(df_fila['data-datos_encuesta-fecha'])
         if '/' in fecha_str:
             ws['AM2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
             ws['AP2'] = fecha_str.split('/')[1]
@@ -1098,7 +1098,7 @@ def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola,
                 ws[celda] = valor
 
 
-        ws['L32'] = df_fila['¿Destino final del producto?']
+        # ws['L32'] = df_fila['¿Destino final del producto?']
         
 
         continuidad = df_fila['data-begin_agricola-begin_sobre_act-continuar_actividad']
@@ -1123,9 +1123,9 @@ def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola,
         else:
             print('Campo vacío') 
 
-        ws['AS36'] = 'Continuar:' + df_fila['data-begin_agricola-begin_sobre_act-porque_continuar'] + ' ' + 'Ampliar:' + df_fila['data-begin_agricola-begin_sobre_act-porque_ampliar']
+        ws['X33'] = df_fila['data-begin_agricola-begin_sobre_act-porque_continuar'] + ', ' + 'Ampliar:' + df_fila['data-begin_agricola-begin_sobre_act-porque_ampliar']
 
-    if df_fila['data-explota_avicola'] == 'yes': ## Hoja data-begin_explot_avicola
+    if df_fila['data-explota_pecuarios'] == 'yes': ## Hoja data-begin_explot_avicola
 
         # -------------------------------
         # SECCIÓN LECHE (Leche o Cría)
@@ -1237,10 +1237,10 @@ def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola,
 
         continuidad2 = df_fila['data-carne-begin_sobre_act3-continuar_actividad3']
         if pd.notna(continuidad2):
-            if continuidad2 == 'Continuar con la actividad':
+            if continuidad2 == 'yes':
                 ws['G60'] = 'X'
                 ws['AP60'] = 'X'
-            elif continuidad2 == 'Finalizar la actividad':
+            elif continuidad2 == 'no':
                 ws['I60'] = 'X'
                 ws['AN60'] = 'X'  
         else:
@@ -1248,16 +1248,16 @@ def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola,
 
         produccion2 = df_fila['data-carne-begin_sobre_act3-ampliar_produccion3']
         if pd.notna(produccion2):
-            if produccion2 == 'Ampliar la producción':
+            if produccion2 == 'yes':
                 ws['Q60'] = 'X'
                 ws['AF60'] = 'X'               
-            elif produccion2 == 'Permanecer con la misma producción':
+            elif produccion2 == 'no':
                 ws['S60'] = 'X'
                 ws['AD60'] = 'X'   
         else:
             print('Campo vacío') 
 
-        ws['AS77'] = df_fila['¿Por qué.1']
+        ws['AS77'] = df_fila['data-carne-begin_sobre_act3-porque_ampliar3']
 
     #Raza
 
@@ -1337,7 +1337,7 @@ def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola,
     else:
         print('Campo vacío') 
 
-    ws['AS77'] = df_fila['data-explotacion_porcina-begin_sobre_act4-porque_continuar4']
+    ws['X74'] = df_fila['data-explotacion_porcina-begin_sobre_act4-porque_continuar4']
 
     # Explotación Avícola
 
@@ -1432,7 +1432,7 @@ def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola,
     else:
         print('Campo vacío') 
 
-    ws['AS92'] = df_fila['data-explotacion_avicola-sobre_la_actividad5-razon_ampliar5']
+    ws['Y89'] = df_fila['data-explotacion_avicola-sobre_la_actividad5-razon_ampliar5']
 
     # INFORMACIÓN COMERCIAL
     # Asegurarte de no pasarte de 13 filas (o las que permita tu plantilla).
@@ -1517,10 +1517,10 @@ def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola,
 
     mapa_energia = {
         'electrica': 'T117',
-        'energia_solar': 'AI117',
+        'solar': 'AI117',
         'otro': 'AP117'
     }
-    energia = df_fila['data-informacion_comercial-energia_utiliza'].split(',')
+    energia = df_fila['data-informacion_comercial-energia_utiliza'].split(', ')
     for tipo_energia in energia:
         if tipo_energia.strip() in mapa_energia and tipo_energia != 'otro':
             ws[mapa_energia.get(tipo_energia, '')] = 'X'
