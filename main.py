@@ -61,11 +61,11 @@ if __name__ == "__main__":
     )
 
     # Inicializamos servicios y ejecutamos
-    # servicio1.inicializarServicios()
+    servicio1.inicializarServicios()
 
-    # servicio1.llenarYSubirInforme1()
-    # servicio1.llenarYSubirFichaPredial()
-    # servicio1.llenarYSubirUsosUsuarios()
+    servicio1.llenarYSubirInforme1()
+    servicio1.llenarYSubirFichaPredial()
+    servicio1.llenarYSubirUsosUsuarios()
 
     # ==========================================================================
     # 5. CREAR LA SEGUNDA INSTANCIA: FORMATO AGROPECUARIO
