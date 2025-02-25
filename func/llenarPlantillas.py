@@ -3,6 +3,7 @@ import re
 import io
 from openpyxl import load_workbook
 from openpyxl.drawing.image import Image
+from openpyxl.styles import Alignment
 from datetime import datetime
 from util.descargas import descargarImagenDrive, parseFileId
 from PIL import Image as PILImage
@@ -1658,24 +1659,35 @@ def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola,
             elif remuneracion == 'superior_2':
                 ws[f'AV{excel_row}'] = 'X'
 
-        # 10) Otros campos
         procedencia = fila_lab.get('data-informacion_laboral-procedencia', "")
-        ws[f'AH{excel_row}'] = procedencia
+        cell_proc = ws[f'AH{excel_row}']
+        cell_proc.value = procedencia
+        cell_proc.alignment = Alignment(wrap_text=True)
 
         residencia = fila_lab.get('data-informacion_laboral-residencia', "")
-        ws[f'AJ{excel_row}'] = residencia
+        cell_res = ws[f'AJ{excel_row}']
+        cell_res.value = residencia
+        cell_res.alignment = Alignment(wrap_text=True)
 
         tiempo_trab = fila_lab.get('data-informacion_laboral-tiempo_trabajado', "")
-        ws[f'AL{excel_row}'] = tiempo_trab
+        cell_tiempo = ws[f'AL{excel_row}']
+        cell_tiempo.value = tiempo_trab
+        cell_tiempo.alignment = Alignment(wrap_text=True)
 
         nucleo_familiar = fila_lab.get('data-informacion_laboral-nucleo_familiar', "")
-        ws[f'AM{excel_row}'] = nucleo_familiar
+        cell_nucleo = ws[f'AM{excel_row}']
+        cell_nucleo.value = nucleo_familiar
+        cell_nucleo.alignment = Alignment(wrap_text=True)
 
         personas_a_cargo = fila_lab.get('data-informacion_laboral-personas_a_cargo', "")
-        ws[f'AN{excel_row}'] = personas_a_cargo
+        cell_personas = ws[f'AN{excel_row}']
+        cell_personas.value = personas_a_cargo
+        cell_personas.alignment = Alignment(wrap_text=True)
 
         lugar_res_fam = fila_lab.get('data-informacion_laboral-lugar_residencia_familiar', "")
-        ws[f'AO{excel_row}'] = lugar_res_fam
+        cell_lugar = ws[f'AO{excel_row}']
+        cell_lugar.value = lugar_res_fam
+        cell_lugar.alignment = Alignment(wrap_text=True)
 
         # ¿Contrata persona por jornal? 
     df_detalle_jornal = df_detalle_jornal.head(3).reset_index(drop=True)
