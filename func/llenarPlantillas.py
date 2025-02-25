@@ -16,51 +16,74 @@ def insertarImagenConOffset(
     file_id,
     start_row=1,
     start_col=1,
-    width_px=300,
-    height_px=200,
+    max_width_px=300,
+    max_height_px=200,
     rotate_degrees=0,
     offset_x_px=0,
     offset_y_px=0
 ):
-    # 1) Descarga la imagen (BytesIO).
+    """
+    Inserta una imagen en la hoja 'ws', partiendo de un file_id de Drive.
+    - Mantiene la relación de aspecto (aspect ratio).
+    - La imagen no excederá max_width_px ni max_height_px.
+    """
+    # 1) Descarga la imagen
     img_bytes_original = descargarImagenDrive(drive_service, file_id)
 
-    # 2) Procesar la imagen con Pillow (rotar y redimensionar).
+    # 2) Procesar con Pillow
     with PILImage.open(img_bytes_original) as pil_img:
+        # Rotar si se indica
         if rotate_degrees:
             pil_img = pil_img.rotate(rotate_degrees, expand=True)
-        pil_img = pil_img.resize((width_px, height_px))
 
+        # Calcular la escala para no sobrepasar max_width_px y max_height_px
+        orig_width, orig_height = pil_img.size
+
+        # Razón de escalado en cada eje
+        ratio_w = max_width_px / orig_width
+        ratio_h = max_height_px / orig_height
+
+        # Tomar la escala mínima para que quepa en ambas dimensiones
+        scale = min(ratio_w, ratio_h, 1.0)  
+        # el "1.0" es para no agrandar la imagen si es más pequeña
+
+        new_width  = int(orig_width * scale)
+        new_height = int(orig_height * scale)
+
+        pil_img = pil_img.resize((new_width, new_height), PILImage.LANCZOS)
+
+        # Guardar en BytesIO
         img_bytes_transformada = io.BytesIO()
         pil_img.save(img_bytes_transformada, format="JPEG")
         img_bytes_transformada.seek(0)
 
-    # 3) Convertir al objeto de openpyxl
+    # 3) Crear imagen openpyxl
     image_para_excel = OpenpyxlImage(img_bytes_transformada)
 
-    # 4) Construir el ancla "OneCellAnchor" con offsets
+    # 4) Ancla "OneCellAnchor"
     row0 = start_row - 1
     col0 = start_col - 1
 
-    # Convertir píxeles a EMUs (1 px ~ 9525 EMUs)
+    # Offsets en EMUs
     colOff = int(offset_x_px * 9525)
     rowOff = int(offset_y_px * 9525)
 
-    # Tamaño en EMUs
-    cx = int(width_px * 9525)
-    cy = int(height_px * 9525)
+    # Tamaño en EMUs según new_width/new_height
+    cx = int(new_width * 9525)
+    cy = int(new_height * 9525)
 
     marker_from = AnchorMarker(col=col0, row=row0, colOff=colOff, rowOff=rowOff)
     size = PositiveSize2D(cx=cx, cy=cy)
 
     one_cell_anchor = OneCellAnchor(
         _from=marker_from,
-        ext=size,
+        ext=size
     )
     image_para_excel.anchor = one_cell_anchor
 
-    # 5) Insertar la imagen en la hoja
+    # 5) Insertar en la hoja
     ws.add_image(image_para_excel)
+
 
 
 def safe_str(value) -> str:
@@ -630,6 +653,9 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila, drive_service):
     ws['B143'] = safe_str(df1_fila['data-start_usos_suelo-expectativas_familia_proyecto'])
     ws['B151'] = safe_str(df1_fila['data-start_usos_suelo-observaciones'])
 
+    # CEDULA RESPONSABLE
+
+    ws['G159'] = safe_str(df1_fila['data-start_usos_suelo-cc_responsable'])
     
     # FIRMA RESPONSABLE
     url_imagen_firma = df1_fila.get('data-start_usos_suelo-firma_responsable')
@@ -641,9 +667,9 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila, drive_service):
                 drive_service=drive_service,
                 file_id=file_id,
                 start_row=157,      # Fila donde anclar
-                start_col=19,       # 'S' es la 19
-                width_px=150,       # Ancho deseado en píxeles
-                height_px=35,      # Alto deseado en píxeles
+                start_col=20,       # 'T' es la 20
+                max_width_px=150,       # Ancho deseado en píxeles
+                max_height_px=60,      # Alto deseado en píxeles
                 rotate_degrees=0,   # Sin rotar
                 offset_x_px=0,     
                 offset_y_px=0
@@ -662,10 +688,10 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila, drive_service):
                 ws=ws,
                 drive_service=drive_service,
                 file_id=file_id,
-                start_row=163,      # Fila donde anclar
-                start_col=2,        # 'B' es la 2
-                width_px=300,       # Ancho deseado en píxeles
-                height_px=150,      # Alto deseado en píxeles
+                start_row=164,      # Fila donde anclar
+                start_col=5,        # 'B' es la 2
+                max_width_px=800,       # Ancho deseado en píxeles
+                max_height_px=480,      # Alto deseado en píxeles
                 rotate_degrees=-90, # Rotar 90 grados
                 offset_x_px=0,      
                 offset_y_px=10000   # Desplazar 1000 píxeles hacia abajo
@@ -674,6 +700,8 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila, drive_service):
             ws['B163'] = 'No se pudo extraer file_id del link'
     else:
         ws['B163'] = 'No se encontró fotografía de la vivienda'
+
+    
 
 
     # 8. ACTIVIDAD ECONÓMICA
@@ -812,14 +840,14 @@ def llenarUsosUsuarios(ws, df1_fila, df_usos, drive_service):
                 file_id=file_id,
                 start_row=62,      # Fila donde anclar
                 start_col=2,       # Columna B
-                width_px=300,      # Ancho en píxeles
-                height_px=150,     # Alto en píxeles
+                max_width_px=360,      # Ancho en píxeles
+                max_height_px=200,     # Alto en píxeles
                 rotate_degrees=-90,
                 offset_x_px=20,    # Desplazamiento dentro de la celda (px)
                 offset_y_px=50
             )
         else:
-            ws['B62'] = 'No se pudo extraer file_id del link'
+            ws['B62'] = 'N/A'
     else:
         ws['B62'] = 'No se encontró foto 1'
 
@@ -835,14 +863,14 @@ def llenarUsosUsuarios(ws, df1_fila, df_usos, drive_service):
                 file_id=file_id,
                 start_row=65,
                 start_col=2, 
-                width_px=300,
-                height_px=150,
+                max_width_px=360,
+                max_height_px=200,
                 rotate_degrees=-90,
                 offset_x_px=20,
                 offset_y_px=50
             )
         else:
-            ws['B65'] = 'No se pudo extraer file_id del link'
+            ws['B65'] = 'N/A'
     else:
         ws['B65'] = 'No se encontró foto 2'
 
@@ -858,14 +886,14 @@ def llenarUsosUsuarios(ws, df1_fila, df_usos, drive_service):
                 file_id=file_id,
                 start_row=55,
                 start_col=2, 
-                width_px=300,
-                height_px=150,
+                max_width_px=360,
+                max_height_px=200,
                 rotate_degrees=-90,
                 offset_x_px=20,
                 offset_y_px=50
             )
         else:
-            ws['B68'] = 'No se pudo extraer file_id del link'
+            ws['B68'] = 'N/A'
     else:
         ws['B68'] = 'No se encontró foto 3'
 
@@ -881,14 +909,14 @@ def llenarUsosUsuarios(ws, df1_fila, df_usos, drive_service):
                 file_id=file_id,
                 start_row=56,
                 start_col=7, 
-                width_px=300,
-                height_px=150,
+                max_width_px=360,
+                max_height_px=200,
                 rotate_degrees=-90,
                 offset_x_px=20,
                 offset_y_px=50
             )
         else:
-            ws['G62'] = 'No se pudo extraer file_id del link'
+            ws['G62'] = 'N/A'
     else:
         ws['G62'] = 'No se encontró foto 1'
 
@@ -904,14 +932,14 @@ def llenarUsosUsuarios(ws, df1_fila, df_usos, drive_service):
                 file_id=file_id,
                 start_row=57,
                 start_col=7, 
-                width_px=300,
-                height_px=150,
+                max_width_px=360,
+                max_height_px=200,
                 rotate_degrees=-90,
                 offset_x_px=20,
                 offset_y_px=500
             )
         else:
-            ws['G65'] = 'No se pudo extraer file_id del link'
+            ws['G65'] = 'N/A'
     else:
         ws['G65'] = 'No se encontró foto 2'
 
@@ -927,14 +955,14 @@ def llenarUsosUsuarios(ws, df1_fila, df_usos, drive_service):
                 file_id=file_id,
                 start_row=58,
                 start_col=7, 
-                width_px=300,
-                height_px=150,
+                max_width_px=360,
+                max_height_px=200,
                 rotate_degrees=-90,
                 offset_x_px=20,
                 offset_y_px=50
             )
         else:
-            ws['G68'] = 'No se pudo extraer file_id del link'
+            ws['G68'] = 'N/A'
     else:
         ws['G68'] = 'No se encontró foto 3'
 
@@ -950,14 +978,14 @@ def llenarUsosUsuarios(ws, df1_fila, df_usos, drive_service):
                 file_id=file_id,
                 start_row=59,
                 start_col=12, 
-                width_px=300,
-                height_px=150,
+                max_width_px=360,
+                max_height_px=200,
                 rotate_degrees=-90,
                 offset_x_px=20,
                 offset_y_px=50
             )
         else:
-            ws['L62'] = 'No se pudo extraer file_id del link'
+            ws['L62'] = 'N/A'
     else:
         ws['L62'] = 'No se encontró foto 1'
 
@@ -973,14 +1001,14 @@ def llenarUsosUsuarios(ws, df1_fila, df_usos, drive_service):
                 file_id=file_id,
                 start_row=60,
                 start_col=12, 
-                width_px=300,
-                height_px=150,
+                max_width_px=360,
+                max_height_px=200,
                 rotate_degrees=-90,
                 offset_x_px=20,
                 offset_y_px=50
             )
         else:
-            ws['L65'] = 'No se pudo extraer file_id del link'
+            ws['L65'] = 'N/A'
     else:
         ws['L65'] = 'No se encontró foto 2'
 
@@ -996,14 +1024,14 @@ def llenarUsosUsuarios(ws, df1_fila, df_usos, drive_service):
                 file_id=file_id,
                 start_row=61,
                 start_col=12, 
-                width_px=300,
-                height_px=150,
+                max_width_px=360,
+                max_height_px=200,
                 rotate_degrees=-90,
                 offset_x_px=20,
                 offset_y_px=50
             )
         else:
-            ws['L68'] = 'No se pudo extraer file_id del link'
+            ws['L68'] = 'N/A'
     else:
         ws['L68'] = 'No se encontró foto 3'
 

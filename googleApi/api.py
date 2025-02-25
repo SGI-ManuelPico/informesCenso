@@ -54,7 +54,7 @@ class GoogleSheetsAExcel:
         self.range_explot_porcina = range_explot_porcina
         self.range_detalle_jornal = range_detalle_jornal
 
-        # Plantillas anteriores
+        # Plantillas FP, Id. AE, Usos/Usuarios
         self.plantilla_informe1 = plantilla_informe1
         self.plantilla_ficha = plantilla_ficha
         self.plantilla_usos_usuarios = plantilla_usos_usuarios
@@ -178,7 +178,7 @@ class GoogleSheetsAExcel:
         df_informe = self.fetchDatos(self.range_informe1)
         pdfConv = Pdf()
 
-        for index, fila in df_informe.iterrows():
+        for _, fila in df_informe.iterrows():
             # 1) Tomar el codigo
             codigo = str(fila['data-info_general-num_encuesta'])
 
@@ -196,15 +196,26 @@ class GoogleSheetsAExcel:
             # 5) Llenar plantilla
             wb = load_workbook(self.plantilla_informe1)
             ws = wb.active
-            llenarInforme1(ws, fila) 
+            llenarInforme1(ws, fila)
 
             # 6) Guardar Excel local
             nombre_excel = f"{codigo}_informe1.xlsx"
             wb.save(nombre_excel)
 
-            # 7) Convertir a PDF
+            # 7) Convertir a PDF (1 sola página, Portrait, A4)
             ruta_pdf = f"{codigo}_informe1.pdf"
-            pdfConv.excelPdf(nombre_excel, ruta_pdf)
+            pdfConv.excelPdf(
+                excel_path=nombre_excel,
+                pdf_path=ruta_pdf,
+                sheet_name=None,           
+                orientation=1,             
+                paper_size=9,              
+                fit_to_pages_wide=1,      
+                fit_to_pages_tall=1,       
+                zoom=None,                 
+                center_horizontally=True,
+                center_vertically=True
+            )
 
             # 8) Subir y limpiar
             self.subirArchivo(ruta_pdf, nombre_pdf, folder_id)
@@ -217,11 +228,11 @@ class GoogleSheetsAExcel:
         """
         Lee 'df_ficha1' y 'df_ficha2' (range_ficha1, range_ficha2).
         Para cada fila de df_ficha1:
-          - Saca el codigo (columna data-info_general-num_encuesta) y la KEY.
-          - Filtra df_ficha2 con PARENT_KEY == KEY para tener un subconjunto.
-          - Llama a 'llenarFichaPredial(ws, row_ficha1, subset_ficha2)', 
-            donde subset_ficha2 llena la tabla en la misma hoja (1 PDF total).
-          - Sube el PDF a la subcarpeta correspondiente al 'codigo'.
+        - Saca el codigo (columna data-info_general-num_encuesta) y la KEY.
+        - Filtra df_ficha2 con PARENT_KEY == KEY para tener un subconjunto.
+        - Llama a 'llenarFichaPredial(ws, row_ficha1, subset_ficha2)', 
+            donde subset_ficha2 llena la tabla en la misma hoja.
+        - Genera un PDF (hasta 3 páginas de alto) y lo sube a la carpeta Drive de 'codigo'.
         """
         if not self.range_ficha1 or not self.range_ficha2 or not self.plantilla_ficha:
             print("No están configurados 'range_ficha1', 'range_ficha2' o 'plantilla_ficha'.")
@@ -262,13 +273,28 @@ class GoogleSheetsAExcel:
 
             # Convertir a PDF
             ruta_pdf = f"{codigo}_fichaPredial.pdf"
-            pdfConv.excelPdf(nombre_excel, ruta_pdf)
+
+            # Ejemplo: ajusta a 1 página de ancho, hasta 3 páginas de alto (FitToPagesTall=3),
+            # en orientación vertical (1 = Portrait), tamaño A4 (9).
+            pdfConv.excelPdf(
+                excel_path=nombre_excel,
+                pdf_path=ruta_pdf,
+                sheet_name=None,          # Usa la hoja activa (ws.active)
+                orientation=1,            # 1 = Portrait, 2 = Landscape
+                paper_size=9,             # 9 = A4, 2 = Letter, etc.
+                fit_to_pages_wide=1,      # Ajustar el ancho a 1 página
+                fit_to_pages_tall=3,      # Permite hasta 3 páginas de alto
+                zoom=None,                # None => usar FitToPages
+                center_horizontally=True,
+                center_vertically=True
+            )
 
             # Subir a Drive y limpiar
             self.subirArchivo(ruta_pdf, nombre_pdf, folder_id)
             os.remove(nombre_excel)
             os.remove(ruta_pdf)
             print(f"[OK] Se generó y subió {nombre_pdf} en la carpeta '{codigo}'.")
+
 
     def llenarYSubirUsosUsuarios(self):
         """
@@ -279,7 +305,8 @@ class GoogleSheetsAExcel:
         Por cada fila de df_usos1:
         - obtiene código data-info_general-num_encuesta,
         - filtra df_usos2 en base a PARENT_KEY == KEY,
-        - llama a llenarUsosUsuarios(ws, fila_principal, subset_usos2, ...).
+        - llama a llenarUsosUsuarios(ws, fila_principal, subset_usos2, ...),
+        - genera un PDF y lo sube a Drive.
         """
         # 1) Validar que tengas definidos los rangos y la plantilla
         if not self.range_usos1 or not self.range_usos2 or not self.plantilla_usos_usuarios:
@@ -317,17 +344,30 @@ class GoogleSheetsAExcel:
             wb = load_workbook(self.plantilla_usos_usuarios)
             ws = wb.active
 
-            # Llamamos a tu función de llenado, 
-            # ajustando parámetros a la firma real que tenga (ej. fila principal + subset)
+            # Llamamos a tu función de llenado 
             llenarUsosUsuarios(ws, row_usos1, subset_usos2, self.drive_service)
 
             # 7) Guardar Excel temporal
             nombre_excel = f"{codigo}_usosUsuarios.xlsx"
             wb.save(nombre_excel)
 
-            # 8) Convertir a PDF
+            # 8) Convertir a PDF 
+            #    - Landscape (orientation=2)
+            #    - A4 (paper_size=9)
+            #    - Ancho en 1 página, alto en máx. 2 páginas
             ruta_pdf = f"{codigo}_usosUsuarios.pdf"
-            pdfConv.excelPdf(nombre_excel, ruta_pdf)
+            pdfConv.excelPdf(
+                excel_path=nombre_excel,
+                pdf_path=ruta_pdf,
+                sheet_name=None,
+                orientation=2,       # 2 = Landscape
+                paper_size=9,        # 9 = A4
+                fit_to_pages_wide=1, # Ajustar ancho a 1 página
+                fit_to_pages_tall=2, # Hasta 2 páginas de alto
+                zoom=None,           # None => usar FitToPages
+                center_horizontally=True,
+                center_vertically=True
+            )
 
             # 9) Subir el PDF y limpiar
             self.subirArchivo(ruta_pdf, nombre_pdf, folder_id)
@@ -337,13 +377,15 @@ class GoogleSheetsAExcel:
             print(f"[OK] Se generó y subió {nombre_pdf} en la carpeta '{codigo}'.")
 
 
+
     def llenarYSubirFormatoAgropecuario(self):
         """
         Lee el rango 'range_formato_agro' como la tabla principal,
         donde cada fila tiene 'KEY' y 'data-info_general-num_encuesta' (código).
         Luego filtra los DataFrames secundarios (info_comercial, avícola, laboral,
         agrícola, porcina, jornal) usando 'PARENT_KEY == KEY'.
-        Llama a 'llenarFormatoAgropecuario' y sube el PDF resultante a Drive.
+        Llama a 'llenarFormatoAgropecuario' y sube el PDF resultante a Drive,
+        generando hasta 4 páginas en modo Landscape (o lo que configures).
         """
         # 1) Validar que estén configurados el rango principal y la plantilla
         if not self.range_formato_agro or not self.plantilla_formato_agro:
@@ -371,11 +413,11 @@ class GoogleSheetsAExcel:
 
             # 4a) Filtrar cada DF secundario por 'PARENT_KEY' == key
             subset_info_com = df_info_com[df_info_com['PARENT_KEY'] == key]
-            subset_avicola = df_avicola[df_avicola['PARENT_KEY'] == key]
-            subset_laboral = df_laboral[df_laboral['PARENT_KEY'] == key]
+            subset_avicola  = df_avicola[df_avicola['PARENT_KEY'] == key]
+            subset_laboral  = df_laboral[df_laboral['PARENT_KEY'] == key]
             subset_agricola = df_agricola[df_agricola['PARENT_KEY'] == key]
-            subset_porcina = df_porcina[df_porcina['PARENT_KEY'] == key]
-            subset_jornal = df_jornal[df_jornal['PARENT_KEY'] == key]
+            subset_porcina  = df_porcina[df_porcina['PARENT_KEY'] == key]
+            subset_jornal   = df_jornal[df_jornal['PARENT_KEY'] == key]
 
             # 5) Crear/obtener la carpeta en Drive
             folder_id = self.obtenerOCrearCarpetaPorCodigo(codigo)
@@ -388,6 +430,9 @@ class GoogleSheetsAExcel:
 
             # 7) Cargar plantilla de Excel
             wb = load_workbook(self.plantilla_formato_agro)
+            # Asume que la hoja que te interesa es la activa
+            # o si tienes un nombre de hoja en particular:
+            # ws = wb["FORMATO2"] 
             ws = wb.active
 
             # 8) Llamar función de llenado
@@ -402,12 +447,30 @@ class GoogleSheetsAExcel:
                 subset_jornal
             )
 
-            # 9) Guardar Excel temporal y convertir a PDF
+            # 9) Guardar Excel temporal
             nombre_excel = f"{codigo}_formatoAgropecuario.xlsx"
             wb.save(nombre_excel)
 
+            # 9b) Convertir a PDF
             ruta_pdf = f"{codigo}_formatoAgropecuario.pdf"
-            pdfConv.excelPdf(nombre_excel, ruta_pdf)
+            
+            # Ejemplo de configuración:
+            # - Landscape (orientation=2)
+            # - Papel A4 (paper_size=9)
+            # - Ajustar ancho a 1 página, alto hasta 4 páginas
+            # - Centrado horizontal/vertical
+            pdfConv.excelPdf(
+                excel_path=nombre_excel,
+                pdf_path=ruta_pdf,
+                sheet_name=None,           # Usa la hoja activa
+                orientation=2,             # 2 = Landscape
+                paper_size=9,              # 9 = A4
+                fit_to_pages_wide=1,       # 1 => ajusta ancho a 1 pág
+                fit_to_pages_tall=4,       # hasta 4 páginas de alto
+                zoom=None,                 # None => usa FitToPages
+                center_horizontally=True,
+                center_vertically=True
+            )
 
             # 10) Subir PDF y limpiar archivos locales
             self.subirArchivo(ruta_pdf, nombre_pdf, folder_id)
