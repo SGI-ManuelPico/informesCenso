@@ -693,7 +693,7 @@ def llenarFichaPredial(ws, df1_fila, df_pob_fila, drive_service):
                 start_col=5,        # 'B' es la 2
                 max_width_px=800,       # Ancho deseado en píxeles
                 max_height_px=480,      # Alto deseado en píxeles
-                rotate_degrees=-90, # Rotar 90 grados
+                rotate_degrees=-0, # Rotar 90 grados
                 offset_x_px=0,      
                 offset_y_px=10000   # Desplazar 1000 píxeles hacia abajo
             )
