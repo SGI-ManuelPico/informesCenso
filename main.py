@@ -15,8 +15,8 @@ if __name__ == "__main__":
     #    (Informe1, FichaPredial, UsosUsuarios)
     # ==========================================================================
     # Ejemplo de rangos
-    RANGE_INFORME1       = "Sheet1!A1:EZ200"
-    RANGE_FICHA1         = "Sheet1!A1:EZ200"
+    RANGE_INFORME1       = "Sheet1!A1:EZ2000"
+    RANGE_FICHA1         = "Sheet1!A1:EZ2000"
     RANGE_FICHA2         = "data-start_carac_poblacion-caracteristicas_poblacion!A1:H200"
     RANGE_USOS1          = "Sheet1!A1:EZ200"
     RANGE_USOS2          = "data-start_bienes_serv-informacion_usos!A1:O200"
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     # ==========================================================================
     # -- Rangos para Formato Agropecuario --
 
-    RANGE_FORMATO_AGRO       = "Sheet1!A1:DC300"
+    RANGE_FORMATO_AGRO       = "Sheet1!A1:DD300"
     RANGE_INFO_COMERCIAL     = "data-informacion_comercial-insumos_actividad!A1:J200"
     RANGE_EXPLOT_AVICOLA     = "data-explotacion_avicola-tipo_explotacion!A1:J200"
     RANGE_INFO_LABORAL       = "data-informacion_laboral!A1:Q200"
