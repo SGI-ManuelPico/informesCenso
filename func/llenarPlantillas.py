@@ -1720,224 +1720,351 @@ def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola,
         residencia = fila_jornal.get('data-detalle_jornal-jornal_detalle-residencia_jornaleros', "")
         ws[f'AN{excel_row}'] = residencia
 
-def llenarFormatoComercial(ws, df_fila):
-        ws['AI1'] = df_fila["Encuesta No."]
+def llenarFormatoComercial(ws, df_fila, df_descripcion_actividad_abastecimiento, df_descripcion_actividad_precio_venta, df_info_laboral):
+    ws['AI1'] = df_fila["data-datos_encuesta-fecha"]
 
-        fecha_str = str(df_fila['Fecha(DD/MM/AAAA)'])
-        if '/' in fecha_str:
-            ws['AK2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
-            ws['AN2'] = fecha_str.split('/')[1]
-            ws['AS2'] = fecha_str.split('/')[0]
-        elif '-' in fecha_str:
-            ws['AK2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
-            ws['AN2'] = fecha_str.split('-')[1]
-            ws['AS2'] = fecha_str.split('-')[0] ####### LLENAR FECHA EN ESPACIOS VACÍOS Y NO SOBRE EL SÍMBOLO.
-        else:
-            print(f'Formato de fecha inesperado: {fecha_str}')
+    fecha_str = str(df_fila['data-datos_encuesta-fecha'])
+    if '/' in fecha_str:
+        ws['AK2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
+        ws['AN2'] = fecha_str.split('/')[1]
+        ws['AS2'] = fecha_str.split('/')[0]
+    elif '-' in fecha_str:
+        ws['AK2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
+        ws['AN2'] = fecha_str.split('-')[1]
+        ws['AS2'] = fecha_str.split('-')[0] 
+    else:
+        print(f'Formato de fecha inesperado: {fecha_str}')
 
-        ws['AK3'] = df_fila["Encuestador"]
-        ws['F6'] = df_fila["Nombre"]
-        ws['AC6'] = df_fila["Empresa"]
-        ws['AP6'] = df_fila["Cargo"]
+    ws['AK3'] = df_fila["data-datos_encuesta-encuestador"]
+    ws['F6'] = df_fila["data-ident_entrevistado-nombre"]
+    ws['AC6'] = df_fila["data-ident_entrevistado-empresa"]
+    ws['AP6'] = df_fila["data-ident_entrevistado-cargo"]
 
-        if df_fila["¿Pertenece a alguna asociación?"] == 'Si':
-            ws['S7'] = "X"
-            ws['AF7'] = df_fila["Otro, ¿Cuál?"]
-
-        elif df_fila["¿Pertenece a alguna asociación?"] == 'No':
-            ws['Y7'] = "X"
-
-        actividad = df_fila['¿Qué tipo de productos comercializa?']
-        if actividad == 'Agrícola':
-            ws['L11'] = 'X'
-        elif actividad == 'Pecuario':
-            ws['L12'] = 'X'
-        elif actividad == 'Víveres':
-            ws['L13'] = 'X'
-        elif actividad == 'Agua en botella/bolsa':
-            ws['L14'] = 'X'
-        elif actividad == 'Licores':
-            ws['U11'] = 'X'
-        elif actividad == 'Productos Naturales: Animal':
-            ws['U13'] = 'X'
-        elif actividad == 'Productos Naturales: Vegetal':
-            ws['Y13'] = 'X'
-        elif actividad == "Otros":
-            ws['T14'] = df_fila['Otro, ¿Cuáles?']
-
-        ws['C16'] = df_fila["¿Cuál es el principal producto que comercializa?"]
-
-        actividad2 = df_fila['¿Con qué frecuencia compra los productos que comercializa?']
-        if actividad2 == 'Diario':
-            ws['L20'] = 'X'
-        elif actividad2 == 'Semanal':
-            ws['L21'] = 'X'
-        elif actividad2 == 'Quincenal':
-            ws['L22'] = 'X'
-        elif actividad2 == 'Mensual':
-            ws['L23'] = 'X'
-        elif actividad2 == 'Semestral':
-            ws['V22'] = actividad2
-        elif actividad2 == 'Otra':
-            ws['V22'] = df_fila["Otro"]
-
-        ws['C28'] = df_fila["Producto"]
-        ws['I28'] = df_fila["Cantidad"]
-        ws['M28'] = df_fila["Unidad de medida"]
-        ws['S28'] = df_fila["Valor"]
-        ws['C29'] = df_fila["Producto.1"]
-        ws['I29'] = df_fila["Cantidad.1"]
-        ws['M29'] = df_fila["Unidad de medida.1"]
-        ws['S29'] = df_fila["Valor.1"]
-        ws['C30'] = df_fila["Producto.2"]
-        ws['I30'] = df_fila["Cantidad.2"]
-        ws['M30'] = df_fila["Unidad de medida.2"]
-        ws['S30'] = df_fila["Valor.2"]
-        ws['C31'] = df_fila["Producto.3"]
-        ws['I31'] = df_fila["Cantidad.3"]
-        ws['M31'] = df_fila["Unidad de medida.3"]
-        ws['S31'] = df_fila["Valor.3"]
-
-        ws['D34'] = df_fila["Producto.4"]
-        ws['R34'] = df_fila["Precio"]
-        ws['D35'] = df_fila["Producto.5"]
-        ws['R35'] = df_fila["Precio.1"]
-        ws['D36'] = df_fila["Producto.6"]
-        ws['R36'] = df_fila["Precio.2"]
-
-        actividad3 = df_fila["Señale el tipo de emplazamiento"]
-        if actividad3 == 'Local':
-            ws['Q39'] = 'X'
-        elif actividad3 == 'Puesto Fijo':
-            ws['Q40'] = 'X'
-        elif actividad3 == 'Vivienda económica':
-            ws['Q41'] = 'X'
-        elif actividad3 == 'Venta ambulante':
-            ws['Q42'] = 'X'
-
-        actividad4 = df_fila["¿Cuál fue el valor promedio de ventas en el último mes?"]
-        if actividad4 == 'Inferiores a $600.000':
-            ws['AN10'] = 'X'
-        elif actividad4 == 'Entre $ 601.000 y $ 1.500.000':
-            ws['AN11'] = 'X'
-        elif actividad4 == 'Entre $ 1.501.000 y $ 3.000.000':
-            ws['AN12'] = 'X'
-        elif actividad4 == 'Superior a $ 3.000.000':
-            ws['AN13'] = 'X'
-            ws['AP13'] = df_fila['Si fue superior a 3 millones, ¿cuánto fue?']
+    map_pertenencia = {
+        'yes': 'S7',
+        'no': 'Y7',
+    }
+    pertenencia = df_fila["data-ident_entrevistado-pertenencia_asociacion"]
+    if pd.notna(pertenencia):
+        if pertenencia == 'yes':
+            ws[map_pertenencia[pertenencia]] = "X"
+            ws['AF7'] = df_fila["data-ident_entrevistado-asociacion_cual"]
 
 
-        actividad5 = df_fila["Vende principalmente en:"]
-        if actividad5 == 'Sitio':
-            ws['AH16'] = 'X'
-        elif actividad5 == 'Vereda':
-            ws['AH17'] = 'X'
-        elif actividad5 == 'Casco Urbano':
-            ws['AH18'] = 'X'
-        elif actividad5 == 'Otros Municipios y/o Veredas':
-            ws['AN16'] = 'X'
-            ws['AO18'] = df_fila["¿Cuáles?"]
-
-        if df_fila["¿Lleva libros contables del establecimiento?"] == 'Si':
-            ws['AO22'] = 'X'
-
-        elif df_fila["¿Lleva libros contables del establecimiento?"] == 'No':
-            ws['AQ22'] = 'X'
-
-        if str(df_fila["Producto 1"]) != "nan":
-            p1 = df_fila["Producto 1"]
-        else:
-            p1 = " "
-        if str(df_fila["Producto 2"]) != "nan":
-            p2 = df_fila["Producto 2"]
-        else:
-            p2 = " "
-        if str(df_fila["Producto 3"]) != "nan":
-            p3 = df_fila["Producto 3"]
-        else:
-            p3 = " "
-        if str(df_fila["Producto 4"]) != "nan":
-            p4 = df_fila["Producto 4"]
-        else:
-            p4 = " "
-        if str(df_fila["Producto 5"]) != "nan":
-            p5 = df_fila["Producto 5"]
-        else:
-            p5 = " "
-            3
-        ws['AE26'] = str(p1) + " " + str(p2) + " " + str(p3) + " " + str(p4) + " " + str(p5)
-
-        if str(df_fila["Hidrocarburos"]) != "nan":
-            ws['AH29'] = 'X'
-            ws['AM29'] = df_fila['Hidrocarburos']
-        if str(df_fila["Otro.1"]) != "nan":
-            ws['AH30'] = 'X'
-            ws['AM30'] = df_fila['Otro.1']
-
-        actividad5 = df_fila['¿Con qué frecuencia compra productos en otras veredas y/o municipios?']
-        if actividad5 == 'Diario':
-            ws['AJ33'] = 'X'
-        elif actividad5 == 'Semanal':
-            ws['AJ34'] = 'X'
-        elif actividad5 == 'Quincenal':
-            ws['AJ35'] = 'X'
-        elif actividad5 == 'Mensual':
-            ws['AJ36'] = 'X'
-        elif actividad5 == 'Otro':
-            ws['AQ33'] = 'X'
-            ws['AP34'] = df_fila["Otro, ¿Cuál?.1"]
-
-        if df_fila["Sobre la actividad, piensa: Continuidad"] == "Continuar con la actividad":
-            ws['AN39'] = 'X'
-        elif df_fila["Sobre la actividad, piensa: Continuidad"] == "Finalizar la actividad":
-            ws['AP39'] = 'X'
-        if df_fila["Sobre la actividad, piensa: Producción"] == "Ampliar la producción":
-            ws['AP40'] = 'X'
-            ws['AN41'] = 'X'
-        elif df_fila["Sobre la actividad, piensa: Producción"] == "Permanecer con la misma producción":
-            ws['AN40'] = 'X'
-            ws['AP41'] = 'X'
-        elif df_fila["Sobre la actividad, piensa: Producción"] == "Ninguna de las anteriores":
-            ws['AP40'] = 'X'
-            ws['AP41'] = 'X'
-
-
-        actividad6 = df_fila['¿De dónde se abastece del recurso hídrico?']
-        if actividad6 == 'Aljibe':
-            ws['I45'] = 'X'
-        elif actividad6 == 'Acueducto Veredal':
-            ws['I46'] = 'X'
-        elif actividad6 == 'Otro':
-            ws['I47'] = 'X'
-            ws['R47'] = df_fila['Otro, ¿Cuál?.2']
+    map_tipo_producto = {
+        'agricola': 'L11',
+        'pecuaria': 'L12',
+        'viveres': 'L13',
+        'agua': 'L14',
+        'licores': 'U11',
+        'naturales': 'U13',
+        "otros": 'T14',
+    }
     
-        ws['U45'] = df_fila["Forma de extracción"]
-        ws['P46'] = df_fila["Cantidad estimada (escribir m3)"]
-
-        if df_fila["¿Cuenta con servicio de alcantarillado?"] == "Si":
-            ws['AP44'] = 'X'
-            ws['AF45'] = df_fila["¿Cuál?"]
-        elif df_fila["¿Cuenta con servicio de alcantarillado?"] == "No":
-            ws['AR44'] = 'X'
+    tipos_producto = df_fila['data-descripcion_actividad-tipo_productos'].split(', ')
+    for tipo in tipos_producto:
+        if tipo == 'Otros':
+            ws['T14'] = df_fila['data-descripcion_actividad-otros_productos']
+        ws[map_tipo_producto[tipo]] = 'X'
 
 
-        actividad7 = df_fila['¿Qué tipo de energía utiliza?']
-        if actividad7 == 'Energía Eléctrica':
-            ws['AG47'] = 'X'
-        elif actividad7 == 'Energía Solar':
-            ws['AN47'] = 'X'
-        elif actividad7 == 'Otro':
-            ws['AS47'] = df_fila['Otro, ¿Cuál?.3']
+    ws['C16'] = df_fila["data-descripcion_actividad-producto_principal"]
 
-        actividad8 = df_fila['¿De dónde proviene la energía que utiliza para la cocción de alimentos?']
-        if actividad8 == 'Energía eléctrica':
-            ws['AG48'] = 'X'
-        elif actividad8 == 'Leña':
-            ws['AM48'] = 'X'
-        elif actividad8 == 'Gas':
-            ws['AO48'] = 'X'
-        elif actividad8 == 'Otro':
-            ws['AS48'] = df_fila['Otro, ¿Cuál?.4']
+    map_frecuencia = {
+        'diatrio': 'L17',
+        'semanal': 'L18',
+        'quincenal': 'L19',
+        'mensual': 'L20',
+        'semestral': 'L21',
+        'otro': 'L22',
+    }
+    frecuencia = df_fila['data-descripcion_actividad-frecuencia_compra']
+    if pd.notna(frecuencia):
+        ws[map_frecuencia[frecuencia]] = 'X'
+        if frecuencia == 'otro':
+            ws['L22'] = df_fila['data-descripcion_actividad-frecuencia_compra_otro']
+
+    df_descripcion_actividad_abastecimiento = df_descripcion_actividad_abastecimiento.head(4).reset_index(drop=True)
+    for i, fila_producto in df_descripcion_actividad_abastecimiento.iterrows():
+        ws[f'C{i+28}'] = fila_producto['data-descripcion_actividad-abastecimiento-producto']
+        ws[f'I{i+28}'] = fila_producto['data-descripcion_actividad-abastecimiento-cantidad']
+        ws[f'M{i+28}'] = fila_producto['data-descripcion_actividad-abastecimiento-unidad_medida']
+        ws[f'S{i+28}'] = fila_producto['data-descripcion_actividad-abastecimiento-valor']
+
+    df_descripcion_actividad_precio_venta = df_descripcion_actividad_precio_venta.head(3).reset_index(drop=True)
+    for i, fila_producto in df_descripcion_actividad_precio_venta.iterrows():
+        ws[f'D{i+34}'] = fila_producto['data-descripcion_actividad-precio_venta-producto_precio']
+        ws[f'R{i+34}'] = fila_producto['data-descripcion_actividad-precio_venta-precio']
+
+    map_tipo_emplazamiento = {
+        'local': 'Q39',
+        'puesto_fijo': 'Q40',
+        'vivienda_economica': 'Q41',
+        'venta_ambulante': 'Q42',
+    }
+
+    tipo_emplazamiento = df_fila["data-descripcion_actividad-tipo_emplacamiento"]
+    if pd.notna(tipo_emplazamiento):
+        ws[map_tipo_emplazamiento[tipo_emplazamiento]] = 'X'
+    
+
+    # Valor venta
+    map_valor_venta = {
+        'inferior_smlv': 'AN10',
+        'igual_smlv': 'AN11',
+        'entre_1y2_smlv': 'AN12',
+        'superior_2': 'AN13',
+    }
+
+    valor_venta = df_fila["data-descripcion_actividad-valor_ventas"]
+    if pd.notna(valor_venta):
+        ws[map_valor_venta[valor_venta]] = 'X'
+        if valor_venta == 'superior_2':
+            ws['AN13'] = df_fila["data-descripcion_actividad-valor_ventas_otro"]
+
+    # Lugar de venta
+    map_vende_principalmente = {
+        'sitio': 'AH16',
+        'vereda': 'AH17',
+        'casco_urbano': 'AH18',
+        'otros': 'AN16',
+    }
+
+    vende_principalmente = df_fila["data-descripcion_actividad-lugar_venta"]
+    if pd.notna(vende_principalmente):
+        ws[map_vende_principalmente[vende_principalmente]] = 'X'
+        if vende_principalmente == 'otros':
+            ws['AO18'] = df_fila["data-descripcion_actividad-otros_lugares"]
+
+
+
+    if df_fila["data-descripcion_actividad-lleva_libros"] == 'yes':
+        ws['AO22'] = 'X'
+
+    elif df_fila["data-descripcion_actividad-lleva_libros"] == 'no':
+        ws['AQ22'] = 'X'
+
+
+    
+    productos_otras_veredas = df_fila['data-descripcion_actividad-productos_insumos'].split(', ')
+    celdas_destino = ['AE26', 'AJ26', 'AN26', 'AS26']
+
+    for celda, producto in zip(celdas_destino, productos_otras_veredas):
+        ws[celda] = producto
+    
+    procedencia_compra = df_fila['data-descripcion_actividad-procedencia_compradores']
+
+    if procedencia_compra == 'hidrocarburos':
+        ws['AH29'] = 'X'
+        ws['AM29'] = df_fila['data-descripcion_actividad-procedencia_hidrocarburos']
+    elif procedencia_compra == 'otros':
+        ws['AH30'] = 'X'
+        ws['AM30'] = df_fila['data-descripcion_actividad-procedencia_otros']  
+
+    map_frecuencia_compra = {
+        'diatrio': 'AJ33',
+        'semanal': 'AJ34',
+        'quincenal': 'AJ35',
+        'mensual': 'AJ36',
+        'otro': 'AQ33',
+    }
+    frecuencia_compra = df_fila['data-descripcion_actividad-frecuencia_compra_veredas']
+    if pd.notna(frecuencia_compra):
+        ws[map_frecuencia_compra[frecuencia_compra]] = 'X'
+        if frecuencia_compra == 'otro':
+            ws['AP34'] = df_fila['data-descripcion_actividad-frecuencia_compra_veredas_otro']
+
+            
+
+    continuidad = df_fila['data-descripcion_actividad-begin_sobre_act-continuar_actividad']
+    if pd.notna(continuidad):
+        if continuidad == 'yes':
+            ws['AN39'] = 'X'
+            ws['AP42'] = 'X'
+        elif continuidad == 'no':
+            ws['AP39'] = 'X'
+            ws['AN42'] = 'X'  
+    else:
+        print('Campo vacío') 
+
+    produccion = df_fila['data-descripcion_actividad-ampliar_produccion']
+    if pd.notna(produccion):
+        if produccion == 'yes':
+            ws['AN41'] = 'X'
+            ws['AP40'] = 'X'               
+        elif produccion == 'no':
+            ws['AN40'] = 'X'
+            ws['AP41'] = 'X'   
+    else:
+        print('Campo vacío') 
+
+    ws['Y89'] = df_fila['data-descripcion_actividad-porque_ampliar']
+
+
+    map_abastece_recurso = {
+        'aljibe': 'I45',
+        'acueducto_veredal': 'I46',
+        'otro': 'I47',
+    }
+    abastece_recurso = df_fila['data-descripcion_actividad-recurso_hidrico']
+    if pd.notna(abastece_recurso):
+        ws[map_abastece_recurso[abastece_recurso]] = 'X'
+        if abastece_recurso == 'otro':
+            ws['R47'] = df_fila['data-descripcion_actividad-recurso_hidrico_otro']
+
+
+    ws['U45'] = df_fila["data-descripcion_actividad-forma_extraccion"]
+
+    if df_fila["data-descripcion_actividad-alcantarillado"] == "yes":
+        ws['AP44'] = 'X'
+        ws['AF45'] = df_fila["data-descripcion_actividad-alcantarillado_cual"]
+    elif df_fila["data-descripcion_actividad-alcantarillado"] == "no":
+        ws['AR44'] = 'X'
+
+
+    map_energia = {
+        'electricidad': 'AG47',
+        'solar': 'AN47',
+        'otro': 'AS47',
+    }
+    energia = df_fila['data-descripcion_actividad-energia_utiliza']
+    if pd.notna(energia):
+        ws[map_energia[energia]] = 'X'
+        if energia == 'otro':
+            ws['AS47'] = df_fila['data-descripcion_actividad-energia_utiliza_otro']
+
+    map_energia_coccion = {
+        'energia_electrica': 'AG48',
+        'lena': 'AM48',
+        'gas': 'AO48',
+        'otro': 'AS48',
+    }
+    energia_coccion = df_fila['data-descripcion_actividad-energia_coccion']
+    if pd.notna(energia_coccion):
+        ws[map_energia_coccion[energia_coccion]] = 'X'
+        if energia_coccion == 'otro':
+            ws['AS48'] = df_fila['data-descripcion_actividad-energia_coccion_otro']
+
+    mano_obra = df_fila['data-informacion_comercial-contrata_mano_obra']
+    if mano_obra == 'yes':
+        ws['U120'] = 'X'
+    elif mano_obra == 'no':
+        ws['AC120'] = 'X'  
+
+    # Información Laboral 
+    #! Arreglar las columnas segun corresponda con la plantilla.
+    df_info_laboral = df_info_laboral.head(10).reset_index(drop=True)
+
+    for i, fila_lab in df_info_laboral.iterrows():
+        excel_row = 54 + i  # Filas 124..133
+
+        # 1) Cargo => Columna E
+        cargo = fila_lab.get('data-informacion_laboral-cargo', "")
+        ws[f'E{excel_row}'] = cargo
+
+        # 2) Edad => Columna J
+        edad = fila_lab.get('data-informacion_laboral-edad', "")
+        ws[f'J{excel_row}'] = edad
+
+        # 3) Duración jornada => Columna K
+        dur_jornada = fila_lab.get('data-informacion_laboral-duracion_jornada', "")
+        ws[f'K{excel_row}'] = dur_jornada
+
+        # 4) Tipo de mano de obra => “familiar” => B, “contratado” => D
+        tipo_mano_obra = fila_lab.get('data-informacion_laboral-tipo_mano_obra', "")
+        if pd.notna(tipo_mano_obra):
+            if tipo_mano_obra.lower() == 'familiar':
+                ws[f'B{excel_row}'] = 'X'
+            elif tipo_mano_obra.lower() == 'contratado':
+                ws[f'D{excel_row}'] = 'X'
+
+        # 5) Género => “M” => I, “F” => G
+        genero = fila_lab.get('data-informacion_laboral-genero', "")
+        if pd.notna(genero):
+            if genero.upper() == 'M':
+                ws[f'I{excel_row}'] = 'X'
+            elif genero.upper() == 'F':
+                ws[f'G{excel_row}'] = 'X'
+
+        # 6) Escolaridad => “primaria” => M, “bachillerato” => O, “tecnico” => Q, 
+        #    “pregrado” => S, “posgrado” => U
+        esc = fila_lab.get('data-informacion_laboral-escolaridad', "")
+        if pd.notna(esc):
+            esc_lower = esc.lower()
+            if esc_lower == 'primaria':
+                ws[f'M{excel_row}'] = 'X'
+            elif esc_lower == 'bachillerato':
+                ws[f'O{excel_row}'] = 'X'
+            elif esc_lower == 'tecnico':
+                ws[f'Q{excel_row}'] = 'X'
+            elif esc_lower == 'pregrado':
+                ws[f'S{excel_row}'] = 'X'
+            elif esc_lower == 'posgrado':
+                ws[f'U{excel_row}'] = 'X'
+
+        # 7) Contrato => “temporal” => AA, “fijo” => AC
+        contrato = fila_lab.get('data-informacion_laboral-contrato', "")
+        if pd.notna(contrato):
+            contrato_lower = contrato.lower()
+            if contrato_lower == 'temporal':
+                # En tu código anterior parecía que escribías el valor, 
+                # pero si sólo quieres marcar X, haz:
+                ws[f'AA{excel_row}'] = 'X'
+            elif contrato_lower == 'fijo':
+                ws[f'AC{excel_row}'] = 'X'
+
+        # 8) Pago de seguridad social => “yes” => AE, “no” => AG
+        pago_seg = fila_lab.get('data-informacion_laboral-pago_seguridad_social', "")
+        if pd.notna(pago_seg):
+            pago_seg_lower = pago_seg.lower()
+            if pago_seg_lower == 'yes':
+                ws[f'AE{excel_row}'] = 'X'
+            elif pago_seg_lower == 'no':
+                ws[f'AG{excel_row}'] = 'X'
+
+        # 9) Remuneración => “inferior_smlv” => AS, “igual_smlv” => AT, 
+        #    “entre_1y2_smlv” => AU, “superior_2” => AV
+        remuneracion = fila_lab.get('data-informacion_laboral-remuneracion', "")
+        if pd.notna(remuneracion):
+            if remuneracion == 'inferior_smlv':
+                ws[f'AS{excel_row}'] = 'X'
+            elif remuneracion == 'igual_smlv':
+                ws[f'AT{excel_row}'] = 'X'
+            elif remuneracion == 'entre_1y2_smlv':
+                ws[f'AU{excel_row}'] = 'X'
+            elif remuneracion == 'superior_2':
+                ws[f'AV{excel_row}'] = 'X'
+
+        procedencia = fila_lab.get('data-informacion_laboral-procedencia', "")
+        cell_proc = ws[f'AH{excel_row}']
+        cell_proc.value = procedencia
+        cell_proc.alignment = Alignment(wrap_text=True)
+
+        residencia = fila_lab.get('data-informacion_laboral-residencia', "")
+        cell_res = ws[f'AJ{excel_row}']
+        cell_res.value = residencia
+        cell_res.alignment = Alignment(wrap_text=True)
+
+        tiempo_trab = fila_lab.get('data-informacion_laboral-tiempo_trabajado', "")
+        cell_tiempo = ws[f'AL{excel_row}']
+        cell_tiempo.value = tiempo_trab
+        cell_tiempo.alignment = Alignment(wrap_text=True)
+
+        nucleo_familiar = fila_lab.get('data-informacion_laboral-nucleo_familiar', "")
+        cell_nucleo = ws[f'AM{excel_row}']
+        cell_nucleo.value = nucleo_familiar
+        cell_nucleo.alignment = Alignment(wrap_text=True)
+
+        personas_a_cargo = fila_lab.get('data-informacion_laboral-personas_a_cargo', "")
+        cell_personas = ws[f'AN{excel_row}']
+        cell_personas.value = personas_a_cargo
+        cell_personas.alignment = Alignment(wrap_text=True)
+
+        lugar_res_fam = fila_lab.get('data-informacion_laboral-lugar_residencia_familiar', "")
+        cell_lugar = ws[f'AO{excel_row}']
+        cell_lugar.value = lugar_res_fam
+        cell_lugar.alignment = Alignment(wrap_text=True)        
+
 
         if df_fila["Contrata algún tipo de mano de obra"] == "Si":
             ws['Z50'] = 'X'
