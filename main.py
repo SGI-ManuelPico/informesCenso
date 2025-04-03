@@ -8,14 +8,15 @@ if __name__ == "__main__":
     SERVICE_ACCOUNT_FILE = r'googleApi\censos-maute-d48ff1e9060b.json'
     SPREADSHEET_ID1      = '1WLZu1vYe8MtihM4kGvRq5Dj3-A5QgtmkSuF151drtZA'   # Primer spreadsheet (FP, UU, Act. Ec)
     SPREADSHEET_ID2      = '1TBqYQ3i4itD2OVswoAWjrOQd2Pu6TzVYqh1GgyjZmpU'   # Segundo spreadsheet (Agropecuario)
-    SPREADSHEET_ID3      = '1nfYCVZLgWTdDJqiu6xGAjT9PEDu6hx-mMRdER3zFYZQ'               # Tercer spreadsheet (Agropecuario)
+    SPREADSHEET_ID3      = '1nfYCVZLgWTdDJqiu6xGAjT9PEDu6hx-mMRdER3zFYZQ'
+    SPREADSHEET_ID4      = '1A45AjJ8UFlebJNW9RlKVGF47l9xk-IjtSmBjfRmCyBk'               # Tercer spreadsheet (Agropecuario)
     DRIVE_FOLDER_ID      = '1kq_6eo-_u0fuCUOHDRV_V5bQ1c_dvfMF'
 
     # ==========================================================================
     # 2. RANGOS Y PLANTILLAS PARA LA PRIMERA INSTANCIA
     #    (Informe1, FichaPredial, UsosUsuarios)
     # ==========================================================================
-    # Ejemplo de rangos
+    # Rangos
     RANGE_INFORME1       = "Sheet1!A1:EZ2000"
     RANGE_FICHA1         = "Sheet1!A1:EZ2000"
     RANGE_FICHA2         = "data-start_carac_poblacion-caracteristicas_poblacion!A1:H200"
@@ -43,22 +44,35 @@ if __name__ == "__main__":
     PLANTILLA_FORMATO_AGRO   = r"censos\Plantilla Agropecuario.xlsx"
 
     # ==========================================================================
-    # 4. CREAR LA TERCERA INSTANCIA: FORMATO COMERCIAL
+    # 4. RANGOS Y PLANTILLA PARA LA TERCERA INSTANCIA: FORMATO COMERCIAL
     # ==========================================================================
     # -- Rangos para Formato Comercial --
     RANGE_FORMATO_COMERCIAL = "Sheet1!A1:AS300"
     RANGE_DESCP_ABAST       = "data-descripcion_actividad-abastecimiento!A1:F200"
-    RANGE_DESC_ACTIVIDAD     = "data-descripcion_actividad-precio_venta!A1:D200"
+    RANGE_DESC_ACTIVIDAD     = "data-descripcion_actividad-precio_venta!A1:Z200"
     RANGE_INFO_LABORAL_COMERCIAL = "data-informacion_laboral!A1:Q200"
 
     PLANTILLA_FORMATO_COMERCIAL = r"censos\Plantilla Comercial.xlsx"
 
     # ==========================================================================
-    # 5. CREAR LA PRIMERA INSTANCIA: ENCUESTAS 1,2,3
+    # 5. RANGOS Y PLANTILLAS PARA LA CUARTA INSTANCIA: FORMATO SERVICIOS
+    # ==========================================================================
+    # -- Rangos para Formato Servicios --
+    RANGE_FORMATO_SERVICIOS = "Sheet1!A1:AQ300"
+    RANGE_DESC_ACTIVIDAD_SERVICIOS = "data-desc_actividad-precio_servicios!A1:D2000"
+    RANGE_INSUMOS_ABASTECIMIENTO = "data-begin_insumos-abastecimiento_insumos!A1:G200"
+    RANGE_DESC_ACTIVIDAD_SERVICIOS_NUM = "data-desc_actividad-num_servicios!A1:C200"
+    RANGE_EQUIPOS_MAQUINARIA = "data-equipos_maquinaria!A1:G200"
+    RANGE_INFO_LABORAL_SERVICIOS = "data-informacion_laboral!A1:Q200"
+
+    PLANTILLA_FORMATO_SERVICIOS = r"censos\Plantilla Servicios.xlsx"
+
+    # ==========================================================================
+    # 6. CREAR LA PRIMERA INSTANCIA: ENCUESTAS 1,2,3
     # ==========================================================================
     servicio1 = GoogleSheetsAExcel(
         service_account_file=SERVICE_ACCOUNT_FILE,
-        spreadsheet_id=SPREADSHEET_ID1,   # ← Usa la ID del primer spreadsheet
+        spreadsheet_id=SPREADSHEET_ID1,   
         drive_folder_id=DRIVE_FOLDER_ID,
 
         range_informe1=RANGE_INFORME1,
@@ -80,7 +94,7 @@ if __name__ == "__main__":
     # servicio1.llenarYSubirUsosUsuarios()
 
     # ==========================================================================
-    # 6. CREAR LA SEGUNDA INSTANCIA: FORMATO AGROPECUARIO
+    # 7. CREAR LA SEGUNDA INSTANCIA: FORMATO AGROPECUARIO
     # ==========================================================================
     servicio2 = GoogleSheetsAExcel(
         service_account_file=SERVICE_ACCOUNT_FILE,
@@ -99,13 +113,14 @@ if __name__ == "__main__":
     )
 
     # Inicializa servicios y llama al método
-    # servicio2.inicializarServicios()
-
+    servicio2.inicializarServicios()
+    # servicio2.llenarYSubirFormatoAgropecuario()
     # servicio2.llenarYSubirFormatoAgropecuario()
 
     # ==========================================================================
-    # 7. CREAR LA TERCERA INSTANCIA: FORMATO COMERCIAL
+    # 8. CREAR LA TERCERA INSTANCIA: FORMATO COMERCIAL
     # ==========================================================================
+    print(RANGE_DESC_ACTIVIDAD)
     servicio3 = GoogleSheetsAExcel(
         service_account_file=SERVICE_ACCOUNT_FILE,
         spreadsheet_id=SPREADSHEET_ID3,  
@@ -113,6 +128,7 @@ if __name__ == "__main__":
 
         range_formato_comercial=RANGE_FORMATO_COMERCIAL,
         range_descripcion_abastecimiento=RANGE_DESCP_ABAST,
+       
         range_descripcion_actividad_precio=RANGE_DESC_ACTIVIDAD,
         range_info_laboral2=RANGE_INFO_LABORAL_COMERCIAL,
         plantilla_formato_comercial=PLANTILLA_FORMATO_COMERCIAL
@@ -121,3 +137,25 @@ if __name__ == "__main__":
     # Inicializa servicios y llama al método
     servicio3.inicializarServicios()
     servicio3.llenarYSubirFormatoComercial()
+
+    # ==========================================================================
+    # 9. CREAR LA CUARTA INSTANCIA: FORMATO SERVICIOS
+    # ==========================================================================
+    servicio4 = GoogleSheetsAExcel(
+        service_account_file=SERVICE_ACCOUNT_FILE,
+        spreadsheet_id=SPREADSHEET_ID4,  
+        drive_folder_id=DRIVE_FOLDER_ID,
+
+        range_formato_servicios=RANGE_FORMATO_SERVICIOS,
+        range_desc_actividad_precio_servicios=RANGE_DESC_ACTIVIDAD_SERVICIOS,
+        range_insumos_abastecimiento_servicios=RANGE_INSUMOS_ABASTECIMIENTO,
+        range_desc_actividad_servicios=RANGE_DESC_ACTIVIDAD_SERVICIOS_NUM,
+        range_equipos_maquinaria_servicios=RANGE_EQUIPOS_MAQUINARIA,
+        range_info_laboral_servicios=RANGE_INFO_LABORAL_SERVICIOS,
+
+        plantilla_formato_servicios=PLANTILLA_FORMATO_SERVICIOS
+    )
+
+    # Inicializa servicios y llama al método
+    servicio4.inicializarServicios()
+    servicio4.llenarYSubirFormatoServicios()

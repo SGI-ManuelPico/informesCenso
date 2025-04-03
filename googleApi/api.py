@@ -5,7 +5,7 @@ import pandas as pd
 from openpyxl import load_workbook
 from datetime import datetime
 import os
-from func.llenarPlantillas import llenarInforme1, llenarFichaPredial, llenarUsosUsuarios, llenarFormatoAgropecuario, llenarFormatoComercial
+from func.llenarPlantillas import llenarInforme1, llenarFichaPredial, llenarUsosUsuarios, llenarFormatoAgropecuario, llenarFormatoComercial, llenarFormatoServicios
 from util.Pdf import Pdf
 
 class GoogleSheetsAExcel:
@@ -38,12 +38,22 @@ class GoogleSheetsAExcel:
         range_descripcion_actividad_precio: str = None,
         range_info_laboral2: str = None,
 
-        # Plantillas 
+        # Rangos para el Formato Servicios
+        range_formato_servicios: str = None, # Rango principal Sheet1
+        range_desc_actividad_precio_servicios: str = None, # data-desc_actividad-precio_servicios
+        range_insumos_abastecimiento_servicios: str = None, # data-begin_insumos-abastecimiento_insumos
+        range_desc_actividad_servicios: str = None, # data-desc_actividad-num_servicios
+        range_equipos_maquinaria_servicios: str = None, # data-equipos_maquinaria
+        range_info_laboral_servicios: str = None, # data-informacion_laboral
+
+
+        # Plantillas
         plantilla_informe1: str = None,
         plantilla_ficha: str = None,
         plantilla_usos_usuarios: str = None,
         plantilla_formato_agro: str = None,
-        plantilla_formato_comercial: str = None
+        plantilla_formato_comercial: str = None,
+        plantilla_formato_servicios: str = None
     ) -> None:
         """
         Constructor de la clase GoogleSheetsAExcel.
@@ -69,10 +79,18 @@ class GoogleSheetsAExcel:
         self.range_detalle_jornal = range_detalle_jornal
 
         # Rangos para el Formato Comercial
-        self.rango_formato_comercial = range_formato_comercial
-        self.rango_descripcion_abastecimiento = range_descripcion_abastecimiento
-        self.rango_descripcion_actividad_precio = range_descripcion_actividad_precio
-        self.rango_info_laboral2 = range_info_laboral2
+        self.range_formato_comercial = range_formato_comercial
+        self.range_descripcion_abastecimiento = range_descripcion_abastecimiento
+        self.range_descripcion_actividad_precio = range_descripcion_actividad_precio
+        self.range_info_laboral2 = range_info_laboral2
+
+        # Rangos para el Formato Servicios
+        self.range_formato_servicios = range_formato_servicios
+        self.range_desc_actividad_precio_servicios = range_desc_actividad_precio_servicios
+        self.range_insumos_abastecimiento_servicios = range_insumos_abastecimiento_servicios
+        self.range_desc_actividad_servicios = range_desc_actividad_servicios
+        self.range_equipos_maquinaria_servicios = range_equipos_maquinaria_servicios
+        self.range_info_laboral_servicios = range_info_laboral_servicios
 
         # Plantillas FP, Id. AE, Usos/Usuarios
         self.plantilla_informe1 = plantilla_informe1
@@ -85,6 +103,10 @@ class GoogleSheetsAExcel:
         # Plantillas para el Formato Comercial
         self.plantilla_formato_comercial = plantilla_formato_comercial
 
+        # Plantillas para el Formato Servicios
+        self.plantilla_formato_servicios = plantilla_formato_servicios
+        
+        
         self.scopes = [
             'https://www.googleapis.com/auth/spreadsheets.readonly',
             'https://www.googleapis.com/auth/drive'
@@ -109,21 +131,25 @@ class GoogleSheetsAExcel:
         """
         Retorna un DataFrame con los datos del rango especificado en la hoja de cálculo.
         """
-        result = self.sheet_service.spreadsheets().values().get(
-            spreadsheetId=self.spreadsheet_id,
-            range=rango
-        ).execute()
+        try:
+            result = self.sheet_service.spreadsheets().values().get(
+                spreadsheetId=self.spreadsheet_id,
+                range=rango
+            ).execute()
 
-        values = result.get('values', [])
-        if not values:
-            raise ValueError(f"No se encontraron datos en el rango '{rango}'")
+            values = result.get('values', [])
+            if not values:
+                raise ValueError(f"No se encontraron datos en el rango '{rango}'")
 
-        columnas = values[0]
-        df = pd.DataFrame(values[1:], columns=columnas)
-        if 'data-fecha' in df.columns:
-            df['data-fecha'] = pd.to_datetime(df['data-fecha'], errors='coerce')
-        
-        return df
+            columnas = values[0]
+            df = pd.DataFrame(values[1:], columns=columnas)
+            if 'data-fecha' in df.columns:
+                df['data-fecha'] = pd.to_datetime(df['data-fecha'], errors='coerce')
+            
+            return df
+
+        except Exception as e:
+            return pd.DataFrame() 
 
     def obtenerOCrearCarpetaPorCodigo(self, codigo: str) -> str:
         """
@@ -506,27 +532,26 @@ class GoogleSheetsAExcel:
         Llama a 'llenarFormatoComercial' y sube el PDF resultante a Drive.
         """
         # 1) Validar que estén configurados el rango principal y la plantilla
-        if not self.rango_formato_comercial or not self.plantilla_formato_comercial:
+        if not self.range_formato_comercial or not self.plantilla_formato_comercial:
             print("No están configurados 'rango_formato_comercial' o 'plantilla_formato_comercial'.")
             return
 
         # 2) Cargar DF principal
-        df_principal = self.fetchDatos(self.rango_formato_comercial)
+        df_principal = self.fetchDatos(self.range_formato_comercial)
 
         # 3) Cargar DFs secundarios
-        df_descripcion_abastecimiento = self.fetchDatos(self.rango_descripcion_abastecimiento)
-        df_descripcion_actividad_precio = self.fetchDatos(self.rango_descripcion_actividad_precio)
-        df_info_laboral = self.fetchDatos(self.rango_info_laboral2)
+        df_descripcion_abastecimiento = self.fetchDatos(self.range_descripcion_abastecimiento)
+        df_descripcion_actividad_precio = self.fetchDatos(self.range_descripcion_actividad_precio)
+        df_info_laboral = self.fetchDatos(self.range_info_laboral2)
 
         pdfConv = Pdf()
 
-        # 4) Iterar sobre cada fila del DF principal
         for idx, df_fila in df_principal.iterrows():
             # Tomamos el código y KEY
             codigo = str(df_fila['data-datos_encuesta-num_encuesta'])
             key = df_fila['KEY']
 
-            # 4a) Filtrar cada DF secundario por 'PARENT_KEY' == key
+             # 4a) Filtrar cada DF secundario por 'PARENT_KEY' == key
             subset_descripcion_abastecimiento = df_descripcion_abastecimiento[df_descripcion_abastecimiento['PARENT_KEY'] == key]
             subset_descripcion_actividad_precio = df_descripcion_actividad_precio[df_descripcion_actividad_precio['PARENT_KEY'] == key]
             subset_info_laboral = df_info_laboral[df_info_laboral['PARENT_KEY'] == key]
@@ -570,6 +595,106 @@ class GoogleSheetsAExcel:
                 fit_to_pages_wide=1,      
                 fit_to_pages_tall=1,       
                 zoom=None,                 
+                center_horizontally=True,
+                center_vertically=True
+            )
+
+            # 10) Subir PDF y limpiar archivos locales
+            self.subirArchivo(ruta_pdf, nombre_pdf, folder_id)
+            os.remove(nombre_excel)
+            os.remove(ruta_pdf)
+
+            print(f"[OK] Se generó y subió {nombre_pdf} en la carpeta '{codigo}'.")
+
+
+    def llenarYSubirFormatoServicios(self):
+        """
+        Lee el rango 'range_formato_servicios' como la tabla principal,
+        Luego filtra los DataFrames secundarios (descripcion_actividad_precio, insumos_abastecimiento, desc_actividad, equipos_maquinaria, info_laboral) usando 'PARENT_KEY == KEY'.
+        Llama a 'llenarFormatoServicios' y sube el PDF resultante a Drive.
+        """
+        # 1) Validar que estén configurados el rango principal y la plantilla
+        if not self.range_formato_servicios or not self.plantilla_formato_servicios:
+            print("No están configurados 'range_formato_servicios' o 'plantilla_formato_servicios'.")
+            return
+
+        # 2) Cargar DF principal
+        df_principal = self.fetchDatos(self.range_formato_servicios)
+
+                # range_formato_servicios: str = None,
+        # range_desc_actividad_precio_servicios: str = None,
+        # range_insumos_abastecimiento_servicios: str = None,
+        # range_desc_actividad_servicios: str = None,
+        # range_equipos_maquinaria_servicios: str = None,
+        # range_info_laboral_servicios: str = None,
+
+        # 3) Cargar DFs secundarios
+        df_descripcion_actividad_precio = self.fetchDatos(self.range_desc_actividad_precio_servicios)
+        df_insumos_abastecimiento = self.fetchDatos(self.range_insumos_abastecimiento_servicios)
+        df_desc_actividad = self.fetchDatos(self.range_desc_actividad_servicios)
+        df_equipos_maquinaria = self.fetchDatos(self.range_equipos_maquinaria_servicios)
+        df_info_laboral = self.fetchDatos(self.range_info_laboral_servicios)
+
+        pdfConv = Pdf()
+
+        # 4) Iterar sobre cada fila del DF principal
+        for idx, df_fila in df_principal.iterrows():
+            # Tomamos el código y KEY
+            codigo = str(df_fila['data-datos_encuesta-num_encuesta'])
+            key = df_fila['KEY']
+            
+
+            # 4a) Filtrar cada DF secundario por 'PARENT_KEY' == key
+            subset_descripcion_actividad_precio = df_descripcion_actividad_precio[df_descripcion_actividad_precio['PARENT_KEY'] == key]
+            subset_insumos_abastecimiento = df_insumos_abastecimiento[df_insumos_abastecimiento['PARENT_KEY'] == key]
+            subset_desc_actividad = df_desc_actividad[df_desc_actividad['PARENT_KEY'] == key]
+            subset_equipos_maquinaria = df_equipos_maquinaria[df_equipos_maquinaria['PARENT_KEY'] == key]
+            if not df_info_laboral.empty:
+                subset_info_laboral = df_info_laboral[df_info_laboral['PARENT_KEY'] == key]
+            else:
+                subset_info_laboral = pd.DataFrame()
+
+            # 5) Crear/obtener la carpeta en Drive
+            folder_id = self.obtenerOCrearCarpetaPorCodigo(codigo)
+
+            # 6) Definir nombre del PDF y chequear si existe
+            nombre_pdf = f"{codigo}_formatoServicios.pdf"
+            if self.archivoExiste(nombre_pdf, folder_id):
+                print(f"El archivo {nombre_pdf} ya existe en '{codigo}'. Omitiendo...")
+                continue
+
+            # 7) Cargar plantilla de Excel
+            wb = load_workbook(self.plantilla_formato_servicios)
+            # Asume que la hoja que te interesa es la activa
+            ws = wb.active
+
+            # 8) Llamar función de llenado
+            llenarFormatoServicios(
+                ws,
+                df_fila,
+                subset_descripcion_actividad_precio,
+                subset_insumos_abastecimiento,
+                subset_desc_actividad,
+                subset_equipos_maquinaria,
+                subset_info_laboral
+            )
+
+            # 9) Guardar Excel temporal
+            nombre_excel = f"{codigo}_formatoServicios.xlsx"
+            wb.save(nombre_excel)
+
+            # 9b) Convertir a PDF
+            ruta_pdf = f"{codigo}_formatoServicios.pdf"
+
+            pdfConv.excelPdf(
+                excel_path=nombre_excel,
+                pdf_path=ruta_pdf,
+                sheet_name=None,
+                orientation=2,
+                paper_size=9,
+                fit_to_pages_wide=1,
+                fit_to_pages_tall=1,
+                zoom=None,
                 center_horizontally=True,
                 center_vertically=True
             )
