@@ -2051,821 +2051,813 @@ def llenarFormatoComercial(ws, df_fila, df_descripcion_actividad_abastecimiento,
         cell_lugar.alignment = Alignment(wrap_text=True)        
 
 
-def llenarInforme4(ws, df_fila):
-        ws['AO1'] = df_fila["Encuesta No."]
+def llenarFormatoServicios(ws, df_fila, df_desc_actividad_precio_servicios, df_insumos_abastecimiento, df_desc_actividad, df_equipos_maquinaria, df_info_laboral):
+    ws['AO1'] = df_fila["data-datos_encuesta-num_encuesta"]
 
-        if pd.notna(df_fila['Fecha(DD/MM/AAAA)']):
-            fecha_str = str(df_fila['Fecha(DD/MM/AAAA)'])
-            if '/' in fecha_str:
-                ws['AN2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
-                ws['AQ2'] = fecha_str.split('/')[1]
-                ws['AT2'] = fecha_str.split('/')[0]
-            elif '-' in fecha_str:
-                ws['AN2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
-                ws['AQ2'] = fecha_str.split('-')[1]
-                ws['AT2'] = fecha_str.split('-')[0] ####### LLENAR FECHA EN ESPACIOS VACÍOS Y NO SOBRE EL SÍMBOLO.
-            else:
-                print(f'Formato de fecha inesperado: {fecha_str}')
-        else:
-            print('Campo de fecha vacío')
+    if pd.notna(df_fila['data-datos_encuesta-fecha']):
+        fecha_str = str(df_fila['data-datos_encuesta-fecha'])
+        dia, mes, año = fecha_str.split('/')
+        ws['AN2'] = dia
+        ws['AQ2'] = mes
+        ws['AT2'] = año
 
-        ws['AN3'] = df_fila["Encuestador"]
-        ws['F7'] = df_fila["Nombre"]
-        ws['AB7'] = df_fila["Empresa"]
-        ws['AR7'] = df_fila["Cargo"]
+    else:
+        print('Campo de fecha vacío')
 
-        if df_fila["¿Pertenece a alguna asociación?"] == 'Si':
-            ws['AB8'] = 'X'
-            ws['AO8'] = df_fila["Otro, ¿Cuál?"]
-        elif df_fila["¿Pertenece a alguna asociación?"] == 'No':
-            ws['AD8'] = 'X'
+    ws['AN3'] = df_fila["data-datos_encuesta-encuestador"]
+    ws['F7']  = df_fila["data-ident_entrevistado-nombre"]
+    ws['AB7'] = df_fila["data-ident_entrevistado-empresa"]
+    ws['AR7'] = df_fila["data-ident_entrevistado-cargo"]
 
-        actividad = df_fila['¿Qué tipo de servicios oferta?']
-        if actividad == 'Restaurante, cafetería':
-            ws['P13'] = 'X'
-        elif actividad == 'Bar y centro nocturno':
-            ws['P14'] = 'X'
-        elif actividad == 'Servicios sexuales':
-            ws['P15'] = 'X'
-        elif actividad == 'Estación de servicios (combustible, montallantas, servicios)':
-            ws['P17'] = 'X'
-        elif actividad == 'Servicio de giros y/o financieros':
-            ws['P19'] = 'X'
-        elif actividad == 'Hospedaje (diligenciar título E)':
-            ws['P21'] = 'X'
+    if df_fila["data-ident_entrevistado-pertenencia_asociacion"] == 'yes':
+        ws['AB8'] = 'X'
+        ws['AO8'] = df_fila["data-ident_entrevistado-asociacion_cual"]
+    elif df_fila["data-ident_entrevistado-pertenencia_asociacion"] == 'no':
+        ws['AD8'] = 'X'
 
-            ################
-            #### ws E ####
-            ################
+    map_tipo_servicio = {
+        'restaurante': 'P13',
+        'bar': 'P14',
+        'sexuales': 'P15',
+        'estacion_servicios': 'P17',
+        'giros': 'P19',
+        'hospedaje': 'P21',
+        'educacion': 'P22',
+        'otros': 'P23',
+        }
+        
+    tipo_servicio = df_fila['data-desc_actividad-tipo_servicios'].split(', ')
+    for servicio in tipo_servicio:
+        ws[map_tipo_servicio[servicio]] = 'X'
+        if servicio == 'otros':
+            ws['P24'] = df_fila['data-desc_actividad-tipo_servicios_otros']
 
-            if df_fila['¿Qué tipo de hospedaje oferta?'] == 'Hotel':
-                ws['F60'] = 'X'
-            elif df_fila['¿Qué tipo de hospedaje oferta?'] == 'Motel':
-                ws['F61'] = 'X'
-            elif df_fila['¿Qué tipo de hospedaje oferta?'] == 'Apartahotel':
-                ws['F62'] = 'X'
-            elif df_fila['¿Qué tipo de hospedaje oferta?'] == 'Pensión':
-                ws['F63'] = 'X'
-            elif df_fila['¿Qué tipo de hospedaje oferta?'] == 'Cabaña':
-                ws['M60'] = 'X'
-            elif df_fila['¿Qué tipo de hospedaje oferta?'] == 'Finca ecoturística':
-                ws['M61'] = 'X'
-            elif df_fila['¿Qué tipo de hospedaje oferta?'] == 'Otro':
-                ws['M62'] = 'X'
-                ws['J24'] = df_fila['Otro, ¿Cuál?.4']
-            
-            ws['R60'] = df_fila["¿Qué capacidad de alojamiento tiene?"]
-            ws['AE60'] = df_fila["Semanalmente, ¿Cuántas personas en promedio hospeda?"]
-            ws['AO60'] = df_fila["¿Cuáles son los principales sitios de procedencia de los huéspedes?"]
-
-
-        elif actividad == 'Educacion':
-            ws['P22'] = 'X'
-        elif actividad == 'Otros':
-            ws['P23'] = 'X'
-            ws['J24'] = df_fila['Otros, ¿Cuáles?']
-
-        if df_fila["Vende principalmente en:"] =='Sitio':
-            ws['I28'] = 'X'
-        if df_fila["Vende principalmente en:"] =='Vereda':
-            ws['I29'] = 'X'
-        if df_fila["Vende principalmente en:"] =='Casco Urbano':
-            ws['I30'] = 'X'
-        if df_fila["Vende principalmente en:"] =='Otros Municipios y/o Veredas':
-            ws['T28'] = 'X'
-            ws['P30'] = df_fila['Otros, ¿Cuáles?.1']
-
-
-        ws['AB13'] = df_fila["Servicio 1"]
-        ws['AN13'] = df_fila["Precio"]
-        ws['AB14'] = df_fila["Servicio 2"]
-        ws['AN14'] = df_fila["Precio.1"]
-        ws['AB15'] = df_fila["Servicio 3"]
-        ws['AN151'] = df_fila["Precio.2"]
-        ws['AB16'] = df_fila["Servicio 4"]
-        ws['AN16'] = df_fila["Precio.3"]
-
-        ws['AC19'] = df_fila["Servicio 1.1"]
-        ws['AC20'] = df_fila["Servicio 2.1"]
-        ws['AO19'] = df_fila["Servicio 3"]
-        ws['AO20'] = df_fila["Servicio 4"]
-
-        actividad2 = df_fila['Frecuencia con que vende los servicios:']
-        if actividad2 == 'Diario':
-            ws['AI23'] = 'X'
-        elif actividad2 == 'Semanal':
-            ws['AI25'] = 'X'
-        elif actividad2 == 'Quincenal':
-            ws['AI24'] = 'X'
-        elif actividad2 == 'Mensual':
-            ws['AR24'] = 'X'
-
-
-        if str(df_fila['Hidrocarburos']) != "nan":
-            ws['AI28'] = 'X'
-            ws['AO28'] = df_fila['Hidrocarburos']
-        elif str(df_fila['Vereda']) != "nan":
-            ws['AI29'] = 'X'
-            ws['AO29'] = df_fila['Vereda']
-        elif str(df_fila['Finca/Propiet.']) != "nan":
-            ws['AI30'] = 'X'
-            ws['AO30'] = df_fila['Finca/Propiet.']
-
-        if df_fila["Sobre la actividad, piensa: Continuidad"] == "Continuar con la actividad":
-            ws['L33'] = 'X'
-            ws['AG34'] = 'X'
-        elif df_fila["Sobre la actividad, piensa: Continuidad"] == "Finalizar la actividad":
-            ws['N33'] = 'X'
-            ws['AE34'] = 'X'
-        if df_fila["Sobre la actividad, piensa: Producción"] == "Ampliar la producción":
-            ws['L34'] = 'X'
-            ws['AG33'] = 'X'
-        elif df_fila["Sobre la actividad, piensa: Producción"] == "Permanecer con la misma producción":
-            ws['N34'] = 'X'
-            ws['AE33'] = 'X'
-        elif df_fila["Sobre la actividad, piensa: Producción"] == "Ninguna de las anteriores":
-            ws['N34'] = 'X'
-            ws['AG33'] = 'X'
-
-        ws['AO34'] = df_fila['¿Por qué?']
-
-        actividad6 = df_fila['¿De dónde se abastece del recurso hídrico?']
-        if actividad6 == 'Aljibe':
-            ws['W36'] = 'X'
-        elif actividad6 == 'Acueducto Veredal':
-            ws['AE36'] = 'X'
-        elif actividad6 == 'Otro':
-            ws['AL36'] = 'X'
-            ws['AQ36'] = df_fila['Otro, ¿Cuál?.1']
+    if 'hospedaje ' in tipo_servicio:
     
-        ws['W37'] = df_fila["Forma de extracción"]
-        ws['AQ37'] = df_fila["Cantidad estimada (agregar m3)"]
-
-
-        actividad7 = df_fila['¿Qué tipo de energía utiliza?']
-        if actividad7 == 'Energía Eléctrica':
-            ws['AA38'] = 'X'
-        elif actividad7 == 'Energía Solar':
-            ws['AJ38'] = 'X'
-        elif actividad7 == 'Otro':
-            ws['AP38'] = df_fila['Otro, ¿Cuál?.2']
-
-        actividad8 = df_fila['¿De dónde proviene la energía que utiliza para la cocción de alimentos?']
-        if actividad8 == 'Energía elétrica':
-            ws['AA39'] = 'X'
-        elif actividad8 == 'Leña':
-            ws['AF39'] = 'X'
-        elif actividad8 == 'Gas':
-            ws['AL39'] = 'X'
-        elif actividad8 == 'Otro':
-            ws['AQ39'] = df_fila['Otro, ¿Cuál?.3']
-
-        if df_fila["¿Cuenta con servicio de alcantarillado?"] == "Si":
-            ws['AB40'] = 'X'
-            ws['AO40'] = df_fila['¿Cuál?']
-        elif df_fila["¿Cuenta con servicio de alcantarillado?"] == "No":
-            ws['AD40'] = 'X'
-
-        ##### ABASTECIMIENTO DE INSUMOS #####
-
-        ## SERVICIO 1
-        ws['B44'] = df_fila["Servicio 1.2"]
-        ws['J44'] = df_fila["Insumo/Materia prima"]
-        ws['S44'] = df_fila["Precio compra"]
-        ws['AB44'] = df_fila["Cantidad"]
-        ws['AI44'] = df_fila["Frecuencia de compra"]
-        ws['AQ44'] = df_fila["Procedencia"]
-
-        ## SERVICIO 2
-        ws['B45'] = df_fila["Servicio 2.2"]
-        ws['J45'] = df_fila["Insumo/Materia prima.1"]
-        ws['S45'] = df_fila["Precio compra.1"]
-        ws['AB45'] = df_fila["Cantidad.1"]
-        ws['AI45'] = df_fila["Frecuencia de compra.1"]
-        ws['AQ45'] = df_fila["Procedencia.1"]
-
-        ## SERVICIO 3
-        ws['B46'] = df_fila["Servicio 3.1"]
-        ws['J46'] = df_fila["Insumo/Materia prima.2"]
-        ws['S46'] = df_fila["Precio compra.2"]
-        ws['AB46'] = df_fila["Cantidad.2"]
-        ws['AI46'] = df_fila["Frecuencia de compra.2"]
-        ws['AQ46'] = df_fila["Procedencia.2"]
-
-        ## SERVICIO 4
-        ws['B47'] = df_fila["Servicio 4.1"]
-        ws['J47'] = df_fila["Insumo/Materia prima.3"]
-        ws['S47'] = df_fila["Precio compra.3"]
-        ws['AB47'] = df_fila["Cantidad.3"]
-        ws['AI47'] = df_fila["Frecuencia de compra.3"]
-        ws['AQ47'] = df_fila["Procedencia.3"]
-
-        ## SERVICIO 5
-        ws['B48'] = df_fila["Servicio 5"]
-        ws['J48'] = df_fila["Insumo/Materia prima.4"]
-        ws['S48'] = df_fila["Precio compra.4"]
-        ws['AB48'] = df_fila["Cantidad.4"]
-        ws['AI48'] = df_fila["Frecuencia de compra.4"]
-        ws['AQ48'] = df_fila["Procedencia.4"]
-
-        ws['W49'] = df_fila["¿Cuál fue el monto total gastado en insumos del último mes?"]
-
-        ##### EQUIPOS Y MAQUINARIA #####
-
-        ## EQUIPO 1
-        ws['B53'] = df_fila["Equipo/maquinaria"]
-        ws['N53'] = df_fila["Precio compra"]
-        ws['X53'] = df_fila["Cantidad que posee la unidad económica"]
-        ws['AF53'] = df_fila["Vida útil"]
-        ws['AO53'] = df_fila["Procedencia.5"]
-
-        ## EQUIPO 2
-        ws['B54'] = df_fila["Equipo/maquinaria.1"]
-        ws['N54'] = df_fila["Precio compra.1"]
-        ws['X54'] = df_fila["Cantidad que posee la unidad económica.1"]
-        ws['AF54'] = df_fila["Vida útil.1"]
-        ws['AO54'] = df_fila["Procedencia.6"]
-
-        ## EQUIPO 3
-        ws['B55'] = df_fila["Equipo/maquinaria.2"]
-        ws['N55'] = df_fila["Precio compra.2"]
-        ws['X55'] = df_fila["Cantidad que posee la unidad económica.2"]
-        ws['AF55'] = df_fila["Vida útil.2"]
-        ws['AO55'] = df_fila["Procedencia.7"]
-
-        ## EQUIPO 4
-        ws['B56'] = df_fila["Equipo/maquinaria.3"]
-        ws['N56'] = df_fila["Precio compra.3"]
-        ws['X56'] = df_fila["Cantidad que posee la unidad económica.3"]
-        ws['AF56'] = df_fila["Vida útil.3"]
-        ws['AO56'] = df_fila["Procedencia.8"]
-
-        if df_fila["Contrata algún tipo de mano de obra"] == "Si":
-            ws['AC64'] = 'X'
-
-            #### Persona 1 ####
-
-            if df_fila["Tipo de mano de obra"] == "Familiar":
-                ws['B69'] = 'X'
-            elif df_fila["Tipo de mano de obra"] == "Contratado":
-                ws['D69'] = 'X'
-
-            ws['E69'] = df_fila["Cargo.1"]
-
-            if df_fila["Género"] == "Masculino":
-                ws['J69'] = 'X'
-            elif df_fila["Género"] == "Femenino":
-                ws['H69'] = 'X'
-
-            ws['K69'] = df_fila["Edad (años)"]
-            ws['L69'] = df_fila["Duración jornada (horas)"]
-
-            actividad9 = df_fila['Escolaridad']
-            if actividad9 == 'Primaria':
-                ws['N69'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                ws['Q69'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                ws['S69'] = 'X'
-            elif actividad9 == 'Profesional':
-                ws['U69'] = 'X'
-            elif actividad9 == 'Posgrado':
-                ws['W69'] = 'X'
-
-            if df_fila['Contrato'] == 'Tem.':
-                ws['Y69'] = 'X'
-            elif df_fila['Contrato'] == 'Fij':
-                ws['AC69'] = 'X'
-            
-            if df_fila['Pago de seguridad'] == 'Si':
-                ws['AE69'] = 'X'
-            elif df_fila['Pago de seguridad'] == 'No':
-                ws['AG69'] = 'X'
-
-            ws['AH69'] = df_fila["Procedencia.9"]
-            ws['AI69'] = df_fila["Residencia"]
-            ws['AL69'] = df_fila["Tiempo trabajado"]
-            ws['AM69'] = df_fila["# Personas núcleo familiar"]
-            ws['AO69'] = df_fila["Personas a cargo"]
-            ws['AP69'] = df_fila["Lugar de residencia familiar"]
+        map_hospedaje = {
+            'hotel': 'F60',
+            'motel': 'F61',
+            'apartahotel': 'F62',
+            'pension': 'F63',
+            'cabaña': 'M60',
+            'finca_ecoturistica': 'M61',
+            'otros': 'M62',
+            }
         
-            actividad10 = df_fila['Remuneración']
-            if actividad10 == 'Inferiores a $900.000':
-                ws['AR69'] = 'X'
-            elif actividad10 == '$901.000 - $1.800.000':
-                ws['AS69'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                ws['AT69'] = 'X'
-            elif actividad10 == 'superiores a $2.701.000':
-                ws['AU69'] = 'X'
+        hospedaje = df_fila['data-capacidad_hotelera-tipo_hospedaje'].split(', ')
+        for servicio in hospedaje:
+            ws[map_hospedaje[servicio]] = 'X'
+            if servicio == 'otros':
+                ws['J24'] = df_fila['data-capacidad_hotelera-tipo_hospedaje_other']
 
-            ##### Persona 2 #####
-
-            if df_fila["Tipo de mano de obra.1"] == "Familiar":
-                ws['B70'] = 'X'
-            elif df_fila["Tipo de mano de obra.1"] == "Contratado":
-                ws['D70'] = 'X'
-
-            ws['E70'] = df_fila["Cargo.2"]
-
-            if df_fila["Género.1"] == "Masculino":
-                ws['J70'] = 'X'
-            elif df_fila["Género.1"] == "Femenino":
-                ws['H70'] = 'X'
-
-            ws['K70'] = df_fila["Edad (años).1"]
-            ws['L70'] = df_fila["Duración jornada (horas).1"]
-
-            actividad9 = df_fila['Escolaridad.1']
-            if actividad9 == 'Primaria':
-                ws['N70'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                ws['Q70'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                ws['S70'] = 'X'
-            elif actividad9 == 'Profesional':
-                ws['U70'] = 'X'
-            elif actividad9 == 'Posgrado':
-                ws['W70'] = 'X'
-
-            if df_fila['Contrato.1'] == 'Tem.':
-                ws['Y70'] = 'X'
-            elif df_fila['Contrato.1'] == 'Fij':
-                ws['AC70'] = 'X'
-            
-            if df_fila['Pago de seguridad.1'] == 'Si':
-                ws['AE70'] = 'X'
-            elif df_fila['Pago de seguridad.1'] == 'No':
-                ws['Ag70'] = 'X'
-
-            ws['AH70'] = df_fila["Procedencia.10"]
-            ws['AI70'] = df_fila["Residencia.1"]
-            ws['AL70'] = df_fila["Tiempo trabajado.1"]
-            ws['AM70'] = df_fila["# Personas núcleo familiar.1"]
-            ws['AO70'] = df_fila["Personas a cargo.1"]
-            ws['AP70'] = df_fila["Lugar de residencia familiar.1"]
         
-            actividad10 = df_fila['Remuneración.1']
-            if actividad10 == 'Inferiores a $900.000':
-                ws['AR70'] = 'X'
-            elif actividad10 == '$901.000 - $1.800.000':
-                ws['AS70'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                ws['AT70'] = 'X'
-            elif actividad10 == 'superiores a $2.701.000':
-                ws['AU70'] = 'X'
+        ws['R60'] = df_fila["data-capacidad_hotelera-capacidad_alojamiento"]
+        ws['AE60'] = df_fila["data-capacidad_hotelera-personas_hospedadas"]
+        ws['AO60'] = df_fila["¿data-capacidad_hotelera-procedencia_huespedes"]
 
-            ##### Persona 3 #####
+    if True:
+        pass
+    elif actividad == 'Educacion':
+        ws['P22'] = 'X'
+    elif actividad == 'Otros':
+        ws['P23'] = 'X'
+        ws['J24'] = df_fila['Otros, ¿Cuáles?']
 
-            if df_fila["Tipo de mano de obra.2"] == "Familiar":
-                ws['B71'] = 'X'
-            elif df_fila["Tipo de mano de obra.2"] == "Contratado":
-                ws['D71'] = 'X'
+    # if df_fila["Vende principalmente en:"] =='Sitio':
+    ws['I28'] = 'X'
+    # if df_fila["Vende principalmente en:"] =='Vereda':
+    #     ws['I29'] = 'X'
+    # if df_fila["Vende principalmente en:"] =='Casco Urbano':
+    #     ws['I30'] = 'X'
+    # if df_fila["Vende principalmente en:"] =='Otros Municipios y/o Veredas':
+    #     ws['T28'] = 'X'
+    #     ws['P30'] = df_fila['Otros, ¿Cuáles?.1']
 
-            ws['E71'] = df_fila["Cargo.3"]
+    for i, fila_servicio in df_desc_actividad_precio_servicios.iterrows():
+        if i < 4:
+            servicio = fila_servicio['data-desc_actividad-precio_servicios-servicio']
+            precio = fila_servicio['data-desc_actividad-precio_servicios-precio']
+            ws[f'AB{i+13}'] = servicio
+            ws[f'AN{i+13}'] = precio
+        else:
+            break
 
-            if df_fila["Género.2"] == "Masculino":
-                ws['J71'] = 'X'
-            elif df_fila["Género.2"] == "Femenino":
-                ws['H71'] = 'X'
+    mapa_frecuencia = {
+        'diario': 'AI23',
+        'semanal': 'AI24',
+        'quincenal': 'AI25',
+        'mensual': 'AP23',
+        'semestral': 'AP24',
+        'otro': 'AP25'
+    }
+    frecuencia = df_fila['data-desc_actividad-frecuencia_servicios']
+    ws[mapa_frecuencia[frecuencia]] = 'X'
 
-            ws['K71'] = df_fila["Edad (años).2"]
-            ws['L71'] = df_fila["Duración jornada (horas).2"]
+    if str(df_fila['Hidrocarburos']) != "nan":
+        ws['AI28'] = 'X'
+        ws['AO28'] = df_fila['Hidrocarburos']
+    elif str(df_fila['Vereda']) != "nan":
+        ws['AI29'] = 'X'
+        ws['AO29'] = df_fila['Vereda']
+    elif str(df_fila['Finca/Propiet.']) != "nan":
+        ws['AI30'] = 'X'
+        ws['AO30'] = df_fila['Finca/Propiet.']
 
-            actividad9 = df_fila['Escolaridad.2']
-            if actividad9 == 'Primaria':
-                ws['N71'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                ws['Q71'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                ws['S71'] = 'X'
-            elif actividad9 == 'Profesional':
-                ws['U71'] = 'X'
-            elif actividad9 == 'Posgrado':
-                ws['W71'] = 'X'
+    if df_fila["Sobre la actividad, piensa: Continuidad"] == "Continuar con la actividad":
+        ws['L33'] = 'X'
+        ws['AG34'] = 'X'
+    elif df_fila["Sobre la actividad, piensa: Continuidad"] == "Finalizar la actividad":
+        ws['N33'] = 'X'
+        ws['AE34'] = 'X'
+    if df_fila["Sobre la actividad, piensa: Producción"] == "Ampliar la producción":
+        ws['L34'] = 'X'
+        ws['AG33'] = 'X'
+    elif df_fila["Sobre la actividad, piensa: Producción"] == "Permanecer con la misma producción":
+        ws['N34'] = 'X'
+        ws['AE33'] = 'X'
+    elif df_fila["Sobre la actividad, piensa: Producción"] == "Ninguna de las anteriores":
+        ws['N34'] = 'X'
+        ws['AG33'] = 'X'
 
-            if df_fila['Contrato.2'] == 'Tem.':
-                ws['Y71'] = 'X'
-            elif df_fila['Contrato.2'] == 'Fij':
-                ws['AC71'] = 'X'
-            
-            if df_fila['Pago de seguridad.2'] == 'Si':
-                ws['AE71'] = 'X'
-            elif df_fila['Pago de seguridad.2'] == 'No':
-                ws['AG71'] = 'X'
+    ws['AO34'] = df_fila['¿Por qué?']
 
-            ws['AH71'] = df_fila["Procedencia.11"]
-            ws['AI71'] = df_fila["Residencia.2"]
-            ws['AL71'] = df_fila["Tiempo trabajado.2"]
-            ws['AM71'] = df_fila["# Personas núcleo familiar.2"]
-            ws['AO71'] = df_fila["Personas a cargo.2"]
-            ws['AP71'] = df_fila["Lugar de residencia familiar.2"]
+    actividad6 = df_fila['¿De dónde se abastece del recurso hídrico?']
+    if actividad6 == 'Aljibe':
+        ws['W36'] = 'X'
+    elif actividad6 == 'Acueducto Veredal':
+        ws['AE36'] = 'X'
+    elif actividad6 == 'Otro':
+        ws['AL36'] = 'X'
+        ws['AQ36'] = df_fila['Otro, ¿Cuál?.1']
+
+    ws['W37'] = df_fila["Forma de extracción"]
+    ws['AQ37'] = df_fila["Cantidad estimada (agregar m3)"]
+
+
+    actividad7 = df_fila['¿Qué tipo de energía utiliza?']
+    if actividad7 == 'Energía Eléctrica':
+        ws['AA38'] = 'X'
+    elif actividad7 == 'Energía Solar':
+        ws['AJ38'] = 'X'
+    elif actividad7 == 'Otro':
+        ws['AP38'] = df_fila['Otro, ¿Cuál?.2']
+
+    actividad8 = df_fila['¿De dónde proviene la energía que utiliza para la cocción de alimentos?']
+    if actividad8 == 'Energía elétrica':
+        ws['AA39'] = 'X'
+    elif actividad8 == 'Leña':
+        ws['AF39'] = 'X'
+    elif actividad8 == 'Gas':
+        ws['AL39'] = 'X'
+    elif actividad8 == 'Otro':
+        ws['AQ39'] = df_fila['Otro, ¿Cuál?.3']
+
+    if df_fila["¿Cuenta con servicio de alcantarillado?"] == "Si":
+        ws['AB40'] = 'X'
+        ws['AO40'] = df_fila['¿Cuál?']
+    elif df_fila["¿Cuenta con servicio de alcantarillado?"] == "No":
+        ws['AD40'] = 'X'
+
+    ##### ABASTECIMIENTO DE INSUMOS #####
+
+    ## SERVICIO 1
+    ws['B44'] = df_fila["Servicio 1.2"]
+    ws['J44'] = df_fila["Insumo/Materia prima"]
+    ws['S44'] = df_fila["Precio compra"]
+    ws['AB44'] = df_fila["Cantidad"]
+    ws['AI44'] = df_fila["Frecuencia de compra"]
+    ws['AQ44'] = df_fila["Procedencia"]
+
+    ## SERVICIO 2
+    ws['B45'] = df_fila["Servicio 2.2"]
+    ws['J45'] = df_fila["Insumo/Materia prima.1"]
+    ws['S45'] = df_fila["Precio compra.1"]
+    ws['AB45'] = df_fila["Cantidad.1"]
+    ws['AI45'] = df_fila["Frecuencia de compra.1"]
+    ws['AQ45'] = df_fila["Procedencia.1"]
+
+    ## SERVICIO 3
+    ws['B46'] = df_fila["Servicio 3.1"]
+    ws['J46'] = df_fila["Insumo/Materia prima.2"]
+    ws['S46'] = df_fila["Precio compra.2"]
+    ws['AB46'] = df_fila["Cantidad.2"]
+    ws['AI46'] = df_fila["Frecuencia de compra.2"]
+    ws['AQ46'] = df_fila["Procedencia.2"]
+
+    ## SERVICIO 4
+    ws['B47'] = df_fila["Servicio 4.1"]
+    ws['J47'] = df_fila["Insumo/Materia prima.3"]
+    ws['S47'] = df_fila["Precio compra.3"]
+    ws['AB47'] = df_fila["Cantidad.3"]
+    ws['AI47'] = df_fila["Frecuencia de compra.3"]
+    ws['AQ47'] = df_fila["Procedencia.3"]
+
+    ## SERVICIO 5
+    ws['B48'] = df_fila["Servicio 5"]
+    ws['J48'] = df_fila["Insumo/Materia prima.4"]
+    ws['S48'] = df_fila["Precio compra.4"]
+    ws['AB48'] = df_fila["Cantidad.4"]
+    ws['AI48'] = df_fila["Frecuencia de compra.4"]
+    ws['AQ48'] = df_fila["Procedencia.4"]
+
+    ws['W49'] = df_fila["¿Cuál fue el monto total gastado en insumos del último mes?"]
+
+    ##### EQUIPOS Y MAQUINARIA #####
+
+    ## EQUIPO 1
+    ws['B53'] = df_fila["Equipo/maquinaria"]
+    ws['N53'] = df_fila["Precio compra"]
+    ws['X53'] = df_fila["Cantidad que posee la unidad económica"]
+    ws['AF53'] = df_fila["Vida útil"]
+    ws['AO53'] = df_fila["Procedencia.5"]
+
+    ## EQUIPO 2
+    ws['B54'] = df_fila["Equipo/maquinaria.1"]
+    ws['N54'] = df_fila["Precio compra.1"]
+    ws['X54'] = df_fila["Cantidad que posee la unidad económica.1"]
+    ws['AF54'] = df_fila["Vida útil.1"]
+    ws['AO54'] = df_fila["Procedencia.6"]
+
+    ## EQUIPO 3
+    ws['B55'] = df_fila["Equipo/maquinaria.2"]
+    ws['N55'] = df_fila["Precio compra.2"]
+    ws['X55'] = df_fila["Cantidad que posee la unidad económica.2"]
+    ws['AF55'] = df_fila["Vida útil.2"]
+    ws['AO55'] = df_fila["Procedencia.7"]
+
+    ## EQUIPO 4
+    ws['B56'] = df_fila["Equipo/maquinaria.3"]
+    ws['N56'] = df_fila["Precio compra.3"]
+    ws['X56'] = df_fila["Cantidad que posee la unidad económica.3"]
+    ws['AF56'] = df_fila["Vida útil.3"]
+    ws['AO56'] = df_fila["Procedencia.8"]
+
+    if df_fila["Contrata algún tipo de mano de obra"] == "Si":
+        ws['AC64'] = 'X'
+
+        #### Persona 1 ####
+
+        if df_fila["Tipo de mano de obra"] == "Familiar":
+            ws['B69'] = 'X'
+        elif df_fila["Tipo de mano de obra"] == "Contratado":
+            ws['D69'] = 'X'
+
+        ws['E69'] = df_fila["Cargo.1"]
+
+        if df_fila["Género"] == "Masculino":
+            ws['J69'] = 'X'
+        elif df_fila["Género"] == "Femenino":
+            ws['H69'] = 'X'
+
+        ws['K69'] = df_fila["Edad (años)"]
+        ws['L69'] = df_fila["Duración jornada (horas)"]
+
+        actividad9 = df_fila['Escolaridad']
+        if actividad9 == 'Primaria':
+            ws['N69'] = 'X'
+        elif actividad9 == 'Bachillerato':
+            ws['Q69'] = 'X'
+        elif actividad9 == 'Técnico o tecnológico':
+            ws['S69'] = 'X'
+        elif actividad9 == 'Profesional':
+            ws['U69'] = 'X'
+        elif actividad9 == 'Posgrado':
+            ws['W69'] = 'X'
+
+        if df_fila['Contrato'] == 'Tem.':
+            ws['Y69'] = 'X'
+        elif df_fila['Contrato'] == 'Fij':
+            ws['AC69'] = 'X'
         
-            actividad10 = df_fila['Remuneración.2']
-            if actividad10 == 'Inferiores a $900.000':
-                ws['AR71'] = 'X'
-            elif actividad10 == '$901.000 - $1.800.000':
-                ws['AS71'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                ws['AT71'] = 'X'
-            elif actividad10 == 'superiores a $2.701.000':
-                ws['AU71'] = 'X'
+        if df_fila['Pago de seguridad'] == 'Si':
+            ws['AE69'] = 'X'
+        elif df_fila['Pago de seguridad'] == 'No':
+            ws['AG69'] = 'X'
 
-            ##### Persona 4 #####
+        ws['AH69'] = df_fila["Procedencia.9"]
+        ws['AI69'] = df_fila["Residencia"]
+        ws['AL69'] = df_fila["Tiempo trabajado"]
+        ws['AM69'] = df_fila["# Personas núcleo familiar"]
+        ws['AO69'] = df_fila["Personas a cargo"]
+        ws['AP69'] = df_fila["Lugar de residencia familiar"]
+    
+        actividad10 = df_fila['Remuneración']
+        if actividad10 == 'Inferiores a $900.000':
+            ws['AR69'] = 'X'
+        elif actividad10 == '$901.000 - $1.800.000':
+            ws['AS69'] = 'X'
+        elif actividad10 == '$1.801.000 - $2.700.000':
+            ws['AT69'] = 'X'
+        elif actividad10 == 'superiores a $2.701.000':
+            ws['AU69'] = 'X'
 
-            if df_fila["Tipo de mano de obra.3"] == "Familiar":
-                ws['B72'] = 'X'
-            elif df_fila["Tipo de mano de obra.3"] == "Contratado":
-                ws['D72'] = 'X'
+        ##### Persona 2 #####
 
-            ws['E72'] = df_fila["Cargo.4"]
+        if df_fila["Tipo de mano de obra.1"] == "Familiar":
+            ws['B70'] = 'X'
+        elif df_fila["Tipo de mano de obra.1"] == "Contratado":
+            ws['D70'] = 'X'
 
-            if df_fila["Género.3"] == "Masculino":
-                ws['J72'] = 'X'
-            elif df_fila["Género.3"] == "Femenino":
-                ws['H72'] = 'X'
+        ws['E70'] = df_fila["Cargo.2"]
 
-            ws['K72'] = df_fila["Edad (años).3"]
-            ws['L72'] = df_fila["Duración jornada (horas).3"]
+        if df_fila["Género.1"] == "Masculino":
+            ws['J70'] = 'X'
+        elif df_fila["Género.1"] == "Femenino":
+            ws['H70'] = 'X'
 
-            actividad9 = df_fila['Escolaridad.3']
-            if actividad9 == 'Primaria':
-                ws['N72'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                ws['Q72'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                ws['S72'] = 'X'
-            elif actividad9 == 'Profesional':
-                ws['U72'] = 'X'
-            elif actividad9 == 'Posgrado':
-                ws['W72'] = 'X'
+        ws['K70'] = df_fila["Edad (años).1"]
+        ws['L70'] = df_fila["Duración jornada (horas).1"]
 
-            if df_fila['Contrato.3'] == 'Tem.':
-                ws['Y72'] = 'X'
-            elif df_fila['Contrato.3'] == 'Fij':
-                ws['AC72'] = 'X'
-            
-            if df_fila['Pago de seguridad.3'] == 'Si':
-                ws['AE72'] = 'X'
-            elif df_fila['Pago de seguridad.3'] == 'No':
-                ws['AG72'] = 'X'
+        actividad9 = df_fila['Escolaridad.1']
+        if actividad9 == 'Primaria':
+            ws['N70'] = 'X'
+        elif actividad9 == 'Bachillerato':
+            ws['Q70'] = 'X'
+        elif actividad9 == 'Técnico o tecnológico':
+            ws['S70'] = 'X'
+        elif actividad9 == 'Profesional':
+            ws['U70'] = 'X'
+        elif actividad9 == 'Posgrado':
+            ws['W70'] = 'X'
 
-            ws['AH72'] = df_fila["Procedencia.12"]
-            ws['AI72'] = df_fila["Residencia.3"]
-            ws['AL72'] = df_fila["Tiempo trabajado.3"]
-            ws['AM72'] = df_fila["# Personas núcleo familiar.3"]
-            ws['AO72'] = df_fila["Personas a cargo.3"]
-            ws['AP72'] = df_fila["Lugar de residencia familiar.3"]
+        if df_fila['Contrato.1'] == 'Tem.':
+            ws['Y70'] = 'X'
+        elif df_fila['Contrato.1'] == 'Fij':
+            ws['AC70'] = 'X'
         
-            actividad10 = df_fila['Remuneración.3']
-            if actividad10 == 'Inferiores a $900.000':
-                ws['AR72'] = 'X'
-            elif actividad10 == '$901.000 - $1.800.000':
-                ws['AS72'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                ws['AT72'] = 'X'
-            elif actividad10 == 'superiores a $2.701.000':
-                ws['AU72'] = 'X'
+        if df_fila['Pago de seguridad.1'] == 'Si':
+            ws['AE70'] = 'X'
+        elif df_fila['Pago de seguridad.1'] == 'No':
+            ws['Ag70'] = 'X'
 
-            ##### Persona 5 #####
+        ws['AH70'] = df_fila["Procedencia.10"]
+        ws['AI70'] = df_fila["Residencia.1"]
+        ws['AL70'] = df_fila["Tiempo trabajado.1"]
+        ws['AM70'] = df_fila["# Personas núcleo familiar.1"]
+        ws['AO70'] = df_fila["Personas a cargo.1"]
+        ws['AP70'] = df_fila["Lugar de residencia familiar.1"]
+    
+        actividad10 = df_fila['Remuneración.1']
+        if actividad10 == 'Inferiores a $900.000':
+            ws['AR70'] = 'X'
+        elif actividad10 == '$901.000 - $1.800.000':
+            ws['AS70'] = 'X'
+        elif actividad10 == '$1.801.000 - $2.700.000':
+            ws['AT70'] = 'X'
+        elif actividad10 == 'superiores a $2.701.000':
+            ws['AU70'] = 'X'
 
-            if df_fila["Tipo de mano de obra.4"] == "Familiar":
-                ws['B73'] = 'X'
-            elif df_fila["Tipo de mano de obra.4"] == "Contratado":
-                ws['D73'] = 'X'
+        ##### Persona 3 #####
 
-            ws['E73'] = df_fila["Cargo.5"]
+        if df_fila["Tipo de mano de obra.2"] == "Familiar":
+            ws['B71'] = 'X'
+        elif df_fila["Tipo de mano de obra.2"] == "Contratado":
+            ws['D71'] = 'X'
 
-            if df_fila["Género.4"] == "Masculino":
-                ws['J73'] = 'X'
-            elif df_fila["Género.4"] == "Femenino":
-                ws['H73'] = 'X'
+        ws['E71'] = df_fila["Cargo.3"]
 
-            ws['K73'] = df_fila["Edad (años).4"]
-            ws['L73'] = df_fila["Duración jornada (horas).4"]
+        if df_fila["Género.2"] == "Masculino":
+            ws['J71'] = 'X'
+        elif df_fila["Género.2"] == "Femenino":
+            ws['H71'] = 'X'
 
-            actividad9 = df_fila['Escolaridad.4']
-            if actividad9 == 'Primaria':
-                ws['N73'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                ws['Q73'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                ws['S73'] = 'X'
-            elif actividad9 == 'Profesional':
-                ws['U73'] = 'X'
-            elif actividad9 == 'Posgrado':
-                ws['W73'] = 'X'
+        ws['K71'] = df_fila["Edad (años).2"]
+        ws['L71'] = df_fila["Duración jornada (horas).2"]
 
-            if df_fila['Contrato.4'] == 'Tem.':
-                ws['Y73'] = 'X'
-            elif df_fila['Contrato.4'] == 'Fij':
-                ws['AC73'] = 'X'
-            
-            if df_fila['Pago de seguridad.4'] == 'Si':
-                ws['AE73'] = 'X'
-            elif df_fila['Pago de seguridad.4'] == 'No':
-                ws['AG73'] = 'X'
+        actividad9 = df_fila['Escolaridad.2']
+        if actividad9 == 'Primaria':
+            ws['N71'] = 'X'
+        elif actividad9 == 'Bachillerato':
+            ws['Q71'] = 'X'
+        elif actividad9 == 'Técnico o tecnológico':
+            ws['S71'] = 'X'
+        elif actividad9 == 'Profesional':
+            ws['U71'] = 'X'
+        elif actividad9 == 'Posgrado':
+            ws['W71'] = 'X'
 
-            ws['AH73'] = df_fila["Procedencia.13"]
-            ws['AI73'] = df_fila["Residencia.4"]
-            ws['AL73'] = df_fila["Tiempo trabajado.4"]
-            ws['AM73'] = df_fila["# Personas núcleo familiar.4"]
-            ws['AO73'] = df_fila["Personas a cargo.4"]
-            ws['AP73'] = df_fila["Lugar de residencia familiar.4"]
+        if df_fila['Contrato.2'] == 'Tem.':
+            ws['Y71'] = 'X'
+        elif df_fila['Contrato.2'] == 'Fij':
+            ws['AC71'] = 'X'
         
-            actividad10 = df_fila['Remuneración.4']
-            if actividad10 == 'Inferiores a $900.000':
-                ws['AR73'] = 'X'
-            elif actividad10 == '$901.000 - $1.800.000':
-                ws['AS73'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                ws['AT73'] = 'X'
-            elif actividad10 == 'superiores a $2.701.000':
-                ws['AU73'] = 'X'
+        if df_fila['Pago de seguridad.2'] == 'Si':
+            ws['AE71'] = 'X'
+        elif df_fila['Pago de seguridad.2'] == 'No':
+            ws['AG71'] = 'X'
 
-            ##### Persona 6 #####
+        ws['AH71'] = df_fila["Procedencia.11"]
+        ws['AI71'] = df_fila["Residencia.2"]
+        ws['AL71'] = df_fila["Tiempo trabajado.2"]
+        ws['AM71'] = df_fila["# Personas núcleo familiar.2"]
+        ws['AO71'] = df_fila["Personas a cargo.2"]
+        ws['AP71'] = df_fila["Lugar de residencia familiar.2"]
+    
+        actividad10 = df_fila['Remuneración.2']
+        if actividad10 == 'Inferiores a $900.000':
+            ws['AR71'] = 'X'
+        elif actividad10 == '$901.000 - $1.800.000':
+            ws['AS71'] = 'X'
+        elif actividad10 == '$1.801.000 - $2.700.000':
+            ws['AT71'] = 'X'
+        elif actividad10 == 'superiores a $2.701.000':
+            ws['AU71'] = 'X'
 
-            if df_fila["Tipo de mano de obra.5"] == "Familiar":
-                ws['B74'] = 'X'
-            elif df_fila["Tipo de mano de obra.5"] == "Contratado":
-                ws['D74'] = 'X'
+        ##### Persona 4 #####
 
-            ws['E74'] = df_fila["Cargo.6"]
+        if df_fila["Tipo de mano de obra.3"] == "Familiar":
+            ws['B72'] = 'X'
+        elif df_fila["Tipo de mano de obra.3"] == "Contratado":
+            ws['D72'] = 'X'
 
-            if df_fila["Género.5"] == "Masculino":
-                ws['j74'] = 'X'
-            elif df_fila["Género.5"] == "Femenino":
-                ws['H74'] = 'X'
+        ws['E72'] = df_fila["Cargo.4"]
 
-            ws['K74'] = df_fila["Edad (años).5"]
-            ws['L74'] = df_fila["Duración jornada (horas).5"]
+        if df_fila["Género.3"] == "Masculino":
+            ws['J72'] = 'X'
+        elif df_fila["Género.3"] == "Femenino":
+            ws['H72'] = 'X'
 
-            actividad9 = df_fila['Escolaridad.5']
-            if actividad9 == 'Primaria':
-                ws['N74'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                ws['Q74'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                ws['S74'] = 'X'
-            elif actividad9 == 'Profesional':
-                ws['U74'] = 'X'
-            elif actividad9 == 'Posgrado':
-                ws['W74'] = 'X'
+        ws['K72'] = df_fila["Edad (años).3"]
+        ws['L72'] = df_fila["Duración jornada (horas).3"]
 
-            if df_fila['Contrato.5'] == 'Tem.':
-                ws['Y74'] = 'X'
-            elif df_fila['Contrato.5'] == 'Fij':
-                ws['AC74'] = 'X'
-            
-            if df_fila['Pago de seguridad.5'] == 'Si':
-                ws['AE74'] = 'X'
-            elif df_fila['Pago de seguridad.5'] == 'No':
-                ws['AG74'] = 'X'
+        actividad9 = df_fila['Escolaridad.3']
+        if actividad9 == 'Primaria':
+            ws['N72'] = 'X'
+        elif actividad9 == 'Bachillerato':
+            ws['Q72'] = 'X'
+        elif actividad9 == 'Técnico o tecnológico':
+            ws['S72'] = 'X'
+        elif actividad9 == 'Profesional':
+            ws['U72'] = 'X'
+        elif actividad9 == 'Posgrado':
+            ws['W72'] = 'X'
 
-            ws['AH74'] = df_fila["Procedencia.14"]
-            ws['AI74'] = df_fila["Residencia.5"]
-            ws['AL74'] = df_fila["Tiempo trabajado.5"]
-            ws['AM74'] = df_fila["# Personas núcleo familiar.5"]
-            ws['AO74'] = df_fila["Personas a cargo.5"]
-            ws['AP74'] = df_fila["Lugar de residencia familiar.5"]
+        if df_fila['Contrato.3'] == 'Tem.':
+            ws['Y72'] = 'X'
+        elif df_fila['Contrato.3'] == 'Fij':
+            ws['AC72'] = 'X'
         
-            actividad10 = df_fila['Remuneración.5']
-            if actividad10 == 'Inferiores a $900.000':
-                ws['AR74'] = 'X'
-            elif actividad10 == '$901.000 - $1.800.000':
-                ws['AS74'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                ws['AT74'] = 'X'
-            elif actividad10 == 'superiores a $2.701.000':
-                ws['AU74'] = 'X'
+        if df_fila['Pago de seguridad.3'] == 'Si':
+            ws['AE72'] = 'X'
+        elif df_fila['Pago de seguridad.3'] == 'No':
+            ws['AG72'] = 'X'
 
-            ##### Persona 7 #####
+        ws['AH72'] = df_fila["Procedencia.12"]
+        ws['AI72'] = df_fila["Residencia.3"]
+        ws['AL72'] = df_fila["Tiempo trabajado.3"]
+        ws['AM72'] = df_fila["# Personas núcleo familiar.3"]
+        ws['AO72'] = df_fila["Personas a cargo.3"]
+        ws['AP72'] = df_fila["Lugar de residencia familiar.3"]
+    
+        actividad10 = df_fila['Remuneración.3']
+        if actividad10 == 'Inferiores a $900.000':
+            ws['AR72'] = 'X'
+        elif actividad10 == '$901.000 - $1.800.000':
+            ws['AS72'] = 'X'
+        elif actividad10 == '$1.801.000 - $2.700.000':
+            ws['AT72'] = 'X'
+        elif actividad10 == 'superiores a $2.701.000':
+            ws['AU72'] = 'X'
 
-            if df_fila["Tipo de mano de obra.6"] == "Familiar":
-                ws['B75'] = 'X'
-            elif df_fila["Tipo de mano de obra.6"] == "Contratado":
-                ws['D75'] = 'X'
+        ##### Persona 5 #####
 
-            ws['E75'] = df_fila["Cargo.7"]
+        if df_fila["Tipo de mano de obra.4"] == "Familiar":
+            ws['B73'] = 'X'
+        elif df_fila["Tipo de mano de obra.4"] == "Contratado":
+            ws['D73'] = 'X'
 
-            if df_fila["Género.6"] == "Masculino":
-                ws['J75'] = 'X'
-            elif df_fila["Género.6"] == "Femenino":
-                ws['H75'] = 'X'
+        ws['E73'] = df_fila["Cargo.5"]
 
-            ws['K75'] = df_fila["Edad (años).6"]
-            ws['L75'] = df_fila["Duración jornada (horas).6"]
+        if df_fila["Género.4"] == "Masculino":
+            ws['J73'] = 'X'
+        elif df_fila["Género.4"] == "Femenino":
+            ws['H73'] = 'X'
 
-            actividad9 = df_fila['Escolaridad.6']
-            if actividad9 == 'Primaria':
-                ws['N75'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                ws['Q75'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                ws['S75'] = 'X'
-            elif actividad9 == 'Profesional':
-                ws['U75'] = 'X'
-            elif actividad9 == 'Posgrado':
-                ws['W75'] = 'X'
+        ws['K73'] = df_fila["Edad (años).4"]
+        ws['L73'] = df_fila["Duración jornada (horas).4"]
 
-            if df_fila['Contrato.6'] == 'Tem.':
-                ws['Y75'] = 'X'
-            elif df_fila['Contrato.6'] == 'Fij':
-                ws['AC75'] = 'X'
-            
-            if df_fila['Pago de seguridad.6'] == 'Si':
-                ws['AE75'] = 'X'
-            elif df_fila['Pago de seguridad.6'] == 'No':
-                ws['AG75'] = 'X'
+        actividad9 = df_fila['Escolaridad.4']
+        if actividad9 == 'Primaria':
+            ws['N73'] = 'X'
+        elif actividad9 == 'Bachillerato':
+            ws['Q73'] = 'X'
+        elif actividad9 == 'Técnico o tecnológico':
+            ws['S73'] = 'X'
+        elif actividad9 == 'Profesional':
+            ws['U73'] = 'X'
+        elif actividad9 == 'Posgrado':
+            ws['W73'] = 'X'
 
-            ws['AH75'] = df_fila["Procedencia.15"]
-            ws['AI75'] = df_fila["Residencia.6"]
-            ws['AL75'] = df_fila["Tiempo trabajado.6"]
-            ws['AM75'] = df_fila["# Personas núcleo familiar.6"]
-            ws['AO75'] = df_fila["Personas a cargo.6"]
-            ws['AP75'] = df_fila["Lugar de residencia familiar.6"]
+        if df_fila['Contrato.4'] == 'Tem.':
+            ws['Y73'] = 'X'
+        elif df_fila['Contrato.4'] == 'Fij':
+            ws['AC73'] = 'X'
         
-            actividad10 = df_fila['Remuneración.6']
-            if actividad10 == 'Inferiores a $900.000':
-                ws['AR75'] = 'X'
-            elif actividad10 == '$901.000 - $1.800.000':
-                ws['AS75'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                ws['AT75'] = 'X'
-            elif actividad10 == 'superiores a $2.701.000':
-                ws['AU75'] = 'X'
+        if df_fila['Pago de seguridad.4'] == 'Si':
+            ws['AE73'] = 'X'
+        elif df_fila['Pago de seguridad.4'] == 'No':
+            ws['AG73'] = 'X'
 
-            ##### Persona 8 #####
+        ws['AH73'] = df_fila["Procedencia.13"]
+        ws['AI73'] = df_fila["Residencia.4"]
+        ws['AL73'] = df_fila["Tiempo trabajado.4"]
+        ws['AM73'] = df_fila["# Personas núcleo familiar.4"]
+        ws['AO73'] = df_fila["Personas a cargo.4"]
+        ws['AP73'] = df_fila["Lugar de residencia familiar.4"]
+    
+        actividad10 = df_fila['Remuneración.4']
+        if actividad10 == 'Inferiores a $900.000':
+            ws['AR73'] = 'X'
+        elif actividad10 == '$901.000 - $1.800.000':
+            ws['AS73'] = 'X'
+        elif actividad10 == '$1.801.000 - $2.700.000':
+            ws['AT73'] = 'X'
+        elif actividad10 == 'superiores a $2.701.000':
+            ws['AU73'] = 'X'
 
-            if df_fila["Tipo de mano de obra.7"] == "Familiar":
-                ws['B76'] = 'X'
-            elif df_fila["Tipo de mano de obra.7"] == "Contratado":
-                ws['D76'] = 'X'
+        ##### Persona 6 #####
 
-            ws['E76'] = df_fila["Cargo.8"]
+        if df_fila["Tipo de mano de obra.5"] == "Familiar":
+            ws['B74'] = 'X'
+        elif df_fila["Tipo de mano de obra.5"] == "Contratado":
+            ws['D74'] = 'X'
 
-            if df_fila["Género.7"] == "Masculino":
-                ws['J76'] = 'X'
-            elif df_fila["Género.7"] == "Femenino":
-                ws['H76'] = 'X'
+        ws['E74'] = df_fila["Cargo.6"]
 
-            ws['K76'] = df_fila["Edad (años).7"]
-            ws['L76'] = df_fila["Duración jornada (horas).7"]
+        if df_fila["Género.5"] == "Masculino":
+            ws['j74'] = 'X'
+        elif df_fila["Género.5"] == "Femenino":
+            ws['H74'] = 'X'
 
-            actividad9 = df_fila['Escolaridad.7']
-            if actividad9 == 'Primaria':
-                ws['N76'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                ws['Q76'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                ws['S76'] = 'X'
-            elif actividad9 == 'Profesional':
-                ws['U76'] = 'X'
-            elif actividad9 == 'Posgrado':
-                ws['W76'] = 'X'
+        ws['K74'] = df_fila["Edad (años).5"]
+        ws['L74'] = df_fila["Duración jornada (horas).5"]
 
-            if df_fila['Contrato.7'] == 'Tem.':
-                ws['Y76'] = 'X'
-            elif df_fila['Contrato.7'] == 'Fij':
-                ws['AC76'] = 'X'
-            
-            if df_fila['Pago de seguridad.7'] == 'Si':
-                ws['AE76'] = 'X'
-            elif df_fila['Pago de seguridad.7'] == 'No':
-                ws['AG76'] = 'X'
+        actividad9 = df_fila['Escolaridad.5']
+        if actividad9 == 'Primaria':
+            ws['N74'] = 'X'
+        elif actividad9 == 'Bachillerato':
+            ws['Q74'] = 'X'
+        elif actividad9 == 'Técnico o tecnológico':
+            ws['S74'] = 'X'
+        elif actividad9 == 'Profesional':
+            ws['U74'] = 'X'
+        elif actividad9 == 'Posgrado':
+            ws['W74'] = 'X'
 
-            ws['AH76'] = df_fila["Procedencia.16"]
-            ws['AI76'] = df_fila["Residencia.7"]
-            ws['AL76'] = df_fila["Tiempo trabajado.7"]
-            ws['AM76'] = df_fila["# Personas núcleo familiar.7"]
-            ws['AO76'] = df_fila["Personas a cargo.7"]
-            ws['AP76'] = df_fila["Lugar de residencia familiar.7"]
+        if df_fila['Contrato.5'] == 'Tem.':
+            ws['Y74'] = 'X'
+        elif df_fila['Contrato.5'] == 'Fij':
+            ws['AC74'] = 'X'
         
-            actividad10 = df_fila['Remuneración.7']
-            if actividad10 == 'Inferiores a $900.000':
-                ws['AR76'] = 'X'
-            elif actividad10 == '$901.000 - $1.800.000':
-                ws['AS76'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                ws['AT76'] = 'X'
-            elif actividad10 == 'superiores a $2.701.000':
-                ws['AU76'] = 'X'
+        if df_fila['Pago de seguridad.5'] == 'Si':
+            ws['AE74'] = 'X'
+        elif df_fila['Pago de seguridad.5'] == 'No':
+            ws['AG74'] = 'X'
 
-            ##### Persona 9 #####
+        ws['AH74'] = df_fila["Procedencia.14"]
+        ws['AI74'] = df_fila["Residencia.5"]
+        ws['AL74'] = df_fila["Tiempo trabajado.5"]
+        ws['AM74'] = df_fila["# Personas núcleo familiar.5"]
+        ws['AO74'] = df_fila["Personas a cargo.5"]
+        ws['AP74'] = df_fila["Lugar de residencia familiar.5"]
+    
+        actividad10 = df_fila['Remuneración.5']
+        if actividad10 == 'Inferiores a $900.000':
+            ws['AR74'] = 'X'
+        elif actividad10 == '$901.000 - $1.800.000':
+            ws['AS74'] = 'X'
+        elif actividad10 == '$1.801.000 - $2.700.000':
+            ws['AT74'] = 'X'
+        elif actividad10 == 'superiores a $2.701.000':
+            ws['AU74'] = 'X'
 
-            if df_fila["Tipo de mano de obra.8"] == "Familiar":
-                ws['B77'] = 'X'
-            elif df_fila["Tipo de mano de obra.8"] == "Contratado":
-                ws['D77'] = 'X'
+        ##### Persona 7 #####
 
-            ws['E77'] = df_fila["Cargo.9"]
+        if df_fila["Tipo de mano de obra.6"] == "Familiar":
+            ws['B75'] = 'X'
+        elif df_fila["Tipo de mano de obra.6"] == "Contratado":
+            ws['D75'] = 'X'
 
-            if df_fila["Género.8"] == "Masculino":
-                ws['J77'] = 'X'
-            elif df_fila["Género.8"] == "Femenino":
-                ws['H77'] = 'X'
+        ws['E75'] = df_fila["Cargo.7"]
 
-            ws['K77'] = df_fila["Edad (años).8"]
-            ws['L77'] = df_fila["Duración jornada (horas).8"]
+        if df_fila["Género.6"] == "Masculino":
+            ws['J75'] = 'X'
+        elif df_fila["Género.6"] == "Femenino":
+            ws['H75'] = 'X'
 
-            actividad9 = df_fila['Escolaridad.8']
-            if actividad9 == 'Primaria':
-                ws['N77'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                ws['Q77'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                ws['S77'] = 'X'
-            elif actividad9 == 'Profesional':
-                ws['U77'] = 'X'
-            elif actividad9 == 'Posgrado':
-                ws['W77'] = 'X'
+        ws['K75'] = df_fila["Edad (años).6"]
+        ws['L75'] = df_fila["Duración jornada (horas).6"]
 
-            if df_fila['Contrato.8'] == 'Tem.':
-                ws['Y77'] = 'X'
-            elif df_fila['Contrato.8'] == 'Fij':
-                ws['AC77'] = 'X'
-            
-            if df_fila['Pago de seguridad.8'] == 'Si':
-                ws['AE77'] = 'X'
-            elif df_fila['Pago de seguridad.8'] == 'No':
-                ws['AG77'] = 'X'
+        actividad9 = df_fila['Escolaridad.6']
+        if actividad9 == 'Primaria':
+            ws['N75'] = 'X'
+        elif actividad9 == 'Bachillerato':
+            ws['Q75'] = 'X'
+        elif actividad9 == 'Técnico o tecnológico':
+            ws['S75'] = 'X'
+        elif actividad9 == 'Profesional':
+            ws['U75'] = 'X'
+        elif actividad9 == 'Posgrado':
+            ws['W75'] = 'X'
 
-            ws['AH77'] = df_fila["Procedencia.17"]
-            ws['AI77'] = df_fila["Residencia.8"]
-            ws['AL77'] = df_fila["Tiempo trabajado.8"]
-            ws['AM77'] = df_fila["# Personas núcleo familiar.8"]
-            ws['AO77'] = df_fila["Personas a cargo.8"]
-            ws['AP77'] = df_fila["Lugar de residencia familiar.8"]
+        if df_fila['Contrato.6'] == 'Tem.':
+            ws['Y75'] = 'X'
+        elif df_fila['Contrato.6'] == 'Fij':
+            ws['AC75'] = 'X'
         
-            actividad10 = df_fila['Remuneración.8']
-            if actividad10 == 'Inferiores a $900.000':
-                ws['AR77'] = 'X'
-            elif actividad10 == '$901.000 - $1.800.000':
-                ws['AS77'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                ws['AT77'] = 'X'
-            elif actividad10 == 'superiores a $2.701.000':
-                ws['AU77'] = 'X'
+        if df_fila['Pago de seguridad.6'] == 'Si':
+            ws['AE75'] = 'X'
+        elif df_fila['Pago de seguridad.6'] == 'No':
+            ws['AG75'] = 'X'
 
-            ##### Persona 10 #####
+        ws['AH75'] = df_fila["Procedencia.15"]
+        ws['AI75'] = df_fila["Residencia.6"]
+        ws['AL75'] = df_fila["Tiempo trabajado.6"]
+        ws['AM75'] = df_fila["# Personas núcleo familiar.6"]
+        ws['AO75'] = df_fila["Personas a cargo.6"]
+        ws['AP75'] = df_fila["Lugar de residencia familiar.6"]
+    
+        actividad10 = df_fila['Remuneración.6']
+        if actividad10 == 'Inferiores a $900.000':
+            ws['AR75'] = 'X'
+        elif actividad10 == '$901.000 - $1.800.000':
+            ws['AS75'] = 'X'
+        elif actividad10 == '$1.801.000 - $2.700.000':
+            ws['AT75'] = 'X'
+        elif actividad10 == 'superiores a $2.701.000':
+            ws['AU75'] = 'X'
 
-            if df_fila["Tipo de mano de obra.9"] == "Familiar":
-                ws['B78'] = 'X'
-            elif df_fila["Tipo de mano de obra.9"] == "Contratado":
-                ws['D78'] = 'X'
+        ##### Persona 8 #####
 
-            ws['E78'] = df_fila["Cargo.9"]
+        if df_fila["Tipo de mano de obra.7"] == "Familiar":
+            ws['B76'] = 'X'
+        elif df_fila["Tipo de mano de obra.7"] == "Contratado":
+            ws['D76'] = 'X'
 
-            if df_fila["Género.9"] == "Masculino":
-                ws['J78'] = 'X'
-            elif df_fila["Género.9"] == "Femenino":
-                ws['H78'] = 'X'
+        ws['E76'] = df_fila["Cargo.8"]
 
-            ws['K78'] = df_fila["Edad (años).9"]
-            ws['L78'] = df_fila["Duración jornada (horas).9"]
+        if df_fila["Género.7"] == "Masculino":
+            ws['J76'] = 'X'
+        elif df_fila["Género.7"] == "Femenino":
+            ws['H76'] = 'X'
 
-            actividad9 = df_fila['Escolaridad.9']
-            if actividad9 == 'Primaria':
-                ws['N78'] = 'X'
-            elif actividad9 == 'Bachillerato':
-                ws['Q78'] = 'X'
-            elif actividad9 == 'Técnico o tecnológico':
-                ws['S78'] = 'X'
-            elif actividad9 == 'Profesional':
-                ws['U78'] = 'X'
-            elif actividad9 == 'Posgrado':
-                ws['W78'] = 'X'
+        ws['K76'] = df_fila["Edad (años).7"]
+        ws['L76'] = df_fila["Duración jornada (horas).7"]
 
-            if df_fila['Contrato.9'] == 'Tem.':
-                ws['Y78'] = 'X'
-            elif df_fila['Contrato.9'] == 'Fij':
-                ws['AC78'] = 'X'
-            
-            if df_fila['Pago de seguridad.9'] == 'Si':
-                ws['AE78'] = 'X'
-            elif df_fila['Pago de seguridad.9'] == 'No':
-                ws['AG78'] = 'X'
+        actividad9 = df_fila['Escolaridad.7']
+        if actividad9 == 'Primaria':
+            ws['N76'] = 'X'
+        elif actividad9 == 'Bachillerato':
+            ws['Q76'] = 'X'
+        elif actividad9 == 'Técnico o tecnológico':
+            ws['S76'] = 'X'
+        elif actividad9 == 'Profesional':
+            ws['U76'] = 'X'
+        elif actividad9 == 'Posgrado':
+            ws['W76'] = 'X'
 
-            ws['AH78'] = df_fila["Procedencia.18"]
-            ws['AI78'] = df_fila["Residencia.9"]
-            ws['AL78'] = df_fila["Tiempo trabajado.9"]
-            ws['AM78'] = df_fila["# Personas núcleo familiar.9"]
-            ws['AO78'] = df_fila["Personas a cargo.9"]
-            ws['AP78'] = df_fila["Lugar de residencia familiar.9"]
+        if df_fila['Contrato.7'] == 'Tem.':
+            ws['Y76'] = 'X'
+        elif df_fila['Contrato.7'] == 'Fij':
+            ws['AC76'] = 'X'
         
-            actividad10 = df_fila['Remuneración.9']
-            if actividad10 == 'Inferiores a $900.000':
-                ws['AR78'] = 'X'
-            elif actividad10 == '$901.000 - $1.800.000':
-                ws['AS78'] = 'X'
-            elif actividad10 == '$1.801.000 - $2.700.000':
-                ws['AT78'] = 'X'
-            elif actividad10 == 'superiores a $2.701.000':
-                ws['AU78'] = 'X'
+        if df_fila['Pago de seguridad.7'] == 'Si':
+            ws['AE76'] = 'X'
+        elif df_fila['Pago de seguridad.7'] == 'No':
+            ws['AG76'] = 'X'
+
+        ws['AH76'] = df_fila["Procedencia.16"]
+        ws['AI76'] = df_fila["Residencia.7"]
+        ws['AL76'] = df_fila["Tiempo trabajado.7"]
+        ws['AM76'] = df_fila["# Personas núcleo familiar.7"]
+        ws['AO76'] = df_fila["Personas a cargo.7"]
+        ws['AP76'] = df_fila["Lugar de residencia familiar.7"]
+    
+        actividad10 = df_fila['Remuneración.7']
+        if actividad10 == 'Inferiores a $900.000':
+            ws['AR76'] = 'X'
+        elif actividad10 == '$901.000 - $1.800.000':
+            ws['AS76'] = 'X'
+        elif actividad10 == '$1.801.000 - $2.700.000':
+            ws['AT76'] = 'X'
+        elif actividad10 == 'superiores a $2.701.000':
+            ws['AU76'] = 'X'
+
+        ##### Persona 9 #####
+
+        if df_fila["Tipo de mano de obra.8"] == "Familiar":
+            ws['B77'] = 'X'
+        elif df_fila["Tipo de mano de obra.8"] == "Contratado":
+            ws['D77'] = 'X'
+
+        ws['E77'] = df_fila["Cargo.9"]
+
+        if df_fila["Género.8"] == "Masculino":
+            ws['J77'] = 'X'
+        elif df_fila["Género.8"] == "Femenino":
+            ws['H77'] = 'X'
+
+        ws['K77'] = df_fila["Edad (años).8"]
+        ws['L77'] = df_fila["Duración jornada (horas).8"]
+
+        actividad9 = df_fila['Escolaridad.8']
+        if actividad9 == 'Primaria':
+            ws['N77'] = 'X'
+        elif actividad9 == 'Bachillerato':
+            ws['Q77'] = 'X'
+        elif actividad9 == 'Técnico o tecnológico':
+            ws['S77'] = 'X'
+        elif actividad9 == 'Profesional':
+            ws['U77'] = 'X'
+        elif actividad9 == 'Posgrado':
+            ws['W77'] = 'X'
+
+        if df_fila['Contrato.8'] == 'Tem.':
+            ws['Y77'] = 'X'
+        elif df_fila['Contrato.8'] == 'Fij':
+            ws['AC77'] = 'X'
+        
+        if df_fila['Pago de seguridad.8'] == 'Si':
+            ws['AE77'] = 'X'
+        elif df_fila['Pago de seguridad.8'] == 'No':
+            ws['AG77'] = 'X'
+
+        ws['AH77'] = df_fila["Procedencia.17"]
+        ws['AI77'] = df_fila["Residencia.8"]
+        ws['AL77'] = df_fila["Tiempo trabajado.8"]
+        ws['AM77'] = df_fila["# Personas núcleo familiar.8"]
+        ws['AO77'] = df_fila["Personas a cargo.8"]
+        ws['AP77'] = df_fila["Lugar de residencia familiar.8"]
+    
+        actividad10 = df_fila['Remuneración.8']
+        if actividad10 == 'Inferiores a $900.000':
+            ws['AR77'] = 'X'
+        elif actividad10 == '$901.000 - $1.800.000':
+            ws['AS77'] = 'X'
+        elif actividad10 == '$1.801.000 - $2.700.000':
+            ws['AT77'] = 'X'
+        elif actividad10 == 'superiores a $2.701.000':
+            ws['AU77'] = 'X'
+
+        ##### Persona 10 #####
+
+        if df_fila["Tipo de mano de obra.9"] == "Familiar":
+            ws['B78'] = 'X'
+        elif df_fila["Tipo de mano de obra.9"] == "Contratado":
+            ws['D78'] = 'X'
+
+        ws['E78'] = df_fila["Cargo.9"]
+
+        if df_fila["Género.9"] == "Masculino":
+            ws['J78'] = 'X'
+        elif df_fila["Género.9"] == "Femenino":
+            ws['H78'] = 'X'
+
+        ws['K78'] = df_fila["Edad (años).9"]
+        ws['L78'] = df_fila["Duración jornada (horas).9"]
+
+        actividad9 = df_fila['Escolaridad.9']
+        if actividad9 == 'Primaria':
+            ws['N78'] = 'X'
+        elif actividad9 == 'Bachillerato':
+            ws['Q78'] = 'X'
+        elif actividad9 == 'Técnico o tecnológico':
+            ws['S78'] = 'X'
+        elif actividad9 == 'Profesional':
+            ws['U78'] = 'X'
+        elif actividad9 == 'Posgrado':
+            ws['W78'] = 'X'
+
+        if df_fila['Contrato.9'] == 'Tem.':
+            ws['Y78'] = 'X'
+        elif df_fila['Contrato.9'] == 'Fij':
+            ws['AC78'] = 'X'
+        
+        if df_fila['Pago de seguridad.9'] == 'Si':
+            ws['AE78'] = 'X'
+        elif df_fila['Pago de seguridad.9'] == 'No':
+            ws['AG78'] = 'X'
+
+        ws['AH78'] = df_fila["Procedencia.18"]
+        ws['AI78'] = df_fila["Residencia.9"]
+        ws['AL78'] = df_fila["Tiempo trabajado.9"]
+        ws['AM78'] = df_fila["# Personas núcleo familiar.9"]
+        ws['AO78'] = df_fila["Personas a cargo.9"]
+        ws['AP78'] = df_fila["Lugar de residencia familiar.9"]
+    
+        actividad10 = df_fila['Remuneración.9']
+        if actividad10 == 'Inferiores a $900.000':
+            ws['AR78'] = 'X'
+        elif actividad10 == '$901.000 - $1.800.000':
+            ws['AS78'] = 'X'
+        elif actividad10 == '$1.801.000 - $2.700.000':
+            ws['AT78'] = 'X'
+        elif actividad10 == 'superiores a $2.701.000':
+            ws['AU78'] = 'X'
 
 
-        elif df_fila["Contrata algún tipo de mano de obra"] == "No":
-            ws['AE64'] = 'X'
+    elif df_fila["Contrata algún tipo de mano de obra"] == "No":
+        ws['AE64'] = 'X'
 
 def llenarInforme5(ws, df_fila):
         ws['AO1'] = df_fila['Encuesta No.']
