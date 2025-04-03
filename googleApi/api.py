@@ -5,7 +5,7 @@ import pandas as pd
 from openpyxl import load_workbook
 from datetime import datetime
 import os
-from func.llenarPlantillas import llenarInforme1, llenarFichaPredial, llenarUsosUsuarios, llenarFormatoAgropecuario
+from func.llenarPlantillas import llenarInforme1, llenarFichaPredial, llenarUsosUsuarios, llenarFormatoAgropecuario, llenarFormatoComercial
 from util.Pdf import Pdf
 
 class GoogleSheetsAExcel:
@@ -17,8 +17,12 @@ class GoogleSheetsAExcel:
         range_informe1: str = None,
         range_ficha1: str = None,
         range_ficha2: str = None,
+
+        # Rangos para el Formato UU
         range_usos1: str = None,
         range_usos2: str = None,
+
+        # Rangos para el Formato Agropecuario
         range_formato_agro: str = None,         
         range_info_comercial: str = None,
         range_explot_avicola: str = None,
@@ -26,10 +30,20 @@ class GoogleSheetsAExcel:
         range_explot_agricola: str = None,
         range_explot_porcina: str = None,
         range_detalle_jornal: str = None,
+
+        # Rangos Formato Comercial
+
+        range_formato_comercial: str = None,
+        range_descripcion_abastecimiento: str = None,
+        range_descripcion_actividad_precio: str = None,
+        range_info_laboral2: str = None,
+
+        # Plantillas 
         plantilla_informe1: str = None,
         plantilla_ficha: str = None,
         plantilla_usos_usuarios: str = None,
-        plantilla_formato_agro: str = None
+        plantilla_formato_agro: str = None,
+        plantilla_formato_comercial: str = None
     ) -> None:
         """
         Constructor de la clase GoogleSheetsAExcel.
@@ -54,6 +68,12 @@ class GoogleSheetsAExcel:
         self.range_explot_porcina = range_explot_porcina
         self.range_detalle_jornal = range_detalle_jornal
 
+        # Rangos para el Formato Comercial
+        self.rango_formato_comercial = range_formato_comercial
+        self.rango_descripcion_abastecimiento = range_descripcion_abastecimiento
+        self.rango_descripcion_actividad_precio = range_descripcion_actividad_precio
+        self.rango_info_laboral2 = range_info_laboral2
+
         # Plantillas FP, Id. AE, Usos/Usuarios
         self.plantilla_informe1 = plantilla_informe1
         self.plantilla_ficha = plantilla_ficha
@@ -62,6 +82,9 @@ class GoogleSheetsAExcel:
         # Plantilla Formato Agropecuario
         self.plantilla_formato_agro = plantilla_formato_agro
 
+        # Plantillas para el Formato Comercial
+        self.plantilla_formato_comercial = plantilla_formato_comercial
+
         self.scopes = [
             'https://www.googleapis.com/auth/spreadsheets.readonly',
             'https://www.googleapis.com/auth/drive'
@@ -69,6 +92,7 @@ class GoogleSheetsAExcel:
         self.credentials = None
         self.sheet_service = None
         self.drive_service = None
+
 
     def inicializarServicios(self):
         """
@@ -454,11 +478,7 @@ class GoogleSheetsAExcel:
             # 9b) Convertir a PDF
             ruta_pdf = f"{codigo}_formatoAgropecuario.pdf"
             
-            # Ejemplo de configuración:
-            # - Landscape (orientation=2)
-            # - Papel A4 (paper_size=9)
-            # - Ajustar ancho a 1 página, alto hasta 4 páginas
-            # - Centrado horizontal/vertical
+
             pdfConv.excelPdf(
                 excel_path=nombre_excel,
                 pdf_path=ruta_pdf,
@@ -468,6 +488,88 @@ class GoogleSheetsAExcel:
                 fit_to_pages_wide=1,       # 1 => ajusta ancho a 1 pág
                 fit_to_pages_tall=4,       # hasta 4 páginas de alto
                 zoom=None,                 # None => usa FitToPages
+                center_horizontally=True,
+                center_vertically=True
+            )
+
+            # 10) Subir PDF y limpiar archivos locales
+            self.subirArchivo(ruta_pdf, nombre_pdf, folder_id)
+            os.remove(nombre_excel)
+            os.remove(ruta_pdf)
+
+            print(f"[OK] Se generó y subió {nombre_pdf} en la carpeta '{codigo}'.")
+
+    def llenarYSubirFormatoComercial(self):
+        """
+        Lee el rango 'rango_formato_comercial' como la tabla principal,
+        Luego filtra los DataFrames secundarios (descripcion_abastecimiento, descripcion_actividad_precio, info_laboral2) usando 'PARENT_KEY == KEY'.
+        Llama a 'llenarFormatoComercial' y sube el PDF resultante a Drive.
+        """
+        # 1) Validar que estén configurados el rango principal y la plantilla
+        if not self.rango_formato_comercial or not self.plantilla_formato_comercial:
+            print("No están configurados 'rango_formato_comercial' o 'plantilla_formato_comercial'.")
+            return
+
+        # 2) Cargar DF principal
+        df_principal = self.fetchDatos(self.rango_formato_comercial)
+
+        # 3) Cargar DFs secundarios
+        df_descripcion_abastecimiento = self.fetchDatos(self.rango_descripcion_abastecimiento)
+        df_descripcion_actividad_precio = self.fetchDatos(self.rango_descripcion_actividad_precio)
+        df_info_laboral = self.fetchDatos(self.rango_info_laboral2)
+
+        pdfConv = Pdf()
+
+        # 4) Iterar sobre cada fila del DF principal
+        for idx, df_fila in df_principal.iterrows():
+            # Tomamos el código y KEY
+            codigo = str(df_fila['data-datos_encuesta-num_encuesta'])
+            key = df_fila['KEY']
+
+            # 4a) Filtrar cada DF secundario por 'PARENT_KEY' == key
+            subset_descripcion_abastecimiento = df_descripcion_abastecimiento[df_descripcion_abastecimiento['PARENT_KEY'] == key]
+            subset_descripcion_actividad_precio = df_descripcion_actividad_precio[df_descripcion_actividad_precio['PARENT_KEY'] == key]
+            subset_info_laboral = df_info_laboral[df_info_laboral['PARENT_KEY'] == key]
+
+            # 5) Crear/obtener la carpeta en Drive
+            folder_id = self.obtenerOCrearCarpetaPorCodigo(codigo)
+
+            # 6) Definir nombre del PDF y chequear si existe
+            nombre_pdf = f"{codigo}_formatoComercial.pdf"
+            if self.archivoExiste(nombre_pdf, folder_id):
+                print(f"El archivo {nombre_pdf} ya existe en '{codigo}'. Omitiendo...")
+                continue
+
+            # 7) Cargar plantilla de Excel
+            wb = load_workbook(self.plantilla_formato_comercial)
+            # Asume que la hoja que te interesa es la activa
+            ws = wb.active
+
+            # 8) Llamar función de llenado
+            llenarFormatoComercial(
+                ws,
+                df_fila,
+                subset_descripcion_abastecimiento,
+                subset_descripcion_actividad_precio,
+                subset_info_laboral
+            )
+
+            # 9) Guardar Excel temporal
+            nombre_excel = f"{codigo}_formatoComercial.xlsx"
+            wb.save(nombre_excel)
+
+            # 9b) Convertir a PDF
+            ruta_pdf = f"{codigo}_formatoComercial.pdf"
+
+            pdfConv.excelPdf(
+                excel_path=nombre_excel,
+                pdf_path=ruta_pdf,
+                sheet_name=None,           
+                orientation=2,          
+                paper_size=9,              
+                fit_to_pages_wide=1,      
+                fit_to_pages_tall=1,       
+                zoom=None,                 
                 center_horizontally=True,
                 center_vertically=True
             )

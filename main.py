@@ -8,6 +8,7 @@ if __name__ == "__main__":
     SERVICE_ACCOUNT_FILE = r'googleApi\censos-maute-d48ff1e9060b.json'
     SPREADSHEET_ID1      = '1WLZu1vYe8MtihM4kGvRq5Dj3-A5QgtmkSuF151drtZA'   # Primer spreadsheet (FP, UU, Act. Ec)
     SPREADSHEET_ID2      = '1TBqYQ3i4itD2OVswoAWjrOQd2Pu6TzVYqh1GgyjZmpU'   # Segundo spreadsheet (Agropecuario)
+    SPREADSHEET_ID3      = '1nfYCVZLgWTdDJqiu6xGAjT9PEDu6hx-mMRdER3zFYZQ'               # Tercer spreadsheet (Agropecuario)
     DRIVE_FOLDER_ID      = '1kq_6eo-_u0fuCUOHDRV_V5bQ1c_dvfMF'
 
     # ==========================================================================
@@ -42,7 +43,18 @@ if __name__ == "__main__":
     PLANTILLA_FORMATO_AGRO   = r"censos\Plantilla Agropecuario.xlsx"
 
     # ==========================================================================
-    # 4. CREAR LA PRIMERA INSTANCIA: ENCUESTAS 1,2,3
+    # 4. CREAR LA TERCERA INSTANCIA: FORMATO COMERCIAL
+    # ==========================================================================
+    # -- Rangos para Formato Comercial --
+    RANGE_FORMATO_COMERCIAL = "Sheet1!A1:AS300"
+    RANGE_DESCP_ABAST       = "data-descripcion_actividad-abastecimiento!A1:F200"
+    RANGE_DESC_ACTIVIDAD     = "data-descripcion_actividad-precio_venta!A1:D200"
+    RANGE_INFO_LABORAL_COMERCIAL = "data-informacion_laboral!A1:Q200"
+
+    PLANTILLA_FORMATO_COMERCIAL = r"censos\Plantilla Comercial.xlsx"
+
+    # ==========================================================================
+    # 5. CREAR LA PRIMERA INSTANCIA: ENCUESTAS 1,2,3
     # ==========================================================================
     servicio1 = GoogleSheetsAExcel(
         service_account_file=SERVICE_ACCOUNT_FILE,
@@ -63,12 +75,12 @@ if __name__ == "__main__":
     # Inicializamos servicios y ejecutamos
     servicio1.inicializarServicios()
 
-    servicio1.llenarYSubirInforme1()
-    servicio1.llenarYSubirFichaPredial()
-    servicio1.llenarYSubirUsosUsuarios()
+    # servicio1.llenarYSubirInforme1()
+    # servicio1.llenarYSubirFichaPredial()
+    # servicio1.llenarYSubirUsosUsuarios()
 
     # ==========================================================================
-    # 5. CREAR LA SEGUNDA INSTANCIA: FORMATO AGROPECUARIO
+    # 6. CREAR LA SEGUNDA INSTANCIA: FORMATO AGROPECUARIO
     # ==========================================================================
     servicio2 = GoogleSheetsAExcel(
         service_account_file=SERVICE_ACCOUNT_FILE,
@@ -87,6 +99,25 @@ if __name__ == "__main__":
     )
 
     # Inicializa servicios y llama al método
-    servicio2.inicializarServicios()
+    # servicio2.inicializarServicios()
 
-    servicio2.llenarYSubirFormatoAgropecuario()
+    # servicio2.llenarYSubirFormatoAgropecuario()
+
+    # ==========================================================================
+    # 7. CREAR LA TERCERA INSTANCIA: FORMATO COMERCIAL
+    # ==========================================================================
+    servicio3 = GoogleSheetsAExcel(
+        service_account_file=SERVICE_ACCOUNT_FILE,
+        spreadsheet_id=SPREADSHEET_ID3,  
+        drive_folder_id=DRIVE_FOLDER_ID,
+
+        range_formato_comercial=RANGE_FORMATO_COMERCIAL,
+        range_descripcion_abastecimiento=RANGE_DESCP_ABAST,
+        range_descripcion_actividad_precio=RANGE_DESC_ACTIVIDAD,
+        range_info_laboral2=RANGE_INFO_LABORAL_COMERCIAL,
+        plantilla_formato_comercial=PLANTILLA_FORMATO_COMERCIAL
+    )
+
+    # Inicializa servicios y llama al método
+    servicio3.inicializarServicios()
+    servicio3.llenarYSubirFormatoComercial()

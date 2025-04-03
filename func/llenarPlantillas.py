@@ -1042,19 +1042,14 @@ def llenarUsosUsuarios(ws, df1_fila, df_usos, drive_service):
 def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola, df_info_laboral, df_explot_agricola, df_explot_porcina, df_detalle_jornal):
 
     ws['AO1'] = df_fila['data-datos_encuesta-num_encuesta']
+    
 
     if pd.notna(df_fila['data-datos_encuesta-fecha']):
         fecha_str = str(df_fila['data-datos_encuesta-fecha'])
-        if '/' in fecha_str:
-            ws['AM2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
-            ws['AP2'] = fecha_str.split('/')[1]
-            ws['AU2'] = fecha_str.split('/')[0]
-        elif '-' in fecha_str:
-            ws['AM2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
-            ws['AP2'] = fecha_str.split('-')[1]
-            ws['AU2'] = fecha_str.split('-')[0]
-        else:
-            print(f'Formato de fecha inesperado: {fecha_str}')
+        dia, mes, año = fecha_str.split('/')
+        ws['AM2'] = dia
+        ws['AP2'] = mes
+        ws['AU2'] = año
     else:
         print('Campo de fecha vacío')   
     
@@ -1721,19 +1716,13 @@ def llenarFormatoAgropecuario(ws, df_fila, df_info_comercial, df_explot_avicola,
         ws[f'AN{excel_row}'] = residencia
 
 def llenarFormatoComercial(ws, df_fila, df_descripcion_actividad_abastecimiento, df_descripcion_actividad_precio_venta, df_info_laboral):
-    ws['AI1'] = df_fila["data-datos_encuesta-fecha"]
+    ws['AI1'] = df_fila["data-datos_encuesta-num_encuesta"]
 
     fecha_str = str(df_fila['data-datos_encuesta-fecha'])
-    if '/' in fecha_str:
-        ws['AK2'] = re.findall('\d+',fecha_str.split("/")[2])[0]
-        ws['AN2'] = fecha_str.split('/')[1]
-        ws['AS2'] = fecha_str.split('/')[0]
-    elif '-' in fecha_str:
-        ws['AK2'] = re.findall('\d+',fecha_str.split("-")[2])[0]
-        ws['AN2'] = fecha_str.split('-')[1]
-        ws['AS2'] = fecha_str.split('-')[0] 
-    else:
-        print(f'Formato de fecha inesperado: {fecha_str}')
+    dia, mes, año = fecha_str.split('/')
+    ws['AK2'] = dia
+    ws['AN2'] = mes
+    ws['AS2'] = año
 
     ws['AK3'] = df_fila["data-datos_encuesta-encuestador"]
     ws['F6'] = df_fila["data-ident_entrevistado-nombre"]
@@ -1746,8 +1735,8 @@ def llenarFormatoComercial(ws, df_fila, df_descripcion_actividad_abastecimiento,
     }
     pertenencia = df_fila["data-ident_entrevistado-pertenencia_asociacion"]
     if pd.notna(pertenencia):
+        ws[map_pertenencia[pertenencia]] = "X"
         if pertenencia == 'yes':
-            ws[map_pertenencia[pertenencia]] = "X"
             ws['AF7'] = df_fila["data-ident_entrevistado-asociacion_cual"]
 
 
@@ -1771,24 +1760,23 @@ def llenarFormatoComercial(ws, df_fila, df_descripcion_actividad_abastecimiento,
     ws['C16'] = df_fila["data-descripcion_actividad-producto_principal"]
 
     map_frecuencia = {
-        'diatrio': 'L17',
-        'semanal': 'L18',
-        'quincenal': 'L19',
-        'mensual': 'L20',
-        'semestral': 'L21',
-        'otro': 'L22',
+        'diario': 'L20',
+        'semanal': 'L21',
+        'quincenal': 'L22',
+        'mensual': 'L23',
+        'otro': 'T20',
     }
     frecuencia = df_fila['data-descripcion_actividad-frecuencia_compra']
     if pd.notna(frecuencia):
         ws[map_frecuencia[frecuencia]] = 'X'
         if frecuencia == 'otro':
-            ws['L22'] = df_fila['data-descripcion_actividad-frecuencia_compra_otro']
+            ws['T21'] = df_fila['data-descripcion_actividad-frecuencia_compra_otro']
 
     df_descripcion_actividad_abastecimiento = df_descripcion_actividad_abastecimiento.head(4).reset_index(drop=True)
     for i, fila_producto in df_descripcion_actividad_abastecimiento.iterrows():
         ws[f'C{i+28}'] = fila_producto['data-descripcion_actividad-abastecimiento-producto']
         ws[f'I{i+28}'] = fila_producto['data-descripcion_actividad-abastecimiento-cantidad']
-        ws[f'M{i+28}'] = fila_producto['data-descripcion_actividad-abastecimiento-unidad_medida']
+        ws[f'M{i+28}'] = fila_producto['data-descripcion_actividad-abastecimiento-unidad']
         ws[f'S{i+28}'] = fila_producto['data-descripcion_actividad-abastecimiento-valor']
 
     df_descripcion_actividad_precio_venta = df_descripcion_actividad_precio_venta.head(3).reset_index(drop=True)
@@ -1799,9 +1787,10 @@ def llenarFormatoComercial(ws, df_fila, df_descripcion_actividad_abastecimiento,
     map_tipo_emplazamiento = {
         'local': 'Q39',
         'puesto_fijo': 'Q40',
-        'vivienda_economica': 'Q41',
+        'vivienda_actividad': 'Q41',
         'venta_ambulante': 'Q42',
     }
+
 
     tipo_emplazamiento = df_fila["data-descripcion_actividad-tipo_emplacamiento"]
     if pd.notna(tipo_emplazamiento):
@@ -1830,7 +1819,7 @@ def llenarFormatoComercial(ws, df_fila, df_descripcion_actividad_abastecimiento,
         'otros': 'AN16',
     }
 
-    vende_principalmente = df_fila["data-descripcion_actividad-lugar_venta"]
+    vende_principalmente = df_fila["data-descripcion_actividad-lugar_venta"].split(', ')[0]
     if pd.notna(vende_principalmente):
         ws[map_vende_principalmente[vende_principalmente]] = 'X'
         if vende_principalmente == 'otros':
@@ -1862,7 +1851,7 @@ def llenarFormatoComercial(ws, df_fila, df_descripcion_actividad_abastecimiento,
         ws['AM30'] = df_fila['data-descripcion_actividad-procedencia_otros']  
 
     map_frecuencia_compra = {
-        'diatrio': 'AJ33',
+        'diario': 'AJ33',
         'semanal': 'AJ34',
         'quincenal': 'AJ35',
         'mensual': 'AJ36',
@@ -1906,7 +1895,7 @@ def llenarFormatoComercial(ws, df_fila, df_descripcion_actividad_abastecimiento,
         'acueducto_veredal': 'I46',
         'otro': 'I47',
     }
-    abastece_recurso = df_fila['data-descripcion_actividad-recurso_hidrico']
+    abastece_recurso = df_fila['data-descripcion_actividad-recurso_hidrico'].split(',')[0]
     if pd.notna(abastece_recurso):
         ws[map_abastece_recurso[abastece_recurso]] = 'X'
         if abastece_recurso == 'otro':
@@ -1923,10 +1912,12 @@ def llenarFormatoComercial(ws, df_fila, df_descripcion_actividad_abastecimiento,
 
 
     map_energia = {
-        'electricidad': 'AG47',
-        'solar': 'AN47',
+        'energia_electrica': 'AG47',
+        'energia_solar': 'AM47',
         'otro': 'AP47',
     }
+
+
     energia = df_fila['data-descripcion_actividad-energia_utiliza']
     if pd.notna(energia):
         ws[map_energia[energia]] = 'X'
@@ -1945,7 +1936,7 @@ def llenarFormatoComercial(ws, df_fila, df_descripcion_actividad_abastecimiento,
         if energia_coccion == 'otro':
             ws['AP48'] = df_fila['data-descripcion_actividad-energia_coccion_otro']
 
-    mano_obra = df_fila['data-informacion_comercial-contrata_mano_obra']
+    mano_obra = df_fila['data-descripcion_actividad-contrata_mano_obra']
     if mano_obra == 'yes':
         ws['Z50'] = 'X'
     elif mano_obra == 'no':
