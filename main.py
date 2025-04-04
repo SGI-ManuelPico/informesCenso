@@ -8,9 +8,9 @@ if __name__ == "__main__":
     SERVICE_ACCOUNT_FILE = r'googleApi\censos-maute-d48ff1e9060b.json'
     SPREADSHEET_ID1      = '1WLZu1vYe8MtihM4kGvRq5Dj3-A5QgtmkSuF151drtZA'   # Primer spreadsheet (FP, UU, Act. Ec)
     SPREADSHEET_ID2      = '1TBqYQ3i4itD2OVswoAWjrOQd2Pu6TzVYqh1GgyjZmpU'   # Segundo spreadsheet (Agropecuario)
-    SPREADSHEET_ID3      = '1nfYCVZLgWTdDJqiu6xGAjT9PEDu6hx-mMRdER3zFYZQ'
-    SPREADSHEET_ID4      = '1A45AjJ8UFlebJNW9RlKVGF47l9xk-IjtSmBjfRmCyBk'               # Tercer spreadsheet (Agropecuario)
-    DRIVE_FOLDER_ID      = '1kq_6eo-_u0fuCUOHDRV_V5bQ1c_dvfMF'
+    SPREADSHEET_ID3      = '1nfYCVZLgWTdDJqiu6xGAjT9PEDu6hx-mMRdER3zFYZQ'   # Tercer spreadsheet (Comercial)
+    SPREADSHEET_ID4      = '1A45AjJ8UFlebJNW9RlKVGF47l9xk-IjtSmBjfRmCyBk'   # Cuarto spreadsheet (Servicios)              
+    DRIVE_FOLDER_ID      = '1kq_6eo-_u0fuCUOHDRV_V5bQ1c_dvfMF'              # Carpeta de Drive para guardar los PDF
 
     # ==========================================================================
     # 2. RANGOS Y PLANTILLAS PARA LA PRIMERA INSTANCIA
@@ -89,9 +89,9 @@ if __name__ == "__main__":
     # Inicializamos servicios y ejecutamos
     servicio1.inicializarServicios()
 
-    # servicio1.llenarYSubirInforme1()
-    # servicio1.llenarYSubirFichaPredial()
-    # servicio1.llenarYSubirUsosUsuarios()
+    servicio1.llenarYSubirInforme1()
+    servicio1.llenarYSubirFichaPredial()
+    servicio1.llenarYSubirUsosUsuarios()
 
     # ==========================================================================
     # 7. CREAR LA SEGUNDA INSTANCIA: FORMATO AGROPECUARIO
@@ -114,8 +114,8 @@ if __name__ == "__main__":
 
     # Inicializa servicios y llama al método
     servicio2.inicializarServicios()
-    # servicio2.llenarYSubirFormatoAgropecuario()
-    # servicio2.llenarYSubirFormatoAgropecuario()
+    servicio2.llenarYSubirFormatoAgropecuario()
+    servicio2.llenarYSubirFormatoAgropecuario()
 
     # ==========================================================================
     # 8. CREAR LA TERCERA INSTANCIA: FORMATO COMERCIAL
