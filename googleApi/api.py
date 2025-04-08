@@ -5,7 +5,7 @@ import pandas as pd
 from openpyxl import load_workbook
 from datetime import datetime
 import os
-from func.llenarPlantillas import llenarInforme1, llenarFichaPredial, llenarUsosUsuarios, llenarFormatoAgropecuario, llenarFormatoComercial, llenarFormatoServicios
+from func.llenarPlantillas import llenarInforme1, llenarFichaPredial, llenarUsosUsuarios, llenarFormatoAgropecuario, llenarFormatoComercial, llenarFormatoServicios, llenarActEconomica
 from util.Pdf import Pdf
 
 class GoogleSheetsAExcel:
@@ -46,6 +46,8 @@ class GoogleSheetsAExcel:
         range_equipos_maquinaria_servicios: str = None, # data-equipos_maquinaria
         range_info_laboral_servicios: str = None, # data-informacion_laboral
 
+        # Rangos para encuesta de identificacion de actividade económica
+        range_identificacion_actividad: str = None, # Sheet1
 
         # Plantillas
         plantilla_informe1: str = None,
@@ -53,7 +55,8 @@ class GoogleSheetsAExcel:
         plantilla_usos_usuarios: str = None,
         plantilla_formato_agro: str = None,
         plantilla_formato_comercial: str = None,
-        plantilla_formato_servicios: str = None
+        plantilla_formato_servicios: str = None,
+        plantilla_identificacion_actividad: str = None
     ) -> None:
         """
         Constructor de la clase GoogleSheetsAExcel.
@@ -92,6 +95,10 @@ class GoogleSheetsAExcel:
         self.range_equipos_maquinaria_servicios = range_equipos_maquinaria_servicios
         self.range_info_laboral_servicios = range_info_laboral_servicios
 
+        # Rango para la encuesta de identificación de actividad económica
+
+        self.range_identificacion_actividad = range_identificacion_actividad
+
         # Plantillas FP, Id. AE, Usos/Usuarios
         self.plantilla_informe1 = plantilla_informe1
         self.plantilla_ficha = plantilla_ficha
@@ -105,8 +112,12 @@ class GoogleSheetsAExcel:
 
         # Plantillas para el Formato Servicios
         self.plantilla_formato_servicios = plantilla_formato_servicios
-        
-        
+
+        # Plantilla para la encuesta de identificación de actividad económica
+        self.plantilla_identificacion_actividad = plantilla_identificacion_actividad
+
+
+              
         self.scopes = [
             'https://www.googleapis.com/auth/spreadsheets.readonly',
             'https://www.googleapis.com/auth/drive'
@@ -247,6 +258,65 @@ class GoogleSheetsAExcel:
             wb = load_workbook(self.plantilla_informe1)
             ws = wb.active
             llenarInforme1(ws, fila)
+
+            # 6) Guardar Excel local
+            nombre_excel = f"{codigo}_informe1.xlsx"
+            wb.save(nombre_excel)
+
+            # 7) Convertir a PDF (1 sola página, Portrait, A4)
+            ruta_pdf = f"{codigo}_informe1.pdf"
+            pdfConv.excelPdf(
+                excel_path=nombre_excel,
+                pdf_path=ruta_pdf,
+                sheet_name=None,           
+                orientation=1,             
+                paper_size=9,              
+                fit_to_pages_wide=1,      
+                fit_to_pages_tall=1,       
+                zoom=None,                 
+                center_horizontally=True,
+                center_vertically=True
+            )
+
+            # 8) Subir y limpiar
+            self.subirArchivo(ruta_pdf, nombre_pdf, folder_id)
+            os.remove(nombre_excel)
+            os.remove(ruta_pdf)
+            print(f"[OK] Se generó y subió {nombre_pdf} en la carpeta '{codigo}'.")
+
+
+    def llenarYSubirIdentificacionActEconomica(self):
+        """
+        Lee el rango 'range_informe1'. Por cada fila, toma 'data-info_general-num_encuesta' 
+        como 'codigo', crea la subcarpeta en Drive (si no existe) y sube un PDF 
+        con nombre <codigo>_informe1.pdf.
+        """
+        if not self.range_identificacion_actividad or not self.plantilla_identificacion_actividad:
+            print("No están configurados 'range_identificacion_actividad' o 'plantilla_informe1'.")
+            return
+
+        df_informe = self.fetchDatos(self.range_identificacion_actividad)
+        pdfConv = Pdf()
+
+        for _, fila in df_informe.iterrows():
+            # 1) Tomar el codigo
+            codigo = str(fila['data-id_encuesta'])
+
+            # 2) Crear/obtener carpeta
+            folder_id = self.obtenerOCrearCarpetaPorCodigo(codigo)
+
+            # 3) Nombre del PDF
+            nombre_pdf = f"{codigo}_informe1.pdf"
+
+            # 4) Verificar si ya existe
+            if self.archivoExiste(nombre_pdf, folder_id):
+                print(f"El archivo {nombre_pdf} ya existe en '{codigo}'. Omitiendo...")
+                continue
+
+            # 5) Llenar plantilla
+            wb = load_workbook(self.plantilla_identificacion_actividad)
+            ws = wb.active
+            llenarActEconomica(ws, fila)
 
             # 6) Guardar Excel local
             nombre_excel = f"{codigo}_informe1.xlsx"
@@ -705,3 +775,4 @@ class GoogleSheetsAExcel:
             os.remove(ruta_pdf)
 
             print(f"[OK] Se generó y subió {nombre_pdf} en la carpeta '{codigo}'.")
+
