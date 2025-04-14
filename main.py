@@ -129,7 +129,7 @@ if __name__ == "__main__":
     # ==========================================================================
     # 9. CREAR LA TERCERA INSTANCIA: FORMATO COMERCIAL
     # ==========================================================================
-    print(RANGE_DESC_ACTIVIDAD)
+
     servicio3 = GoogleSheetsAExcel(
         service_account_file=SERVICE_ACCOUNT_FILE,
         spreadsheet_id=SPREADSHEET_ID3,  
