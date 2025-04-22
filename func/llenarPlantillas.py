@@ -2396,12 +2396,12 @@ def llenarFormatoServicios(ws, df_fila, df_desc_actividad_precio_servicios, df_i
     mapa_energia = {
         'energia_electrica': 'AA38',
         'energia_solar': 'AJ38',
-        'otro': 'AP38'
+        'other': 'AN38'
     }
     energia = df_fila['data-desc_actividad-energia_utiliza']
     ws[mapa_energia[energia]] = 'X'
-    if energia == 'otro':
-        ws['AP38'] = df_fila["data-desc_actividad-energia_utiliza_other"]
+    if energia == 'other':
+        ws['AN38'] = df_fila["data-desc_actividad-energia_utiliza_other"]
 
     # 9. Energía de cocción
     mapa_coccion = {
@@ -2453,9 +2453,9 @@ def llenarFormatoServicios(ws, df_fila, df_desc_actividad_precio_servicios, df_i
 
     mano_obra = df_fila['data-capacidad_hotelera-contrata_mano_obra']
     if mano_obra == 'yes':
-        ws['Z50'] = 'X'
+        ws['AC64'] = 'X'
     elif mano_obra == 'no':
-        ws['AF50'] = 'X'  
+        ws['AE64'] = 'X'  
 
     df_info_laboral = df_info_laboral.head(10).reset_index(drop=True)
 
